@@ -1,2 +1,2 @@
 # Project_TomAndJerry
-23TNT1 Group 7 
+A beautiful and smart maze game
