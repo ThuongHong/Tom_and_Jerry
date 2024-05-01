@@ -25,7 +25,6 @@ class Button:
         if self.rect.collidepoint(pos):
             hover_width = self.hover_image.get_width()
             hover_x_coord = int(self.rect.x - (hover_width - self.modified_width) / 2)
-            
             surface.blit(self.hover_image, (hover_x_coord, self.rect.y))
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 pygame.mixer.Sound.play(self.sound)

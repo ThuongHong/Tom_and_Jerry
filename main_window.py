@@ -9,7 +9,7 @@ RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BEIGE = (217, 211, 186)
-FPS = 30
+FPS = 60
 
 # Font
 # font = pygame.font.SysFont('The fountain of wishes', 40)
@@ -24,23 +24,24 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Tam va Gia Huy')
 clock = pygame.time.Clock()
 
-# images
-images_source = 'images'
-
-
+# image
+image_source = 'image'
 # sound
-s = 'sound'
-click_sound = pygame.mixer.Sound(os.path.join(s, 'click.ogg'))
+sound_source = 'sound'
 
 # game window
-game_window = visualize.GameScreen(screen, images_source)
+game_window = visualize.GameScreen(screen, image_source, sound_source)
 
 while game_window.running:
     clock.tick(FPS)
     if game_window.game_state == 'main menu':
-        game_window.draw_main_menu(click_sound)
+        game_window.draw_main_menu()
     elif game_window.game_state == 'login signin':
-        game_window.draw_login_signin(click_sound)
+        game_window.draw_login_signin()
+    elif game_window.game_state == 'new game':
+        game_window.draw_newgame()
+    elif game_window.game_state == 'leaderboard':
+        game_window.draw_leaderboard()
         
         
     # event handler
