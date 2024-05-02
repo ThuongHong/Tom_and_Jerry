@@ -15,6 +15,8 @@ class Button:
         self.rect = self.image.get_rect()
         self.rect.topleft = (x_coord, y_coord)
         self.clicked = False
+        self.mouse_down = False
+        self.mouse_click = False
                 
     def draw(self, surface):
         action = False
@@ -25,16 +27,22 @@ class Button:
         if self.rect.collidepoint(pos):
             hover_width = self.hover_image.get_width()
             hover_x_coord = int(self.rect.x - (hover_width - self.modified_width) / 2)
+            # draw button on screen
             surface.blit(self.hover_image, (hover_x_coord, self.rect.y))
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                pygame.mixer.Sound.play(self.sound)
-                self.clicked = True
-                action = True
+            if pygame.mouse.get_pressed()[0] == 1:
+                self.mouse_down = True
+            if pygame.mouse.get_pressed()[0] == 0 and self.mouse_down == True:
+                self.mouse_click = True
         else:
+            # draw button on screen
             surface.blit(self.image, (self.rect.x, self.rect.y))
+            if pygame.mouse.get_pressed()[0] == 0:
+                self.mouse_down = False
             
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.clicked = False
-        # draw button on screen
+        if self.mouse_click == True:
+            pygame.mixer.Sound.play(self.sound)
+            action = True
+            self.mouse_down = False
+            self.mouse_click = False
         
         return action

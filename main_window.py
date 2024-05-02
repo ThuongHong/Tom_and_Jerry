@@ -1,5 +1,4 @@
 import pygame
-import os
 import visualize
 
 SCREEN_WIDTH = 1400
@@ -39,7 +38,7 @@ while game_window.running:
     elif game_window.game_state == 'login signin':
         game_window.draw_login_signin()
     elif game_window.game_state == 'new game':
-        game_window.draw_newgame()
+        game_window.draw_new_game()
     elif game_window.game_state == 'leaderboard':
         game_window.draw_leaderboard()
         
