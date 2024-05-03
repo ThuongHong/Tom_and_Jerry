@@ -1,5 +1,6 @@
 import button
 import graphic
+import textbox
 import os
 import pygame
 
@@ -167,13 +168,14 @@ class GameScreen:
                 self.music = True
         
     def draw_login_signin(self):
+        username_login_textbox = textbox.LoginTextBox(600, 335, 300, 50, self.click_sound_source)
+
         self.background.draw(self.screen)
         if self.login_signin == 'log in':
             if self.button_box_signin.draw(self.screen):
                 self.login_signin = 'sign in'
             self.box_login.draw(self.screen)
-            pygame.draw.rect(self.screen, (255, 255, 255), (600, 335, 300, 50))
-            pygame.draw.rect(self.screen, (255, 255, 255), (600, 435, 300, 50))
+            username_login_textbox.get_text(self.screen)
             if self.button_login.draw(self.screen):
                 pass # do something here
             
@@ -181,8 +183,8 @@ class GameScreen:
             if self.button_box_login.draw(self.screen):
                 self.login_signin = 'log in'
             self.box_signin.draw(self.screen)
-            pygame.draw.rect(self.screen, (255, 255, 255), (600, 335, 300, 50))
-            pygame.draw.rect(self.screen, (255, 255, 255), (600, 435, 300, 50))
+            pygame.draw.rect(self.screen, (239, 237, 240), (600, 335, 300, 50))
+            pygame.draw.rect(self.screen, (239, 237, 240), (600, 435, 300, 50))
             if self.button_signin.draw(self.screen):
                 pass # do something here
             
