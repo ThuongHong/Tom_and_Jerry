@@ -172,6 +172,8 @@ class GameScreen:
             if self.button_box_signin.draw(self.screen):
                 self.login_signin = 'sign in'
             self.box_login.draw(self.screen)
+            pygame.draw.rect(self.screen, (255, 255, 255), (600, 335, 300, 50))
+            pygame.draw.rect(self.screen, (255, 255, 255), (600, 435, 300, 50))
             if self.button_login.draw(self.screen):
                 pass # do something here
             
@@ -179,6 +181,8 @@ class GameScreen:
             if self.button_box_login.draw(self.screen):
                 self.login_signin = 'log in'
             self.box_signin.draw(self.screen)
+            pygame.draw.rect(self.screen, (255, 255, 255), (600, 335, 300, 50))
+            pygame.draw.rect(self.screen, (255, 255, 255), (600, 435, 300, 50))
             if self.button_signin.draw(self.screen):
                 pass # do something here
             
