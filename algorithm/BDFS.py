@@ -1,13 +1,10 @@
 from solving_maze.utility import Node, StackFrontier, QueueFrontier
-from game_structure.character import Character
 
-def BDFS(player: Character, algorithm: str = 'DFS'):
-    player_current_position = player.position
-    
-    maze = player.Maze
-
-    player_winning_position = maze.end_position
-        # Keep track of number of grid explored and grid that already explored
+def BDFS(grids: dict,
+         player_current_position: tuple[int],
+         player_winning_position: tuple[int],
+         algorithm: str = 'DFS'):
+    # Keep track of number of grid explored and grid that already explored
     num_explored = 0
     explored_grid = set()
 
@@ -46,7 +43,7 @@ def BDFS(player: Character, algorithm: str = 'DFS'):
         explored_grid.add(node.state)
 
             # Add neighbors to frontier
-        for action, state in maze.grids[node.state].get_neighbors(is_get_direction= True):
+        for action, state in grids[node.state].get_neighbors(is_get_direction= True):
             if not frontier.contains_state(state) and state not in explored_grid:
                 child_node = Node(state= state, parent= node, action= action)
                 frontier.add(child_node)
