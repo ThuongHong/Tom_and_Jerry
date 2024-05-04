@@ -1,6 +1,7 @@
 import button
 import graphic
 import textbox
+import data
 import os
 import pygame
 
@@ -99,6 +100,11 @@ class GameScreen:
         self.button_box_login = button.Button(496, 200, button_box_login_img, self.click_sound_source, 0.3, 0.31)
         self.button_box_signin = button.Button(701, 200, button_box_signin_img, self.click_sound_source, 0.3, 0.31)
         self.button_back = button.Button(30, 690, button_back_img, self.click_sound_source, 0.3, 0.31)
+                    # create login/ signin textbox
+        self.username_login_textbox = textbox.TextBox(600, 335, 300, 50, self.click_sound_source)
+        self.password_login_textbox = textbox.TextBox(600, 435, 300, 50, self.click_sound_source)
+        self.username_signin_textbox = textbox.TextBox(600, 335, 300, 50, self.click_sound_source)
+        self.password_signin_textbox = textbox.TextBox(600, 435, 300, 50, self.click_sound_source)
 
                     # create graphic
         self.background = graphic.Graphic(0, 0, background_img, 1.46)
@@ -168,33 +174,44 @@ class GameScreen:
                 self.music = True
         
     def draw_login_signin(self):
-        username_login_textbox = textbox.TextBox(600, 335, 300, 50, self.click_sound_source)
-        password_login_textbox = textbox.TextBox(600, 435, 300, 50, self.click_sound_source)
-        username_signin_textbox = textbox.TextBox(600, 335, 300, 50, self.click_sound_source)
-        password_signin_textbox = textbox.TextBox(600, 435, 300, 50, self.click_sound_source)
-
         self.background.draw(self.screen)
         if self.login_signin == 'log in':
             if self.button_box_signin.draw(self.screen):
                 self.login_signin = 'sign in'
             self.box_login.draw(self.screen)
 
-            username_login_textbox.get_text(self.screen)
-            password_login_textbox.get_text(self.screen, True)
+            self.username_login_textbox.draw(self.screen, (239, 237, 240))
+            self.username_login_textbox.draw_text(self.screen, (0, 0, 0), False)
+            self.password_login_textbox.draw(self.screen, (239, 237, 240))
+            self.password_login_textbox.draw_text(self.screen, (0, 0, 0), True)
+
+            self.username_login_textbox.get_text(self.screen)
+            self.password_login_textbox.get_text(self.screen, True)
 
             if self.button_login.draw(self.screen):
-                pass # do something here
+                username = self.username_login_textbox.text
+                password = self.password_login_textbox.text
+                check_login = data.login(username, password)
+                print(check_login)
             
         if self.login_signin == 'sign in':
             if self.button_box_login.draw(self.screen):
                 self.login_signin = 'log in'
             self.box_signin.draw(self.screen)
             
-            username_signin_textbox.get_text(self.screen)
-            password_signin_textbox.get_text(self.screen, True)
+            self.username_signin_textbox.draw(self.screen, (239, 237, 240))
+            self.username_signin_textbox.draw_text(self.screen, (0, 0, 0), False)
+            self.password_signin_textbox.draw(self.screen, (239, 237, 240))
+            self.password_signin_textbox.draw_text(self.screen, (0, 0, 0), True)
+
+            self.username_signin_textbox.get_text(self.screen)
+            self.password_signin_textbox.get_text(self.screen, True)
 
             if self.button_signin.draw(self.screen):
-                pass # do something here
+                new_username = self.username_signin_textbox.text
+                new_password = self.password_signin_textbox.text
+                check_signin = data.register(new_username, new_password)
+                print(check_signin)
             
         if self.button_back.draw(self.screen):
             self.game_state = 'main menu'
