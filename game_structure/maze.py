@@ -1,4 +1,5 @@
 from game_structure.grid import GridCell
+from algorithm.BDFS import BDFS
 import random
 
 class Maze():
@@ -15,21 +16,51 @@ class Maze():
         for i in range(self.maze_size):
             for j in range(self.maze_size):
                 self.grids[i, j] = GridCell(grid_position= (i, j), grid_size= self.maze_grid_size)
-    
-    def spawn_start_end_position(self, option= 'TOP_BOTTOM'):    
-        """This method create 2 new class variable call start_position and end_position
-        """
-        start = random.randint(0, self.maze_size - 1)
-        end = random.randint(0, self.maze_size - 1)
 
+    def spawn_start_position_for_generate_maze(self) -> tuple[int]:
+        """This methos will randomly create start position for generate maze
+
+        Returns:
+            tuple[int]: Random position in maze
+        """
+        x_random = random.randint(0, self.maze_size - 1)
+        y_random = random.randint(0, self.maze_size - 1)
+
+        return (x_random, y_random)
+    
+    def spawn_start_end_position(self, option= 'TOP_BOTTOM', 
+                                 start_position= None, 
+                                 end_position= None):    
+        """This method create two class variable start_position and end_position in maze
+
+        Args:
+            option (str, optional): One of ['TOP_BOTTOM', 'SELECT']. Defaults to 'TOP_BOTTOM'.
+            start_position (tuple[int], optional): If the option is 'SELECT', Fill start_position. Defaults to None.
+            end_position (tuple[int], optional): If the option is 'SELECT'. Defaults to None.
+            IF DOES NOT PROVIDE ONE OF ARG(start_position or end_position) IF option is SELECT, Raise ValueError
+        """
         if option == 'TOP_BOTTOM':
+            start = random.randint(0, self.maze_size - 1)
+            end = random.randint(0, self.maze_size - 1)
+
             self.start_position = (start, 0)
             self.end_position = (end, self.maze_size - 1)
             
             # Remove wall for visualize
             self.grids[self.start_position].walls['top'] = False
             self.grids[self.end_position].walls['bottom'] = False
-
+        
+        elif option == 'SELECT' and start_position and end_position:
+            if BDFS(grids= self.grids,
+                    player_current_position= start_position,
+                    player_winning_position= end_position,
+                    algorithm= 'DFS'):
+                self.start_position = start_position
+                self.end_position = end_position
+            else: return False
+        
+        else: raise ValueError("Missing Inputs")
+    
     def check_grid_exist(self, position: tuple[int]) -> bool:
         """This method will check if a grid is valid or not
 
@@ -108,9 +139,9 @@ class Maze():
         """
         if algorithm == 'DFS':
             # Generate spawn and end position
-            self.spawn_start_end_position()
+            # self.spawn_start_end_position()
 
-            current_grid = self.start_position
+            current_grid = self.spawn_start_position_for_generate_maze()
 
             # Stack store grid for later move in backtracking
             DFS_stack = []
