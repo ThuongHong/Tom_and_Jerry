@@ -1,7 +1,9 @@
 import pygame
 
 TEXT_LENGTH = 18
-
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREY = (239, 237, 240)
 
 class TextBox:
     def __init__(self, x_coord, y_coord, length, width, sound):
@@ -11,35 +13,42 @@ class TextBox:
         self.width = width
         self.sound = sound
         self.rect = pygame.Rect(self.x_coord, self.y_coord, self.length, self.width)
+        self.text = ""
+        self.font = pygame.font.SysFont('The fountain of wishes', 40)
 
-    def draw(self, surface): 
-        pygame.draw.rect(surface, (239, 237, 240), self.rect)
+    def draw(self, surface, color): 
+        pygame.draw.rect(surface, color, self.rect)
 
+    def draw_text(self, surface, text_color, censored):
+        if censored:
+            text = self.font.render("*" * len(self.text), True, text_color)
+        else:
+            text = self.font.render(self.text, True, text_color)
+        surface.blit(text, (self.x_coord + 10, self.y_coord + 10))
 
-class LoginTextBox(TextBox):
-    def get_text(self, surface):
-        LoginTextBox.draw(self, surface)
+    def get_text(self, surface, censored = False):
+        TextBox.draw(self, surface, GREY)
+        TextBox.draw_text(self, surface, BLACK, censored)
+
         pos = pygame.mouse.get_pos()
         activated = False
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
             activated = True
-        user_text = ""
+
         while activated:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
                     pygame.quit() 
-
                 if event.type == pygame.KEYDOWN: 
-                    if len(user_text) > 0 and event.key == pygame.K_BACKSPACE: 
-                        user_text = user_text[:-1] 
-                    elif event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
+                    if len(self.text) > 0 and event.key == pygame.K_BACKSPACE: 
+                        self.text = self.text[:-1] 
+                    elif event.key == pygame.K_RETURN:
                         activated = False
-                        break
-                    elif len(user_text) < TEXT_LENGTH:
-                        user_text += event.unicode
+                    elif len(self.text) < TEXT_LENGTH:
+                        self.text += event.unicode
 
-            LoginTextBox.draw(self, surface)
-            text_surface = pygame.font.Font("The fountain of wishes.ttf", 40).render(user_text, True, (0, 0, 0)) 
-            surface.blit(text_surface, (self.x_coord + 10, self.y_coord + 10))
+            TextBox.draw(self, surface, WHITE)
+            TextBox.draw_text(self, surface, BLACK, censored)
 
-            pygame.display.update() 
+            pygame.display.update()
+
