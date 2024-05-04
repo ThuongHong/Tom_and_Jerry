@@ -16,7 +16,7 @@ class Maze():
             for j in range(self.maze_size):
                 self.grids[i, j] = GridCell(grid_position= (i, j), grid_size= self.maze_grid_size)
     
-    def spawn_start_end_position(self, option= 'TOP_BOTTOM'):
+    def spawn_start_end_position(self, option= 'TOP_BOTTOM'):    
         """This method create 2 new class variable call start_position and end_position
         """
         start = random.randint(0, self.maze_size - 1)
@@ -25,6 +25,10 @@ class Maze():
         if option == 'TOP_BOTTOM':
             self.start_position = (start, 0)
             self.end_position = (end, self.maze_size - 1)
+            
+            # Remove wall for visualize
+            self.grids[self.start_position].walls['top'] = False
+            self.grids[self.end_position].walls['bottom'] = False
 
     def check_grid_exist(self, position: tuple[int]) -> bool:
         """This method will check if a grid is valid or not

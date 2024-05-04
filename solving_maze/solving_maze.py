@@ -17,7 +17,7 @@ def solve_maze(player: Character, algorithm: str = 'DFS') -> list[tuple[str, tup
 
     player_winning_position = maze.end_position
 
-    if algorithm == 'DFS' or 'BFS':
+    if algorithm == 'DFS' or algorithm == 'BFS':
         # Keep track of number of grid explored and grid that already explored
         num_explored = 0
         explored_grid = set()

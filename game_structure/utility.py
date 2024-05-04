@@ -13,6 +13,7 @@ def get_position_after_move(position: tuple[int],
     elif direction == 'R': return (position[0] + 1, position[1])
     elif direction == 'B': return (position[0], position[1] + 1)
     elif direction == 'L': return (position[0] - 1, position[1])
+    else: raise ValueError
 
 def get_diffirent_coord(direction: str, maze_grid_size: int):
     if direction == 'T': return (0, -maze_grid_size)

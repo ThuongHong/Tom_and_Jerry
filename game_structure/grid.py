@@ -59,12 +59,13 @@ class GridCell():
         
         return actions
 
-    def get_neighbors(self, is_wall_direction: bool= False) -> list[tuple[int]]:
+    def get_neighbors(self, is_wall_direction: bool= False, is_get_direction: bool = False) -> list[tuple[int]]:
         """Return all the neighbors surround this grid that this grid can move to
 
         Returns:
             list[tuple[int]]: None description
         """
+        actions = []
         neighbors = []
         
         if is_wall_direction:
@@ -73,6 +74,10 @@ class GridCell():
         else:
             for action in self.get_actions():
                 neighbors.append(get_position_after_move(self.get_position(), direction= action))
+                actions.append(action)
+        
+        if is_get_direction: return zip(actions, neighbors)
+        
         return neighbors
 
     def get_feature(self) -> str:
