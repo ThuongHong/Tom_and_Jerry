@@ -43,6 +43,9 @@ class Maze():
             return True
         return False
     
+        # return position in self.grids
+        # Tien hon neu co o co index am de cho nhan vat bay ra khoi maze :>>
+    
     def remove_wall_between_two_grid(self, 
                                      current_grid: tuple[int],
                                      next_grid: tuple[int]):
@@ -54,19 +57,24 @@ class Maze():
         """
         delta_x = current_grid[0] - next_grid[0]
         delta_y = current_grid[1] - next_grid[1]
-
+        
+        # next || current
         if delta_x == 1:
             self.grids[current_grid].walls["left"] = False
             self.grids[next_grid].walls["right"] = False
-        
+        # current || next
         elif delta_x == -1:
             self.grids[current_grid].walls["right"] = False
             self.grids[next_grid].walls["left"] = False
-        
+        # next
+        # ----
+        # current
         if delta_y == 1:
             self.grids[current_grid].walls["top"] = False
             self.grids[next_grid].walls["bottom"] = False
-        
+        # currrent
+        # ----
+        # next
         elif delta_y == -1:
             self.grids[current_grid].walls["bottom"] = False
             self.grids[next_grid].walls["top"] = False
@@ -82,7 +90,10 @@ class Maze():
         """
         unvisited_grids = []
 
-        for grid in self.grids[position].get_neighbors(is_wall_direction= True):
+        # Iterate for each grid that position cannot move to that(or can say have wall in the connect between two grid)
+        for grid in self.grids[position].get_neighbors(is_wall_direction= True): # Option is_wall_direction modify behave of the method. Read GridCell for more
+            # Check if is that a valid grid because get_neighbors does not design to check
+            # Check if that grid is not visited
             if self.check_grid_exist(position= grid) and not self.grids[grid].is_visited:
                 unvisited_grids.append(grid)
         
@@ -96,31 +107,50 @@ class Maze():
             algorithm (str, optional): _description_. Defaults to 'DFS'.
         """
         if algorithm == 'DFS':
+            # Generate spawn and end position
             self.spawn_start_end_position()
+
             current_grid = self.start_position
+
+            # Stack store grid for later move in backtracking
             DFS_stack = []
 
+            # Define stop condition for generate maze
             break_count = 1
             break_value = self.maze_size ** 2
 
+            # Start generate maze
             while break_count != break_value:
+                # Mark current grid visited
                 self.grids[current_grid].is_visited = True
+                
+                # Choose next grid by random neighbors that unvisited of current grid
                 try:
                     next_grid = random.choice(self.get_unvisited_grid(current_grid))
+                # There is a case that current grid does not have any neighbors that unvisited
+                # Then will return [], and random.choice() will raise IndexError if input is a empty list
                 except IndexError:
+                    # Set next grid to NULL or Nothing
                     next_grid = None
                 
                 if next_grid:
-                    self.grids[current_grid].is_visited = True
+                    # Does not need this one. Fuhoa Sori:>>
+                    # self.grids[current_grid].is_visited = True
 
+                    # Because we will loop until all gird in maze is visited so if we can move to other grid, we increase th value of break_count to 1
                     break_count += 1
 
+                    # Append to DFS_stack for backtracking later
                     DFS_stack.append(current_grid)
+
+                    # Create connection between two grid
                     self.remove_wall_between_two_grid(current_grid= current_grid,
                                                       next_grid= next_grid)
                     
+                    # Set current to next
                     current_grid = next_grid
                 
+                # If does not have next grid -> Backtrack
                 elif len(DFS_stack) != 0:
                     current_grid = DFS_stack.pop()
 

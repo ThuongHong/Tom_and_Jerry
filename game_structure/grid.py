@@ -38,7 +38,7 @@ class GridCell():
         wall_directions = []
 
         for direction in self.walls:
-            # If this direction does not have wall
+            # If this direction has wall
             if self.walls[direction]: 
                 wall_directions.append(direction[0].upper())
 
@@ -60,24 +60,33 @@ class GridCell():
         return actions
 
     def get_neighbors(self, is_wall_direction: bool= False, is_get_direction: bool = False) -> list[tuple[int]]:
-        """Return all the neighbors surround this grid that this grid can move to
+        """Dafault: Return neighbors that this grid can move. Modified: like description
+
+        Args:
+            is_wall_direction (bool, optional): If we want to get the neighbors that this grid cannot move to. Opposite to the meaning of method in the first place
+            is_get_direction (bool, optional): A boolean if we want to get either direction and grid cell. Defaults to False.
 
         Returns:
-            list[tuple[int]]: None description
+            list[tuple[int]]: _description_
         """
         actions = []
         neighbors = []
         
+        # If we want to get neighbors grid that can not move to
         if is_wall_direction:
             for direction in self.get_wall_direction():
                 neighbors.append(get_position_after_move(self.get_position(), direction= direction))
+        
+        # Otherwise
         else:
             for action in self.get_actions():
                 neighbors.append(get_position_after_move(self.get_position(), direction= action))
                 actions.append(action)
         
+        # If want to get the action
         if is_get_direction: return zip(actions, neighbors)
         
+        # Otherwise
         return neighbors
 
     def get_feature(self) -> str:
