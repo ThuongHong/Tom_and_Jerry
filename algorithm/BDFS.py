@@ -1,4 +1,4 @@
-from solving_maze.utility import Node, StackFrontier, QueueFrontier
+from algorithm.utility import Node, StackFrontier, QueueFrontier
 
 def BDFS(grids: dict,
          player_current_position: tuple[int],
