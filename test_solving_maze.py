@@ -4,9 +4,14 @@ from game_structure.character import Character
 import pygame
 from sys import exit
 
+### DIEU CHINH CAI NÌ
+START_POSITION = (0, 0)
+END_POSITION = (1, 1)
+
 def draw_solution(solution: list[tuple[str, tuple[int]]], screen):
-    for action, state in solution:
-        ...
+    print(list(solution))
+    # for action, state in solution:
+    #     print(state, action)
 
 if __name__ == '__main__':
     pygame.init()
@@ -16,6 +21,7 @@ if __name__ == '__main__':
 
     maze = Maze(maze_size= 12, maze_grid_size= 30)
     maze.generate_new_maze()
+    maze.spawn_start_end_position('SELECT', START_POSITION, END_POSITION)
 
     tom = Character(maze)
 
