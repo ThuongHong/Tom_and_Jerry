@@ -1,7 +1,6 @@
 import pygame
 import visualize
 from constants.INTERFACE_CONSTANTS import DISPLAY
-from constants.INTERFACE_CONSTANTS import COLOR
 
 
 # Font
@@ -17,9 +16,9 @@ screen = pygame.display.set_mode((DISPLAY.SCREEN_WIDTH, DISPLAY.SCREEN_HEIGHT))
 pygame.display.set_caption('Tam va Gia Huy')
 clock = pygame.time.Clock()
 
-# image
+# images
 image_source = 'images'
-# sound
+# sounds
 sound_source = 'sounds'
 
 # game window
