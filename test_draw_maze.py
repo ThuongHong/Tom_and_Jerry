@@ -17,9 +17,13 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    maze = Maze(maze_size= 40, maze_grid_size= 15)
+    maze = Maze(maze_size= 25, maze_grid_size= 20)
 
-    maze.generate_new_maze(algorithm= 'HAK', is_multiple_way= True, draw= True, screen= screen, draw_speed= 'FAST')
+    maze.generate_new_maze(algorithm= 'HAK', 
+                           is_multiple_way= True, 
+                           draw= True, 
+                           screen= screen, 
+                           draw_speed= 'SLOW')
     maze.spawn_start_end_position()
 
     tom = Tom(maze)
@@ -42,10 +46,11 @@ if __name__ == '__main__':
                 elif event.key == pygame.K_DOWN:
                     player.update(direction= 'B')
         
+        # This one use for blit background
         screen.fill((0, 0, 0))
 
         maze.draw(screen)
-        player.update(draw_solution= screen, algorithm= 'BFS')
+        player.update(draw_solution= screen, algorithm= 'DFS')
         player.draw(screen)
 
         pygame.display.update()

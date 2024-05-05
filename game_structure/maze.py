@@ -160,6 +160,7 @@ class Maze():
 
     def draw(self, screen):
         """For test, no use for real game"""
+        # Background blit
         screen.fill((0, 0, 0))
 
         for position in self.grids:
@@ -211,7 +212,6 @@ class Maze():
 
     def generate_new_maze(self,
                           algorithm: str = 'DFS',
-                          is_multiple_way: bool = False,
                           draw: bool = False,
                           screen = None,
                           draw_speed= 'NORMAL'):
@@ -308,7 +308,7 @@ class Maze():
                             for visited_grid in visited_grids:
                                 self.remove_wall_between_two_grid(current_grid= (col, row),
                                                                     next_grid= visited_grid)
-                            if not is_multiple_way: break
+                            
                         # Carve again
                         self.carve_wall_one_line(current_grid= (col, row),
                                                  draw= draw,
