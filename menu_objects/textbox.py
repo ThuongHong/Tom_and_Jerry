@@ -40,6 +40,7 @@ class TextBox:
 
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+            pygame.mixer.Sound.play(self.sound)
             return True
         
         return False
