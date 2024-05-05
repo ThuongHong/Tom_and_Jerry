@@ -1,7 +1,8 @@
 from algorithm.BDFS import BDFS
-from game_structure.character import Character
+# from game_structure.character import Character
 
-def solve_maze(player: Character, algorithm: str = 'DFS') -> list[tuple[str, tuple[int]]]:
+def solve_maze(player, #: Character, 
+               algorithm: str = 'DFS') -> list[tuple[str, tuple[int]]]:
     """Given the character, this function return a list of move to get to the end point
 
     Args:

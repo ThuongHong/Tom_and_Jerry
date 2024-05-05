@@ -1,5 +1,6 @@
 from game_structure.maze import Maze
 from game_structure.utility import get_position_after_move, get_diffirent_coord
+from solving_maze.solving_maze import solve_maze
 from os.path import join
 from os import listdir
 import pygame
@@ -44,8 +45,54 @@ class Character(pygame.sprite.Sprite):
             self.move(direction= kwargs['direction'])
         # More feature like draw, update img, state of character
 
+
 class Tom(Character):
+    YELLOW = (255, 255, 0)
+
     def __init__(self,
                  maze: Maze,
                  ):
         super().__init__(character_maze= maze)
+    
+    def draw_solution(self, solution: list,
+                      screen):
+        # If do not have solution a.k.a you in the right spot
+        if not solution: return
+
+        # If there a way to come to end spot
+        current_state = solution[0][1]
+        current_center_coord = self.Maze.grids[current_state].get_center_coord()
+        solution.pop(0)
+        
+        # Draw circle in the spot we at
+        CIRCLE_RADIUS = self.Maze.maze_grid_size / 6
+        pygame.draw.circle(screen, self.YELLOW, current_center_coord, CIRCLE_RADIUS)
+
+        # Draw line to next spot
+        while solution:
+
+            next_state = solution.pop(0)[1]
+            next_center_coord = self.Maze.grids[next_state].get_center_coord()
+            pygame.draw.line(screen, self.YELLOW, current_center_coord, next_center_coord)
+            pygame.draw.circle(screen, self.YELLOW, next_center_coord, CIRCLE_RADIUS)
+
+            current_state = next_state
+            current_center_coord = next_center_coord
+
+        # pygame.display.update()
+
+    def update(self, **kwargs):
+        """Update state of player
+
+        Args:
+            direction (str): If want to update move
+            draw_solution (pygame.Surface): Given screen if want to draw solution
+        """
+        if 'direction' in kwargs:
+            self.move(direction= kwargs['direction'])
+        if 'draw_solution' in kwargs:
+            self.draw_solution(
+                solution= solve_maze(self),
+                screen= kwargs['draw_solution'] 
+            )
+        # More feature like draw, update img, state of character

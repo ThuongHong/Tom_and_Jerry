@@ -1,22 +1,32 @@
+from solving_maze.solving_maze import solve_maze
 from game_structure.maze import Maze
-from game_structure.character import Character
+from game_structure.character import Tom
 import pygame
 from sys import exit
+
+
+def draw_solution(solution: list[tuple[str, tuple[int]]], screen):
+    print(list(solution))
+    # for action, state in solution:
+    #     print(state, action)
 
 if __name__ == '__main__':
     pygame.init()
 
-    screen = pygame.display.set_mode((500, 500))
+    screen = pygame.display.set_mode((1000, 650))
+    screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    maze = Maze(maze_size= 20, maze_grid_size= 30)
-    maze.generate_new_maze()
+    maze = Maze(maze_size= 10, maze_grid_size= 40)
 
-    tom = Character(maze)
+    maze.generate_new_maze(algorithm= 'HAK', draw= True, screen= screen, draw_speed= 'NORMAL')
+    maze.spawn_start_end_position()
+
+    tom = Tom(maze)
 
     player = pygame.sprite.GroupSingle()
     player.add(tom)
-
+    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -35,6 +45,7 @@ if __name__ == '__main__':
         screen.fill((0, 0, 0))
 
         maze.draw(screen)
+        player.update(draw_solution= screen)
         player.draw(screen)
 
         pygame.display.update()

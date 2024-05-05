@@ -1,6 +1,8 @@
 from game_structure.grid import GridCell
 from algorithm.BDFS import BDFS
 import random
+import pygame
+import time    
 
 class Maze():
     def __init__(self,
@@ -49,7 +51,13 @@ class Maze():
             # Remove wall for visualize
             self.grids[self.start_position].walls['top'] = False
             self.grids[self.end_position].walls['bottom'] = False
-        
+
+            self.grids[start, -1] = GridCell((start, -1), self.maze_grid_size)
+            self.grids[end, self.maze_size] = GridCell((end, self.maze_size), self.maze_grid_size)
+
+            self.grids[start, -1].walls['bottom'] = False
+            self.grids[end, self.maze_size].walls['top'] = False
+
         elif option == 'SELECT' and start_position and end_position:
             if BDFS(grids= self.grids,
                     player_current_position= start_position,
@@ -129,19 +137,91 @@ class Maze():
                 unvisited_grids.append(grid)
         
         return unvisited_grids
+    
+    def get_visited_grid(self, position: tuple[int]) -> list[tuple[int]]:
+        """Return neighbors that is unvisited, This method support for generating maze by using DFS or HAK algorithm
+
+        Args:
+            position (tuple[int]): None_description_
+
+        Returns:
+            list[tuple[int]]: None_description_
+        """
+        unvisited_grids = []
+
+        # Iterate for each grid that position cannot move to that(or can say have wall in the connect between two grid)
+        for grid in self.grids[position].get_neighbors(is_wall_direction= True): # Option is_wall_direction modify behave of the method. Read GridCell for more
+            # Check if is that a valid grid because get_neighbors does not design to check
+            # Check if that grid is not visited
+            if self.check_grid_exist(position= grid) and self.grids[grid].is_visited:
+                unvisited_grids.append(grid)
+        
+        return unvisited_grids
+
+    def draw(self, screen):
+        """For test, no use for real game"""
+        screen.fill((0, 0, 0))
+
+        for position in self.grids:
+            is_last_grid = True if position[1] == self.maze_size else False
+            self.grids[position].draw(screen, self.maze_grid_size, is_last= is_last_grid)
+
+    def carve_wall_one_line(self, current_grid,
+                            is_stack: bool = False,
+                            stack: list = None,
+                            draw: bool = False, 
+                            screen = None, 
+                            draw_speed = 'NORMAL'):
+        while current_grid:
+            # Mark current grid visited
+            self.grids[current_grid].is_visited = True
+            
+            # Choose next grid by random neighbors that unvisited of current grid
+            try:
+                next_grid = random.choice(self.get_unvisited_grid(current_grid))
+            # There is a case that current grid does not have any neighbors that unvisited
+            # Then will return [], and random.choice() will raise IndexError if input is a empty list
+            except IndexError:
+                # Set next grid to NULL or Nothing
+                next_grid = None
+
+            if next_grid:
+                # Does not need this one. Fuhoa Sori:>>
+                # self.grids[current_grid].is_visited = True
+                if is_stack: 
+                    stack.append(current_grid)
+
+                # Create connection between two grid
+                self.remove_wall_between_two_grid(current_grid= current_grid,
+                                                    next_grid= next_grid)
+                
+                # Draw maze if you want to see the process
+                if draw:
+                    self.draw(screen= screen)
+                    pygame.display.update()
+                    if draw_speed == 'NORMAL':
+                        time.sleep(0.01)
+                    elif draw_speed == 'FAST':
+                        time.sleep(0.0001)
+
+            # Set current to next
+            current_grid = next_grid
 
     def generate_new_maze(self,
-                          algorithm: str = 'DFS'):
+                          algorithm: str = 'DFS',
+                          draw: bool = False,
+                          screen = None,
+                          draw_speed= 'NORMAL'):
         """Generate new maze using following algorithm
 
         Args:
             algorithm (str, optional): _description_. Defaults to 'DFS'.
         """
-        if algorithm == 'DFS':
-            # Generate spawn and end position
-            # self.spawn_start_end_position()
+        # Generate spawn and end position
+        current_grid = self.spawn_start_position_for_generate_maze()
+        # self.spawn_start_end_position()
 
-            current_grid = self.spawn_start_position_for_generate_maze()
+        if algorithm == 'DFS':
 
             # Stack store grid for later move in backtracking
             DFS_stack = []
@@ -151,44 +231,80 @@ class Maze():
             break_value = self.maze_size ** 2
 
             # Start generate maze
-            while break_count != break_value:
+            while current_grid:
+                self.carve_wall_one_line(current_grid= current_grid,
+                                         is_stack= True,
+                                         stack= DFS_stack,
+                                         draw= draw,
+                                         screen= screen,
+                                         draw_speed= draw_speed)
                 # Mark current grid visited
-                self.grids[current_grid].is_visited = True
+                # self.grids[current_grid].is_visited = True
                 
-                # Choose next grid by random neighbors that unvisited of current grid
-                try:
-                    next_grid = random.choice(self.get_unvisited_grid(current_grid))
-                # There is a case that current grid does not have any neighbors that unvisited
-                # Then will return [], and random.choice() will raise IndexError if input is a empty list
-                except IndexError:
-                    # Set next grid to NULL or Nothing
-                    next_grid = None
+                # # Choose next grid by random neighbors that unvisited of current grid
+                # try:
+                #     next_grid = random.choice(self.get_unvisited_grid(current_grid))
+                # # There is a case that current grid does not have any neighbors that unvisited
+                # # Then will return [], and random.choice() will raise IndexError if input is a empty list
+                # except IndexError:
+                #     # Set next grid to NULL or Nothing
+                #     next_grid = None
                 
-                if next_grid:
-                    # Does not need this one. Fuhoa Sori:>>
-                    # self.grids[current_grid].is_visited = True
+                # if next_grid:
+                #     # Does not need this one. Fuhoa Sori:>>
+                #     # self.grids[current_grid].is_visited = True
 
-                    # Because we will loop until all gird in maze is visited so if we can move to other grid, we increase th value of break_count to 1
-                    break_count += 1
+                #     # Because we will loop until all gird in maze is visited so if we can move to other grid, we increase th value of break_count to 1
+                #     break_count += 1
 
-                    # Append to DFS_stack for backtracking later
-                    DFS_stack.append(current_grid)
+                #     # Append to DFS_stack for backtracking later
+                #     DFS_stack.append(current_grid)
 
-                    # Create connection between two grid
-                    self.remove_wall_between_two_grid(current_grid= current_grid,
-                                                      next_grid= next_grid)
-                    
-                    # Set current to next
-                    current_grid = next_grid
+                #     # Create connection between two grid
+                #     self.remove_wall_between_two_grid(current_grid= current_grid,
+                #                                       next_grid= next_grid)
+                #                     # Draw maze if you want to see the process
+                #     if draw:
+                #         self.draw(screen= screen)
+                #         pygame.display.update()
+                #         if draw_speed == 'NORMAL':
+                #             time.sleep(0.01)
+                #         elif draw_speed == 'FAST':
+                #             time.sleep(0.0001)
+
+                #     # Set current to next
+                #     current_grid = next_grid
                 
                 # If does not have next grid -> Backtrack
-                elif len(DFS_stack) != 0:
+                if len(DFS_stack) != 0:
                     current_grid = DFS_stack.pop()
+                else:
+                    break
 
         elif algorithm == 'HAK': # e.g Hunt and Kill
-            pass
-    
-    def draw(self, screen):
-        """For test, no use for real game"""
-        for position in self.grids:
-            self.grids[position].draw(screen, self.maze_grid_size)
+            # Start generate maze
+            
+            # Carve until do not any neighbors
+            self.carve_wall_one_line(current_grid= current_grid,
+                                     draw= draw,
+                                     screen= screen,
+                                     draw_speed= draw_speed)
+            # Enter Hunt Mode
+            for i in range(self.maze_size):
+                for j in range(self.maze_size):
+                    visited_grids = self.get_visited_grid(position= (i, j))
+                    # If find a grid that not visited and have visited grid in neighbors
+                    if not self.grids[i, j].is_visited and visited_grids:
+                        # Connect the unvited with visited
+                        for grid in visited_grids:
+                            self.remove_wall_between_two_grid(current_grid= (i, j),
+                                                              next_grid= grid)
+                        
+                        # Carve again
+                        self.carve_wall_one_line(current_grid= (i, j),
+                                                 draw= draw,
+                                                 screen= screen,
+                                                 draw_speed= draw_speed)
+
+
+

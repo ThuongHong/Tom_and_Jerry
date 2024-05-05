@@ -5,9 +5,8 @@ import pygame
 from sys import exit
 
 def draw_solution(solution: list[tuple[str, tuple[int]]], screen):
-    print(list(solution))
-    # for action, state in solution:
-    #     print(state, action)
+    for action, state in solution:
+        ...
 
 if __name__ == '__main__':
     pygame.init()

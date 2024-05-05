@@ -8,6 +8,7 @@ class GridCell():
                  ):
         self.grid_size = grid_size
         self.grid_coord = (grid_position[0] * self.grid_size, grid_position[1] * self.grid_size)
+        self.thickness = int(self.grid_size * 4 / 30)
 
         # Variable check if cell is go over or not in generate maze by using DFS algorithm
         self.is_visited = False
@@ -29,6 +30,9 @@ class GridCell():
         """
         return self.grid_coord[0] // self.grid_size, self.grid_coord[1] // self.grid_size
     
+    def get_center_coord(self):
+        return (self.grid_coord[0] + self.grid_size // 2, self.grid_coord[1] + self.grid_size // 2)
+
     def get_wall_direction(self) -> list[str]:
         """This method support for DFS algorithm in generate maze. Opposite with the method below
 
@@ -105,7 +109,7 @@ class GridCell():
 
         return '-'.join(features)
 
-    def draw(self, screen, grid_source):
+    def draw(self, screen, grid_source, is_last= False):
         """This method for drawing a grid"""
 
         # grid_name = self.get_feature() + '.png' # May be jpg or sth, Fuhoa do not know about thys hee he
@@ -113,13 +117,14 @@ class GridCell():
         x, y = self.grid_coord
 
         if self.walls['top']:
-            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x, y), (x + self.grid_size, y), 4)
+            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x, y), (x + self.grid_size, y), self.thickness)
         if self.walls['right']:
-            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x + self.grid_size, y), (x + self.grid_size, y + self.grid_size), 4)
-        if self.walls['bottom']:
-            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x + self.grid_size, y + self.grid_size), (x, y + self.grid_size), 4)
+            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x + self.grid_size, y), (x + self.grid_size, y + self.grid_size), self.thickness)
+        if not is_last:
+            if self.walls['bottom']:
+                pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x + self.grid_size, y + self.grid_size), (x, y + self.grid_size), self.thickness)
         if self.walls['left']:
-            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x, y + self.grid_size), (x, y), 4)
+            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x, y + self.grid_size), (x, y), self.thickness)
             
         """Do some thing to visualize this grid""" 
         # raise NotImplementedError       

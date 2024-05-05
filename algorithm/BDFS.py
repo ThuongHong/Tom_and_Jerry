@@ -36,7 +36,7 @@ def BDFS(grids: dict,
             actions.reverse()
             grids.reverse()
 
-            return zip(actions, grids)
+            return list(zip(actions, grids))
     
         # If we not found the end position
             # Add current position to explored set
