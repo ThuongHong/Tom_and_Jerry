@@ -14,6 +14,7 @@ class Character(pygame.sprite.Sprite):
 
         self.Maze = character_maze
         self.position = self.Maze.start_position
+        self.step_moves = 0
         
         # Rect will be draw while we using GroupSingle then add this character
         img_tmp = pygame.image.load(r'imgs/tom_norm.jpg').convert_alpha()
@@ -37,13 +38,15 @@ class Character(pygame.sprite.Sprite):
             
             move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.Maze.maze_grid_size)
             self.rect = self.rect.move(move_coord[0], move_coord[1])
+            
+            self.step_moves += 1
 
-    def update(self, **kwargs):
-        """This method is use for update state of character. This one is one of method of Group() in pygame we will use later because we cannot create a sprite not have group include its
-        """
-        if 'direction' in kwargs:
-            self.move(direction= kwargs['direction'])
-        # More feature like draw, update img, state of character
+    # def update(self, **kwargs):
+    #     """This method is use for update state of character. This one is one of method of Group() in pygame we will use later because we cannot create a sprite not have group include its
+    #     """
+    #     if 'direction' in kwargs:
+    #         self.move(direction= kwargs['direction'])
+    #     # More feature like draw, update img, state of character
 
 
 class Tom(Character):
@@ -81,7 +84,7 @@ class Tom(Character):
 
         # pygame.display.update()
 
-    def update(self, **kwargs):
+    def update(self, **kwargs) -> bool:
         """Update state of player
 
         Args:
