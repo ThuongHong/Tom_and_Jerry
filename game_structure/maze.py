@@ -139,7 +139,7 @@ class Maze():
         return unvisited_grids
     
     def get_visited_grid(self, position: tuple[int]) -> list[tuple[int]]:
-        """Return neighbors that is unvisited, This method support for generating maze by using DFS or HAK algorithm
+        """Return neighbors that is visited, This method support for generating maze by using HAK algorithm
 
         Args:
             position (tuple[int]): None_description_
@@ -202,13 +202,16 @@ class Maze():
                     if draw_speed == 'NORMAL':
                         time.sleep(0.01)
                     elif draw_speed == 'FAST':
-                        time.sleep(0.0001)
+                        time.sleep(0.001)
+                    elif draw_speed == 'SLOW':
+                        time.sleep(0.1)
 
             # Set current to next
             current_grid = next_grid
 
     def generate_new_maze(self,
                           algorithm: str = 'DFS',
+                          is_multiple_way: bool = False,
                           draw: bool = False,
                           screen = None,
                           draw_speed= 'NORMAL'):
@@ -281,7 +284,7 @@ class Maze():
                 else:
                     break
 
-        elif algorithm == 'HAK': # e.g Hunt and Kill
+        elif algorithm == 'HAK': # i.e Hunt and Kill
             # Start generate maze
             
             # Carve until do not any neighbors
@@ -290,18 +293,24 @@ class Maze():
                                      screen= screen,
                                      draw_speed= draw_speed)
             # Enter Hunt Mode
-            for i in range(self.maze_size):
-                for j in range(self.maze_size):
-                    visited_grids = self.get_visited_grid(position= (i, j))
+            for row in range(self.maze_size):
+                for col in range(self.maze_size):
+                    try:
+                        visited_grids = self.get_visited_grid(position= (col, row))
+                    except IndexError:
+                        visited_grids = None
+                    
                     # If find a grid that not visited and have visited grid in neighbors
-                    if not self.grids[i, j].is_visited and visited_grids:
-                        # Connect the unvited with visited
-                        for grid in visited_grids:
-                            self.remove_wall_between_two_grid(current_grid= (i, j),
-                                                              next_grid= grid)
+                    if not self.grids[col, row].is_visited:
                         
+                        # Connect the unvited with visited
+                        if visited_grids:
+                            for visited_grid in visited_grids:
+                                self.remove_wall_between_two_grid(current_grid= (col, row),
+                                                                    next_grid= visited_grid)
+                            if not is_multiple_way: break
                         # Carve again
-                        self.carve_wall_one_line(current_grid= (i, j),
+                        self.carve_wall_one_line(current_grid= (col, row),
                                                  draw= draw,
                                                  screen= screen,
                                                  draw_speed= draw_speed)

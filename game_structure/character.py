@@ -91,8 +91,14 @@ class Tom(Character):
         if 'direction' in kwargs:
             self.move(direction= kwargs['direction'])
         if 'draw_solution' in kwargs:
-            self.draw_solution(
-                solution= solve_maze(self),
-                screen= kwargs['draw_solution'] 
-            )
+            if 'algorithm' in kwargs:
+                self.draw_solution(
+                    solution= solve_maze(self, algorithm= kwargs['algorithm']),
+                    screen= kwargs['draw_solution']
+                )
+            else:
+                self.draw_solution(
+                    solution= solve_maze(self, algorithm= 'DFS'),
+                    screen= kwargs['draw_solution']
+                )
         # More feature like draw, update img, state of character
