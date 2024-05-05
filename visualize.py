@@ -1,9 +1,10 @@
-import button
-import graphic
-import textbox
-import data
+from menu_objects import button
+from menu_objects import graphic
+from menu_objects import textbox
+from data import data
 import os
 import pygame
+from constants.INTERFACE_CONSTANTS import COLOR
 
 def create_img(image_source, image_name):
     image_name = image_name + '.png'
@@ -180,10 +181,10 @@ class GameScreen:
                 self.login_signin = 'sign in'
             self.box_login.draw(self.screen)
 
-            self.username_login_textbox.draw(self.screen, (239, 237, 240))
-            self.username_login_textbox.draw_text(self.screen, (0, 0, 0), False)
-            self.password_login_textbox.draw(self.screen, (239, 237, 240))
-            self.password_login_textbox.draw_text(self.screen, (0, 0, 0), True)
+            self.username_login_textbox.draw(self.screen, COLOR.GREY)
+            self.username_login_textbox.draw_text(self.screen, COLOR.BLACK, False)
+            self.password_login_textbox.draw(self.screen, COLOR.GREY)
+            self.password_login_textbox.draw_text(self.screen, COLOR.BLACK, True)
 
             self.username_login_textbox.get_text(self.screen)
             self.password_login_textbox.get_text(self.screen, True)
@@ -199,10 +200,10 @@ class GameScreen:
                 self.login_signin = 'log in'
             self.box_signin.draw(self.screen)
             
-            self.username_signin_textbox.draw(self.screen, (239, 237, 240))
-            self.username_signin_textbox.draw_text(self.screen, (0, 0, 0), False)
-            self.password_signin_textbox.draw(self.screen, (239, 237, 240))
-            self.password_signin_textbox.draw_text(self.screen, (0, 0, 0), True)
+            self.username_signin_textbox.draw(self.screen, COLOR.GREY)
+            self.username_signin_textbox.draw_text(self.screen, COLOR.BLACK, False)
+            self.password_signin_textbox.draw(self.screen, COLOR.GREY)
+            self.password_signin_textbox.draw_text(self.screen, COLOR.BLACK, True)
 
             self.username_signin_textbox.get_text(self.screen)
             self.password_signin_textbox.get_text(self.screen, True)
