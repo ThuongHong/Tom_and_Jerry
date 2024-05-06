@@ -1,7 +1,7 @@
 import pygame
 import time
-from constants.INTERFACE_CONSTANTS import DISPLAY
-from constants.INTERFACE_CONSTANTS import COLOR
+from CONSTANTS import DISPLAY
+from CONSTANTS import COLOR
 
 class TextBox:
     def __init__(self, x_coord, y_coord, length, width, sound):

@@ -1,6 +1,6 @@
 import pygame
 import visualize
-from constants.INTERFACE_CONSTANTS import DISPLAY
+from CONSTANTS import DISPLAY
 
 
 # Font

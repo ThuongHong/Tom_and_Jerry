@@ -4,7 +4,7 @@ from menu_objects import textbox
 from data import data
 import os
 import pygame
-from constants.INTERFACE_CONSTANTS import COLOR
+from CONSTANTS import COLOR
 
 def create_img(image_source, image_name):
     image_name = image_name + '.png'
