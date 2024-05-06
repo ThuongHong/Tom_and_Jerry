@@ -1,6 +1,7 @@
 import pygame
 import visualize
 from CONSTANTS import DISPLAY
+from game_structure.game import GamePlay
 
 
 # Font
@@ -39,7 +40,10 @@ while game_window.running:
     elif game_window.game_state == 'login signin':
         game_window.draw_login_signin()
     elif game_window.game_state == 'ingame':
-        game_window.game_state = 'main menu'
+        screen.fill((0, 0, 0))
+        Game = GamePlay(game_window.difficulty, 20, (0, 0), (500, 500), [True, False], screen, 1)
+        Game.run(screen)
+        
         
         
     # event handler

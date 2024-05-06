@@ -5,6 +5,7 @@ from data import data
 import os
 import pygame
 from CONSTANTS import COLOR
+from CONSTANTS import DIFFICULTY
 
 def create_img(image_source, image_name):
     image_name = image_name + '.png'
@@ -18,6 +19,7 @@ class GameScreen:
         self.running = True
         
         self.game_state = 'main menu'
+        self.difficulty = ''
         self.music = True
         self.sound = True
         self.login = False # do something with login system
@@ -287,11 +289,14 @@ class GameScreen:
             self.mood_hard.draw(self.screen)
             self.choose_difficulty.draw(self.screen)
             if self.button_easy.draw(self.screen):
-                pass # do something here
+                self.game_state = 'ingame'
+                self.difficulty = DIFFICULTY.EASY
             if self.button_medium.draw(self.screen):
-                pass # do something here
+                self.game_state = 'ingame'
+                self.difficulty = DIFFICULTY.MEDIUM
             if self.button_hard.draw(self.screen):
-                pass # do something here
+                self.game_state = 'ingame'
+                self.difficulty = DIFFICULTY.HARD
         if self.button_back.draw(self.screen):
             self.game_state = 'main menu'
             self.skip_login = False
