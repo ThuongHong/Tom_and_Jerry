@@ -20,15 +20,17 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
 
     maze = Maze(maze_size= 12, maze_grid_size= 30)
-    maze.generate_new_maze()
-    maze.spawn_start_end_position('SELECT', START_POSITION, END_POSITION)
+    maze.generate_new_maze(algorithm="HAK")
+    maze.spawn_start_end_position()
+    print(maze.start_position," ",maze.end_position)
 
     tom = Character(maze)
 
     player = pygame.sprite.GroupSingle()
     player.add(tom)
-    
-    draw_solution(solution= solve_maze(player.sprite), screen= screen)
+
+    draw_solution(solution= solve_maze(player.sprite,algorithm="DFS"), screen= screen)
+    draw_solution(solution= solve_maze(player.sprite,algorithm="GBFS"), screen= screen)
 
     while True:
         for event in pygame.event.get():

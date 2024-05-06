@@ -1,4 +1,5 @@
 from algorithm.BDFS import BDFS
+from algorithm.GBFS import GBFS
 # from game_structure.character import Character
 
 def solve_maze(player, #: Character, 
@@ -23,8 +24,10 @@ def solve_maze(player, #: Character,
                     player_current_position= player_current_position, 
                     player_winning_position= player_winning_position, 
                     algorithm=algorithm)
-    elif algorithm == 'GDFS':
-        raise NotImplementedError
+    elif algorithm == 'GBFS':
+        return GBFS(grids= maze.grids,
+                   player_current_position= player_current_position,
+                   player_winning_position= player_winning_position)
     elif algorithm == 'AStar':
         raise NotImplementedError
     elif algorithm == 'HAKill':

@@ -31,3 +31,6 @@ class QueueFrontier(StackFrontier):
             node = self.frontier[0]
             self.frontier = self.frontier[1:]
             return node
+class StackFroniterGreedySearch(StackFrontier):
+    def add(self, list_node):
+        self.frontier.extend(list_node)
