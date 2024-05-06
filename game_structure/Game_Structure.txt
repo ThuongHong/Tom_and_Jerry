@@ -1,0 +1,33 @@
+DataBase 
+{
+    TABLE:
+    {
+        FOR NOW JUST GAME_SAVE
+        'game_save' (
+            'id' : int -> GamePlay Index Unique for each game -> PRIMARY KEY with AUTOINCREMENT,
+            'times': real -> How many time has pass,
+            'moves': int -> How many moves that user already play
+        )
+    }
+}
+
+GamePlay (
+    Scale -> Zoom in Zoom out,
+    Maze_size,
+    Grid_size,
+    Start_coord, End_coord -> Top left of screen while draw Maze and Character -> Moving Maze,
+    ** kwargs
+        -- new_maze : str : represent 3 thing below given a iterable, e.g [True, True] or [True, False] or [False, <game_index>]
+        -- is_generate_new_maze : bool
+        
+        -- is_select_position: bool -> given when is_generate_new_maze is True
+            -- Then give two position
+        
+        -- game_index : int -> given when is_load_maze is True
+)
+-- Maze
+    --
+
+-- Character
+    -- 
+
