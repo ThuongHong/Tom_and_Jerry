@@ -85,5 +85,3 @@ class TextBox:
             TextBox.draw_text(self, surface, COLOR.BLACK, censored)
 
             pygame.display.update()
-
-

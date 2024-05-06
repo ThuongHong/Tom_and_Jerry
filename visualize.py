@@ -22,6 +22,7 @@ class GameScreen:
         self.sound = True
         self.login = False # do something with login system
         self.skip_login = False
+        self.username = ''
         self.login_signin = 'log in'
         self.leaderboard = 'easy'
         self.click_sound_source = pygame.mixer.Sound(os.path.join(sound_source, 'click.ogg'))
@@ -33,6 +34,7 @@ class GameScreen:
         button_leaderboard_img = create_img(self.image_source, 'button_leaderboard')
         button_exit_img = create_img(self.image_source, 'button_exit')
         button_login_signin_img = create_img(self.image_source, 'button_login_signin')
+        button_logout_img = create_img(self.image_source, 'button_logout')
         button_sound_on_img = create_img(self.image_source, 'button_sound_on')
         button_sound_off_img = create_img(self.image_source, 'button_sound_off')
         button_music_on_img = create_img(self.image_source, 'button_music_on')
@@ -83,6 +85,7 @@ class GameScreen:
         self.button_leaderboard = button.Button(545, 520, button_leaderboard_img, self.click_sound_source, 0.3, 0.31)
         self.button_exit = button.Button(545, 640, button_exit_img, self.click_sound_source, 0.3, 0.31)
         self.button_login_signin = button.Button(30, 690, button_login_signin_img, self.click_sound_source, 0.25, 0.26)
+        self.button_logout = button.Button(30, 690, button_logout_img, self.click_sound_source, 0.25, 0.26)
         self.button_sound_on = button.Button(1110, 693, button_sound_on_img, self.click_sound_source, 0.25, 0.26)
         self.button_sound_off = button.Button(1109, 693, button_sound_off_img, self.click_sound_source, 0.25, 0.26)
         self.button_music_on = button.Button(1200, 690, button_music_on_img, self.click_sound_source, 0.25, 0.26)
@@ -152,14 +155,22 @@ class GameScreen:
         
         if self.button_newgame.draw(self.screen):
             self.game_state = 'new game'
-        elif self.button_loadgame.draw(self.screen):
+        if self.button_loadgame.draw(self.screen):
             self.game_state = 'load game'
-        elif self.button_leaderboard.draw(self.screen):
+        if self.button_leaderboard.draw(self.screen):
             self.game_state = 'leaderboard'
-        elif self.button_exit.draw(self.screen):
+        if self.button_exit.draw(self.screen):
             self.running = False
-        elif self.button_login_signin.draw(self.screen):
-            self.game_state = 'login signin'
+        if self.login == False:
+            if self.button_login_signin.draw(self.screen):
+                self.game_state = 'login signin'
+        else:
+            font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
+            greeting = font.render(f'Hello {self.username}', True, (255, 255, 255))
+            self.screen.blit(greeting, (180, 708))
+            if self.button_logout.draw(self.screen):
+                self.username = ''
+                self.login = False
             
         if self.sound == True:
             if self.button_sound_on.draw(self.screen):
@@ -192,8 +203,10 @@ class GameScreen:
             if self.button_login.draw(self.screen):
                 username = self.username_login_textbox.text
                 password = self.password_login_textbox.text
-                check_login = data.login(username, password)
-                print(check_login)
+                self.login = data.login(username, password)
+                if self.login == True:
+                    self.username = username
+                    self.game_state = 'main menu'
             
         if self.login_signin == 'sign in':
             if self.button_box_login.draw(self.screen):
@@ -211,8 +224,12 @@ class GameScreen:
             if self.button_signin.draw(self.screen):
                 new_username = self.username_signin_textbox.text
                 new_password = self.password_signin_textbox.text
-                check_signin = data.register(new_username, new_password)
-                print(check_signin)
+                if new_username == "" or new_password == "":
+                    pass
+                else: self.login = data.register(new_username, new_password)
+                if self.login == True:
+                    self.username = new_username
+                    self.game_state = 'main menu'
             
         if self.button_back.draw(self.screen):
             self.game_state = 'main menu'
