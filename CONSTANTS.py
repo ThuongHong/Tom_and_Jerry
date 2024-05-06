@@ -13,3 +13,7 @@ class COLOR:
     WHITE = (255, 255, 255)
     BEIGE = (217, 211, 186)
 
+class DIFFICULTY:
+    EASY = 20
+    MEDIUM = 40
+    HARD = 100
