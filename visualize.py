@@ -171,6 +171,7 @@ class GameScreen:
             if self.button_logout.draw(self.screen):
                 self.username = ''
                 self.login = False
+                self.login_signin = 'log in'
             
         if self.sound == True:
             if self.button_sound_on.draw(self.screen):
@@ -190,6 +191,8 @@ class GameScreen:
         if self.login_signin == 'log in':
             if self.button_box_signin.draw(self.screen):
                 self.login_signin = 'sign in'
+                self.username_login_textbox.text = ''
+                self.password_login_textbox.text = ''
             self.box_login.draw(self.screen)
 
             self.username_login_textbox.draw(self.screen, COLOR.GREY)
@@ -211,6 +214,8 @@ class GameScreen:
         if self.login_signin == 'sign in':
             if self.button_box_login.draw(self.screen):
                 self.login_signin = 'log in'
+                self.username_signin_textbox.text = ''
+                self.password_signin_textbox.text = ''
             self.box_signin.draw(self.screen)
             
             self.username_signin_textbox.draw(self.screen, COLOR.GREY)
@@ -234,6 +239,12 @@ class GameScreen:
         if self.button_back.draw(self.screen):
             self.game_state = 'main menu'
             self.login_signin = 'log in'
+            
+        if self.game_state == 'main menu':
+            self.username_login_textbox.text = ''
+            self.username_signin_textbox.text = ''
+            self.password_login_textbox.text = ''
+            self.password_signin_textbox.text = ''
             
         
     def draw_leaderboard(self):
