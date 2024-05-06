@@ -38,6 +38,8 @@ while game_window.running:
         game_window.draw_leaderboard()
     elif game_window.game_state == 'login signin':
         game_window.draw_login_signin()
+    elif game_window.game_state == 'ingame':
+        game_window.game_state = 'main menu'
         
         
     # event handler
