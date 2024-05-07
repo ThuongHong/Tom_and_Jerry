@@ -10,7 +10,7 @@ class Maze():
                  maze_grid_size: int,
                  scale: int = 1):
         self.maze_size = maze_size
-        self.maze_grid_size = maze_grid_size
+        self._maze_grid_size = maze_grid_size
         self.scale = scale
         
         self.grids = {}
@@ -18,6 +18,19 @@ class Maze():
         for i in range(self.maze_size):
             for j in range(self.maze_size):
                 self.grids[i, j] = GridCell(grid_position= (i, j), grid_size= self.maze_grid_size)
+
+    @property
+    def maze_grid_size(self):
+        return self._maze_grid_size * self.scale
+
+    def set_scale(self, new_scale):
+        self.scale = new_scale
+
+    def update(self, **kwargs):
+        if 'scale' in kwargs:
+            self.set_scale(kwargs['scale'])
+            for grid in self.grids:
+                self.grids[grid].update(scale= self.scale)
 
     def spawn_start_position_for_generate_maze(self) -> tuple[int]:
         """This methos will randomly create start position for generate maze
@@ -42,11 +55,19 @@ class Maze():
             IF DOES NOT PROVIDE ONE OF ARG(start_position or end_position) IF option is SELECT, Raise ValueError
         """
         if option == 'TOP_BOTTOM':
-            start = random.randint(0, self.maze_size - 1)
-            end = random.randint(0, self.maze_size - 1)
+            while True:
+                start = random.randint(0, self.maze_size - 1)
+                end = random.randint(0, self.maze_size - 1)
 
-            self.start_position = (start, 0)
-            self.end_position = (end, self.maze_size - 1)
+                self.start_position = (start, 0)
+                self.end_position = (end, self.maze_size - 1)
+
+                if BDFS(
+                    grids= self.grids,
+                    player_current_position= self.start_position,
+                    player_winning_position= self.end_position
+                ):
+                    break
             
             # Remove wall for visualize
             self.grids[self.start_position].walls['top'] = False
@@ -314,6 +335,4 @@ class Maze():
                                                  draw= draw,
                                                  screen= screen,
                                                  draw_speed= draw_speed)
-
-
 

@@ -7,16 +7,12 @@ import time
 if __name__ == '__main__':
     pygame.init()
 
-    m = Maze(10, 30)
     screen = pygame.display.set_mode((1000, 650))
     screen.fill((0, 0, 0))
-    m.generate_new_maze('HAK', True, screen, 'FAST')
-    m.spawn_start_end_position()
+    clock = pygame.time.Clock()
 
-    p = pygame.sprite.GroupSingle()
-    p.add(Tom(m))
+    Game = GamePlay(10, 30, (0, 0), (500, 500), [True, False], screen, 1)
 
-    g = GamePlay(p)
+    Game.run(screen)
 
-    g.run(screen)
-
+    pygame.display.update()

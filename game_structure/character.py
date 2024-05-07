@@ -7,36 +7,49 @@ import pygame
 
 class Character(pygame.sprite.Sprite):
     def __init__(self,
-                 character_maze: Maze,
+                #  character_maze: Maze,
+                 start_position: tuple[int],
+                 grid_size: int,
                  imgs_directory: str = None,
                  img_scale: int = 1):
         super().__init__()
 
-        self.Maze = character_maze
-        self.position = self.Maze.start_position
+        # self.Maze = character_maze
+        # self.position = self.Maze.start_position
+        self.position = start_position
+        self._grid_size = grid_size
+        self.scale = img_scale
+
         self.step_moves = 0
         
         # Rect will be draw while we using GroupSingle then add this character
         img_tmp = pygame.image.load(r'imgs/tom_norm.jpg').convert_alpha()
         
         bigger_size = img_tmp.get_height() if (img_tmp.get_height() > img_tmp.get_width()) else img_tmp.get_width()
-        scale_index = bigger_size // self.Maze.maze_grid_size
+        scale_index = bigger_size // self.grid_size
         self.image = pygame.transform.rotozoom(img_tmp, 0, 1 / scale_index)
 
-        self.rect = self.image.get_rect(topleft= (self.position[0] * self.Maze.maze_grid_size,
-                                                  self.position[1] * self.Maze.maze_grid_size))
+        self.rect = self.image.get_rect(topleft= (self.position[0] * self.grid_size,
+                                                  self.position[1] * self.grid_size))
 
-    def is_valid_move(self, direction: str) -> bool:
+    @property
+    def grid_size(self):
+        return self._grid_size * self.scale
+
+    def set_scale(self, new_scale):
+        self.scale = new_scale
+
+    def is_valid_move(self, direction: str, grids) -> bool:
         if get_position_after_move(position= self.position,
-                                   direction= direction) in self.Maze.grids[self.position].get_neighbors():
+                                   direction= direction) in grids[self.position].get_neighbors():
             return True
         return False
         
-    def move(self, direction: str):
-        if self.is_valid_move(direction= direction):
+    def move(self, direction: str, grids):
+        if self.is_valid_move(direction= direction, grids= grids):
             self.position = get_position_after_move(position= self.position, direction= direction)
             
-            move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.Maze.maze_grid_size)
+            move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.grid_size)
             self.rect = self.rect.move(move_coord[0], move_coord[1])
             
             self.step_moves += 1
@@ -53,9 +66,14 @@ class Tom(Character):
     YELLOW = (255, 255, 0)
 
     def __init__(self,
-                 maze: Maze,
+                #  maze: Maze,
+                 start_position: tuple[int],
+                 grid_size: int,
+                 scale: int
                  ):
-        super().__init__(character_maze= maze)
+        super().__init__(start_position= start_position,
+                         grid_size= grid_size,
+                         img_scale= scale)
     
     def draw_solution(self, solution: list,
                       screen):
@@ -91,8 +109,17 @@ class Tom(Character):
             direction (str): If want to update move
             draw_solution (pygame.Surface): Given screen if want to draw solution
         """
+        if 'scale' in kwargs:
+            self.set_scale(kwargs['scale'])
+
+            self.image = pygame.transform.rotozoom(self.image, 0, self.scale)
+
+            self.rect = self.image.get_rect(topleft= (self.position[0] * self.grid_size,
+                                                    self.position[1] * self.grid_size))
+
+
         if 'direction' in kwargs:
-            self.move(direction= kwargs['direction'])
+            self.move(direction= kwargs['direction'], grids= kwargs['grids'])
         if 'draw_solution' in kwargs:
             if 'algorithm' in kwargs:
                 self.draw_solution(

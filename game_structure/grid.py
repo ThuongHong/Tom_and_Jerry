@@ -4,10 +4,12 @@ import pygame
 class GridCell():
     def __init__(self,
                  grid_position: tuple[int],
-                 grid_size: int
+                 grid_size: int,
+                 scale: int = 1
                  ):
-        self.grid_size = grid_size
-        self.grid_coord = (grid_position[0] * self.grid_size, grid_position[1] * self.grid_size)
+        self.scale = scale
+        self._grid_size = grid_size
+        self._grid_coord = (grid_position[0] * self.grid_size, grid_position[1] * self.grid_size)
         self.thickness = int(self.grid_size * 4 / 30)
 
         # Variable check if cell is go over or not in generate maze by using DFS algorithm
@@ -22,6 +24,21 @@ class GridCell():
             'left': True
         }
     
+    @property
+    def grid_size(self):
+        return self._grid_size * self.scale
+
+    @property
+    def grid_coord(self):
+        return (self._grid_coord[0] * self.scale, self._grid_coord[1] * self.scale)
+    
+    def set_scale(self, new_scale):
+        self.scale = new_scale
+
+    def update(self, **kwargs):
+        if kwargs['scale']:
+            self.set_scale(kwargs['scale'])
+
     def get_position(self) -> tuple[int]:
         """This method return index of this grid in maze
 
