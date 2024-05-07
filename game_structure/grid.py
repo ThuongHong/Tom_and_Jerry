@@ -1,4 +1,4 @@
-from Game_Structure.utility import get_position_after_move
+from game_structure.utility import get_position_after_move
 import pygame
 
 class GridCell():

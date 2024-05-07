@@ -1,5 +1,5 @@
-from Algorithm.utility import Node, StackFrontier, QueueFrontier
-from Algorithm.draw_utility import draw_two_grids
+from algorithm.utility import Node, StackFrontier, QueueFrontier
+from algorithm.draw_utility import draw_two_grids
 import pygame
 
 def BDFS(grids: dict,

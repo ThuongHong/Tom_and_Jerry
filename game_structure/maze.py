@@ -1,5 +1,5 @@
-from Game_Structure.grid import GridCell
-from Algorithm.BDFS import BDFS
+from game_structure.grid import GridCell
+from algorithm.BDFS import BDFS
 import random
 import pygame
 import time    

@@ -1,5 +1,5 @@
-from Algorithm.BDFS import BDFS
-from Algorithm.GBFS import GBFS
+from algorithm.BDFS import BDFS
+from algorithm.GBFS import GBFS
 # from game_structure.character import Character
 
 def solve_maze(player, #: Character,

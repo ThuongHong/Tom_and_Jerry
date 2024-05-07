@@ -1,6 +1,6 @@
-from Solving_Maze.solving_maze import solve_maze
-from Game_Structure.maze import Maze
-from Game_Structure.character import Tom
+from solving_maze.solving_maze import solve_maze
+from game_structure.maze import Maze
+from game_structure.character import Tom
 import pygame
 from sys import exit
 

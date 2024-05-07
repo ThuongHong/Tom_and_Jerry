@@ -1,6 +1,6 @@
-from Game_Structure.maze import Maze
-from Game_Structure.character import Tom
-from Game_Structure.game import GamePlay
+from game_structure.maze import Maze
+from game_structure.character import Tom
+from game_structure.game import GamePlay
 import pygame
 import time
 
