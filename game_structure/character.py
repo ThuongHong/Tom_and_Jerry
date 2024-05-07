@@ -10,6 +10,7 @@ class Character(pygame.sprite.Sprite):
                 #  character_maze: Maze,
                  start_position: tuple[int],
                  grid_size: int,
+                 screen,
                  imgs_directory: str = None,
                  img_scale: int = 1):
         super().__init__()
@@ -19,6 +20,7 @@ class Character(pygame.sprite.Sprite):
         self.position = start_position
         self._grid_size = grid_size
         self.scale = img_scale
+        self.screen = screen
 
         self.step_moves = 0
         
@@ -69,31 +71,34 @@ class Tom(Character):
                 #  maze: Maze,
                  start_position: tuple[int],
                  grid_size: int,
+                 screen,
                  scale: int
                  ):
         super().__init__(start_position= start_position,
                          grid_size= grid_size,
+                         screen= screen,
                          img_scale= scale)
     
     def draw_solution(self, solution: list,
+                      grids,
                       screen):
         # If do not have solution a.k.a you in the right spot
         if not solution: return
 
         # If there a way to come to end spot
         current_state = solution[0][1]
-        current_center_coord = self.Maze.grids[current_state].get_center_coord()
+        current_center_coord = grids[current_state].get_center_coord()
         solution.pop(0)
         
         # Draw circle in the spot we at
-        CIRCLE_RADIUS = self.Maze.maze_grid_size / 6
+        CIRCLE_RADIUS = self.grid_size / 6
         pygame.draw.circle(screen, self.YELLOW, current_center_coord, CIRCLE_RADIUS)
 
         # Draw line to next spot
         while solution:
 
             next_state = solution.pop(0)[1]
-            next_center_coord = self.Maze.grids[next_state].get_center_coord()
+            next_center_coord = grids[next_state].get_center_coord()
             pygame.draw.line(screen, self.YELLOW, current_center_coord, next_center_coord)
             pygame.draw.circle(screen, self.YELLOW, next_center_coord, CIRCLE_RADIUS)
 
@@ -102,33 +107,77 @@ class Tom(Character):
 
         # pygame.display.update()
 
-    def update(self, **kwargs) -> bool:
+    def update(self, maze,
+               scale: int = None,
+               direction: str = None, 
+               draw_solution: bool = False, 
+               show_solving_process: bool = False,
+               algorithm: str = 'DFS',
+                **kwargs) -> bool:
         """Update state of player
 
         Args:
+            scale (float): current_scale
             direction (str): If want to update move
             draw_solution (pygame.Surface): Given screen if want to draw solution
         """
-        if 'scale' in kwargs:
-            self.set_scale(kwargs['scale'])
+        # May be using for loop here, update later
+        if scale:
+            if scale != self.scale:
+                self.set_scale(kwargs['scale'])
 
-            self.image = pygame.transform.rotozoom(self.image, 0, self.scale)
+                self.image = pygame.transform.rotozoom(self.image, 0, self.scale)
 
-            self.rect = self.image.get_rect(topleft= (self.position[0] * self.grid_size,
-                                                    self.position[1] * self.grid_size))
-
-
-        if 'direction' in kwargs:
-            self.move(direction= kwargs['direction'], grids= kwargs['grids'])
-        if 'draw_solution' in kwargs:
-            if 'algorithm' in kwargs:
-                self.draw_solution(
-                    solution= solve_maze(self, algorithm= kwargs['algorithm']),
-                    screen= kwargs['draw_solution']
-                )
+                self.rect = self.image.get_rect(topleft= (self.position[0] * self.grid_size,
+                                                        self.position[1] * self.grid_size))
+        if direction:
+            self.move(direction= direction, grids= maze.grids)
+        if draw_solution:
+            if show_solving_process:
+                solution = solve_maze(self, 
+                                       maze= maze,
+                                       algorithm= algorithm,
+                                       screen= self.screen)
             else:
-                self.draw_solution(
-                    solution= solve_maze(self, algorithm= 'DFS'),
-                    screen= kwargs['draw_solution']
-                )
-        # More feature like draw, update img, state of character
+                solution = solve_maze(self,
+                                       maze= maze,
+                                       algorithm= algorithm)
+            self.draw_solution(solution= solution, 
+                               grids= maze.grids, 
+                               screen= self.screen)
+        # if 'show_solving_process' in kwargs:
+        #     if 'algorithm' in kwargs:
+        #         ...
+        #     else:
+        #         self.draw_solution(
+        #             solution= solve_maze(self, 
+        #                                  maze= maze, 
+        #                                  algorithm= 'BFS',
+        #                                  screen= self.screen),
+        #             grids= maze.grids,
+        #             screen= self.screen
+        #         )
+
+        # if 'draw_solution' in kwargs:
+        #     if 'algorithm' in kwargs:
+        #         self.draw_solution(
+        #             solution= solve_maze(self, maze= maze, 
+        #                                  algorithm= kwargs['algorithm']
+        #                                 #  screen= kwargs['draw_solution']
+        #                                  ),
+        #             grids= maze.grids,
+        #             screen= kwargs['draw_solution']
+        #         )
+        #     else:
+        #         self.draw_solution(
+        #             solution= solve_maze(self, 
+        #                                  maze= maze, 
+        #                                  algorithm= 'DFS'
+        #                                 #  screen= kwargs['draw_solution']
+        #                                  ),
+        #             grids= maze.grids,
+        #             screen= kwargs['draw_solution']
+        #         )
+
+
+        # # More feature like draw, update img, state of character

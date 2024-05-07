@@ -1,9 +1,12 @@
 from algorithm.utility import Node, StackFrontier, QueueFrontier
+from algorithm.draw_utility import draw_two_grids
+import pygame
 
 def BDFS(grids: dict,
          player_current_position: tuple[int],
          player_winning_position: tuple[int],
-         algorithm: str = 'DFS'):
+         algorithm: str = 'DFS',
+         screen= None):
     # Keep track of number of grid explored and grid that already explored
     num_explored = 0
     explored_grid = set()
@@ -47,3 +50,11 @@ def BDFS(grids: dict,
             if not frontier.contains_state(state) and state not in explored_grid:
                 child_node = Node(state= state, parent= node, action= action)
                 frontier.add(child_node)
+                if screen:
+                    draw_two_grids(grids= grids,
+                                screen= screen,
+                                current_grid= node.state,
+                                next_grid= child_node.state)
+                    
+                    pygame.time.wait(100)
+

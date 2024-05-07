@@ -11,7 +11,7 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = GamePlay(10, 30, (0, 0), (500, 500), [True, False], screen, 1)
+    Game = GamePlay(20, 30, (0, 0), (500, 500), [True, False], screen, 1)
 
     Game.run(screen)
 

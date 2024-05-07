@@ -17,6 +17,7 @@ class GamePlay():
                  **kwargs):
         self.Maze = Maze(maze_size= maze_size,
                          maze_grid_size= grid_size,
+                         screen= screen,
                          scale= scale)
         
         self.screen = screen
@@ -40,7 +41,10 @@ class GamePlay():
                 self.Maze.spawn_start_end_position()
 
         self.player = pygame.sprite.GroupSingle()
-        tom = Tom(self.Maze.start_position, grid_size= grid_size, scale= scale)
+        tom = Tom(self.Maze.start_position, 
+                  grid_size= grid_size, 
+                  screen= screen,
+                  scale= scale)
         self.player.add(tom)
         
         # # Maze
@@ -51,6 +55,8 @@ class GamePlay():
         # Time
         self.game_state = 'run'
         self.start_time = pygame.time.get_ticks()
+
+        self.game_clock = pygame.time.Clock()
 
     @property
     def step_moves(self):
@@ -67,7 +73,7 @@ class GamePlay():
         return f"{mili_sec / 1000} ms"
 
     def run(self, screen):
-        test_scale = True
+        test_draw_process = True
         while self.game_state == 'run':
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -75,25 +81,25 @@ class GamePlay():
                     exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
-                        self.player.update(direction= 'L', grids= self.Maze.grids)
+                        self.player.update(direction= 'L', maze= self.Maze)
                     elif event.key == pygame.K_RIGHT:
-                        self.player.update(direction= 'R', grids= self.Maze.grids)
+                        self.player.update(direction= 'R', maze= self.Maze)
                     elif event.key == pygame.K_UP:
-                        self.player.update(direction= 'T', grids= self.Maze.grids)
+                        self.player.update(direction= 'T', maze= self.Maze)
                     elif event.key == pygame.K_DOWN:
-                        self.player.update(direction= 'B', grids= self.Maze.grids)
-            if test_scale:
-                self.scale = 2
-                test_scale = False
-
-                self.Maze.update(scale= self.scale)
-                self.player.update(scale= self.scale)
-            else:
-                self.Maze.update()
-                self.player.update()
-
-            self.Maze.draw(screen)
+                        self.player.update(direction= 'B', maze= self.Maze)
+            self.Maze.draw()
             self.player.draw(screen)
+
+            self.Maze.update(scale= self.scale)
+            self.player.update(scale= self.scale, 
+                            maze= self.Maze, 
+                            show_solving_process= test_draw_process,
+                            draw_solution= True)
+            
+            if test_draw_process: test_draw_process = False
+
+            self.game_clock.tick(60)
 
             if self.player.sprite.position == self.Maze.end_position:
                 self.game_state = 'win'

@@ -8,10 +8,12 @@ class Maze():
     def __init__(self,
                  maze_size: int,
                  maze_grid_size: int,
+                 screen,
                  scale: int = 1):
         self.maze_size = maze_size
         self._maze_grid_size = maze_grid_size
         self.scale = scale
+        self.screen = screen
         
         self.grids = {}
 
@@ -179,20 +181,19 @@ class Maze():
         
         return unvisited_grids
 
-    def draw(self, screen):
+    def draw(self):
         """For test, no use for real game"""
         # Background blit
-        screen.fill((0, 0, 0))
+        self.screen.fill((0, 0, 0))
 
         for position in self.grids:
             is_last_grid = True if position[1] == self.maze_size else False
-            self.grids[position].draw(screen, self.maze_grid_size, is_last= is_last_grid)
+            self.grids[position].draw(self.screen, self.maze_grid_size, is_last= is_last_grid)
 
     def carve_wall_one_line(self, current_grid,
                             is_stack: bool = False,
                             stack: list = None,
                             draw: bool = False, 
-                            screen = None, 
                             draw_speed = 'NORMAL'):
         while current_grid:
             # Mark current grid visited
@@ -219,7 +220,7 @@ class Maze():
                 
                 # Draw maze if you want to see the process
                 if draw:
-                    self.draw(screen= screen)
+                    self.draw()
                     pygame.display.update()
                     if draw_speed == 'NORMAL':
                         time.sleep(0.01)
@@ -260,7 +261,6 @@ class Maze():
                                          is_stack= True,
                                          stack= DFS_stack,
                                          draw= draw,
-                                         screen= screen,
                                          draw_speed= draw_speed)
                 # Mark current grid visited
                 # self.grids[current_grid].is_visited = True
@@ -311,7 +311,6 @@ class Maze():
             # Carve until do not any neighbors
             self.carve_wall_one_line(current_grid= current_grid,
                                      draw= draw,
-                                     screen= screen,
                                      draw_speed= draw_speed)
             # Enter Hunt Mode
             for row in range(self.maze_size):
@@ -333,6 +332,5 @@ class Maze():
                         # Carve again
                         self.carve_wall_one_line(current_grid= (col, row),
                                                  draw= draw,
-                                                 screen= screen,
                                                  draw_speed= draw_speed)
 

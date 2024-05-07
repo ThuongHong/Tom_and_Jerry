@@ -2,8 +2,10 @@ from algorithm.BDFS import BDFS
 from algorithm.GBFS import GBFS
 # from game_structure.character import Character
 
-def solve_maze(player, #: Character, 
-               algorithm: str = 'DFS') -> list[tuple[str, tuple[int]]]:
+def solve_maze(player, #: Character,
+               maze, 
+               algorithm: str = 'DFS',
+               screen= None) -> list[tuple[str, tuple[int]]]:
     """Given the character, this function return a list of move to get to the end point
 
     Args:
@@ -15,23 +17,22 @@ def solve_maze(player, #: Character,
     """
     player_current_position = player.position
     
-    maze = player.Maze
-
     player_winning_position = maze.end_position
 
     if algorithm == 'DFS' or algorithm == 'BFS':
         return BDFS(grids= maze.grids, 
                     player_current_position= player_current_position, 
                     player_winning_position= player_winning_position, 
-                    algorithm=algorithm)
+                    algorithm=algorithm,
+                    screen= screen)
     elif algorithm == 'GBFS':
         return GBFS(grids= maze.grids,
                    player_current_position= player_current_position,
                    player_winning_position= player_winning_position)
     elif algorithm == 'AStar':
         raise NotImplementedError
-    elif algorithm == 'HAKill':
-        raise NotImplementedError
+    # elif algorithm == 'HAKill':
+    #     raise NotImplementedError
 
 
                     

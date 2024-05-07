@@ -3,6 +3,7 @@ class Node:
         self.state = state
         self.action = action
         self.parent = parent
+        
 class HyperNode:
     def __init__(self, state, action, parent, f, g, h):
         self.state = state
@@ -11,6 +12,7 @@ class HyperNode:
         self.f = f
         self.g = g #cost
         self.h = h #heuristic
+
 class StackFrontier:
     def __init__(self):
         self.frontier = []
