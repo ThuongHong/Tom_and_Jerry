@@ -110,7 +110,7 @@ class Tom(Character):
     def update(self, maze,
                scale: int = None,
                direction: str = None, 
-               draw_solution: bool = False, 
+               show_solution: bool = False, 
                show_solving_process: bool = False,
                algorithm: str = 'DFS',
                 **kwargs) -> bool:
@@ -132,7 +132,7 @@ class Tom(Character):
                                                         self.position[1] * self.grid_size))
         if direction:
             self.move(direction= direction, grids= maze.grids)
-        if draw_solution:
+        if show_solution:
             if show_solving_process:
                 solution = solve_maze(self, 
                                        maze= maze,
@@ -145,6 +145,12 @@ class Tom(Character):
             self.draw_solution(solution= solution, 
                                grids= maze.grids, 
                                screen= self.screen)
+        elif not show_solution and show_solving_process:
+            solve_maze(self, 
+                        maze= maze,
+                        algorithm= algorithm,
+                        screen= self.screen)
+
         # if 'show_solving_process' in kwargs:
         #     if 'algorithm' in kwargs:
         #         ...

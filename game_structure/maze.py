@@ -235,7 +235,6 @@ class Maze():
     def generate_new_maze(self,
                           algorithm: str = 'DFS',
                           draw: bool = False,
-                          screen = None,
                           draw_speed= 'NORMAL'):
         """Generate new maze using following algorithm
 

@@ -21,12 +21,16 @@ class GamePlay():
                          scale= scale)
         
         self.screen = screen
+        
         self.scale = scale
+        
+        self.draw_solution = False
+        
+        self.draw_solving_process = False
         
         if game_setting[0]: # i.e generate new game
             self.Maze.generate_new_maze('HAK',
-                                        draw= True,
-                                        screen= self.screen)
+                                        draw= False)
             if game_setting[1]: # i.e user choose to select position
                 
                 # This step here, we will get the user input for start_end_position some how in Game UI
@@ -71,43 +75,50 @@ class GamePlay():
         mili_sec = pygame.time.get_ticks() - self.start_time
 
         return f"{mili_sec / 1000} ms"
+    
+    def visualize_solution(self):
+        self.draw_solution = True
 
-    def run(self, screen):
-        test_draw_process = True
-        while self.game_state == 'run':
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        self.player.update(direction= 'L', maze= self.Maze)
-                    elif event.key == pygame.K_RIGHT:
-                        self.player.update(direction= 'R', maze= self.Maze)
-                    elif event.key == pygame.K_UP:
-                        self.player.update(direction= 'T', maze= self.Maze)
-                    elif event.key == pygame.K_DOWN:
-                        self.player.update(direction= 'B', maze= self.Maze)
-            self.Maze.draw()
-            self.player.draw(screen)
+    def de_visualize_solution(self):
+        self.draw_solution = False
+    
+    def visualize_process(self):
+        self.draw_solving_process = True
+    
+    def de_visualize_process(self):
+        self.draw_solving_process = False
 
-            self.Maze.update(scale= self.scale)
-            self.player.update(scale= self.scale, 
-                            maze= self.Maze, 
-                            show_solving_process= test_draw_process,
-                            draw_solution= True,
-                            algorithm= 'GBFS')
-            
-            if test_draw_process: test_draw_process = False
+    def run(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.player.update(direction= 'L', maze= self.Maze)
+                elif event.key == pygame.K_RIGHT:
+                    self.player.update(direction= 'R', maze= self.Maze)
+                elif event.key == pygame.K_UP:
+                    self.player.update(direction= 'T', maze= self.Maze)
+                elif event.key == pygame.K_DOWN:
+                    self.player.update(direction= 'B', maze= self.Maze)
+        
+        self.Maze.draw()
+        self.player.draw(self.screen)
 
-            self.game_clock.tick(60)
+        self.Maze.update(scale= self.scale)
+        self.player.update(scale= self.scale, 
+                        maze= self.Maze, 
+                        show_solving_process= self.draw_solving_process,
+                        show_solution= self.draw_solution,
+                        algorithm= 'GBFS')
+        
+        self.game_clock.tick(60)
 
-            if self.player.sprite.position == self.Maze.end_position:
-                self.game_state = 'win'
+        if self.player.sprite.position == self.Maze.end_position:
+            self.game_state = 'win'
 
-            pygame.display.update()
-
-        self.save()
+        pygame.display.update()
     
     def save(self):
         # Connect to Database

@@ -13,6 +13,13 @@ if __name__ == '__main__':
 
     Game = GamePlay(20, 30, (0, 0), (500, 500), [True, False], screen, 1)
 
-    Game.run(screen)
+    while True:
+        # If anytime we want to draw solution or process
+        Game.visualize_process()
 
-    pygame.display.update()
+        # Game.visualize_solution()
+
+        Game.run()
+
+
+        pygame.display.update()

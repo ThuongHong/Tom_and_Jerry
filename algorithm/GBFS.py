@@ -28,8 +28,10 @@ def GBFS(grids: dict,
                 actions.append(node.action)
                 states.append(node.state)
                 node = node.parent
+            
             actions.reverse()
             states.reverse()
+            
             return list(zip(actions, states))
         
         #When haven't found the goal yet, add the current node to frontier
@@ -39,15 +41,19 @@ def GBFS(grids: dict,
         moves = []
         for action, state in grids[node.state].get_neighbors(is_get_direction=True):
             if not frontier.contains_state(state) and state not in node_explored:
+                
                 child = Node(state=state,action=action,parent=node)
                 moves.append(child)
+                
                 if screen:
                     draw_two_grids(grids= grids,
                                 screen= screen,
                                 current_grid= node.state,
                                 next_grid= child.state)
                     
-                    pygame.time.wait(100)
+                    pygame.time.wait(10)
 
         #Add child nodes that are sorted decreasely by Manhattan distance
-        frontier.add(sorted(moves,key= lambda x: get_manhattan_distance(x.state,player_winning_position),reverse=True))
+        frontier.add(sorted(moves, 
+                            key= lambda x: get_manhattan_distance(x.state,player_winning_position), 
+                            reverse=True))
