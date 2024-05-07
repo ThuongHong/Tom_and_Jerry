@@ -28,7 +28,8 @@ def solve_maze(player, #: Character,
     elif algorithm == 'GBFS':
         return GBFS(grids= maze.grids,
                    player_current_position= player_current_position,
-                   player_winning_position= player_winning_position)
+                   player_winning_position= player_winning_position,
+                   screen= screen)
     elif algorithm == 'AStar':
         raise NotImplementedError
     # elif algorithm == 'HAKill':

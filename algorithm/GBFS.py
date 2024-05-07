@@ -1,9 +1,13 @@
 from algorithm.utility import StackFroniterGreedySearch, Node
+from algorithm.draw_utility import draw_two_grids
+import pygame
+
 def get_manhattan_distance(fisrt_position: tuple, second_position: tuple):
     return abs(fisrt_position[0] - second_position[0]) + abs(fisrt_position[1] - second_position[1])
 def GBFS(grids: dict,
          player_current_position: tuple[int],
-         player_winning_position: tuple[int]):
+         player_winning_position: tuple[int],
+         screen= None):
     
     #Keep track which node is explored
     node_explored = []
@@ -37,5 +41,13 @@ def GBFS(grids: dict,
             if not frontier.contains_state(state) and state not in node_explored:
                 child = Node(state=state,action=action,parent=node)
                 moves.append(child)
+                if screen:
+                    draw_two_grids(grids= grids,
+                                screen= screen,
+                                current_grid= node.state,
+                                next_grid= child.state)
+                    
+                    pygame.time.wait(100)
+
         #Add child nodes that are sorted decreasely by Manhattan distance
         frontier.add(sorted(moves,key= lambda x: get_manhattan_distance(x.state,player_winning_position),reverse=True))

@@ -223,11 +223,11 @@ class Maze():
                     self.draw()
                     pygame.display.update()
                     if draw_speed == 'NORMAL':
-                        time.sleep(0.01)
+                        pygame.time.wait(30)
                     elif draw_speed == 'FAST':
-                        time.sleep(0.001)
+                        pygame.time.wait(10)
                     elif draw_speed == 'SLOW':
-                        time.sleep(0.1)
+                        pygame.time.wait(100)
 
             # Set current to next
             current_grid = next_grid

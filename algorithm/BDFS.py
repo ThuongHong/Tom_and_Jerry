@@ -56,5 +56,5 @@ def BDFS(grids: dict,
                                 current_grid= node.state,
                                 next_grid= child_node.state)
                     
-                    pygame.time.wait(100)
+                    pygame.time.wait(10)
 

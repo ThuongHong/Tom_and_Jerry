@@ -95,7 +95,8 @@ class GamePlay():
             self.player.update(scale= self.scale, 
                             maze= self.Maze, 
                             show_solving_process= test_draw_process,
-                            draw_solution= True)
+                            draw_solution= True,
+                            algorithm= 'GBFS')
             
             if test_draw_process: test_draw_process = False
 
