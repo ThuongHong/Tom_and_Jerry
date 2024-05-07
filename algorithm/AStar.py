@@ -1,4 +1,4 @@
-from algorithm.utility import HyperNode
+from Algorithm.utility import HyperNode
 def h(fisrt_position: tuple, second_position: tuple):
     return abs(fisrt_position[0] - second_position[0]) + abs(fisrt_position[1] - second_position[1])
 def f(node: HyperNode, player_winning_position):

@@ -1,6 +1,6 @@
-from game_structure.maze import Maze
-from game_structure.utility import get_position_after_move, get_diffirent_coord
-from solving_maze.solving_maze import solve_maze
+from Game_Structure.maze import Maze
+from Game_Structure.utility import get_position_after_move, get_diffirent_coord
+from Solving_Maze.solving_maze import solve_maze
 from os.path import join
 from os import listdir
 import pygame

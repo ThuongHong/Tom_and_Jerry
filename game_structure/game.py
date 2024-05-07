@@ -1,7 +1,7 @@
 import pygame
 import sqlite3
-from game_structure.maze import Maze
-from game_structure.character import Tom
+from Game_Structure.maze import Maze
+from Game_Structure.character import Tom
 
 
 

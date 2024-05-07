@@ -1,5 +1,5 @@
-from algorithm.utility import StackFroniterGreedySearch, Node
-from algorithm.draw_utility import draw_two_grids
+from Algorithm.utility import StackFroniterGreedySearch, Node
+from Algorithm.draw_utility import draw_two_grids
 import pygame
 
 def get_manhattan_distance(fisrt_position: tuple, second_position: tuple):
