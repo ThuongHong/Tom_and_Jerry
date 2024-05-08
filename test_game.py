@@ -11,15 +11,29 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = GamePlay(20, 30, (0, 0), (500, 500), [True, False], screen, 1)
-
+    Game = GamePlay(maze_size= 20,
+                    grid_size= 30,
+                    start_coord_screen= (0, 0),
+                    end_coord_screen= (500, 500),
+                    screen= screen,
+                    scale= 1)
+    Game.generate(ondraw= True)
+    Game.spawn_random()
+    i = 1
+    j = 0
     while True:
-        # If anytime we want to draw solution or process
-        Game.visualize_process()
+        if i:
+            Game.visualize_process()
 
-        # Game.visualize_solution()
-
+            # Game.visualize_solution()
+            i -= 1
+        j += 1
         Game.run()
+
+        # if j == 100:
+        #     Game.de_visualize_process()
+        # Game.de_visualize_process()
+        # Game.de_visualize_solution()
 
 
         pygame.display.update()

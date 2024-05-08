@@ -1,6 +1,8 @@
 from game_structure.maze import Maze
-from game_structure.utility import get_position_after_move, get_diffirent_coord
+from game_structure.utility import get_position_after_move, get_diffirent_coord, get_direction
 from solving_maze.solving_maze import solve_maze
+from algorithm.draw_utility import mark_grid
+from Game_Constant.Color import Color
 from os.path import join
 from os import listdir
 import pygame
@@ -46,6 +48,18 @@ class Character(pygame.sprite.Sprite):
                                    direction= direction) in grids[self.position].get_neighbors():
             return True
         return False
+    
+    def teleport(self, new_position):
+        direction = get_direction(current_grid= self.position,
+                                        next_grid= new_position,
+                                        maze_grid_size= self.grid_size)
+        self.position = new_position
+        move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.grid_size)
+        self.rect.move(move_coord[0], move_coord[1])
+
+        pygame.time.wait(10)
+
+        # self.step_moves += 1
         
     def move(self, direction: str, grids):
         if self.is_valid_move(direction= direction, grids= grids):
@@ -79,31 +93,52 @@ class Tom(Character):
                          screen= screen,
                          img_scale= scale)
     
-    def draw_solution(self, solution: list,
-                      grids,
-                      screen):
+    # def draw_process(self,
+    #                  processes: list[tuple[int]],
+    #                  grids = None,
+    #                  screen = None):
+    #     if not processes: return
+        
+    #     for new_position in processes:
+    #         self.teleport(new_position)
+    
+    def draw_solution(self, 
+                      solution: list,
+                      grids = None,
+                      screen = None):
         # If do not have solution a.k.a you in the right spot
         if not solution: return
 
+        # for action, state in solution:
+        #     self.move(direction= action)
+            
+        #     pygame.display.update
+
         # If there a way to come to end spot
-        current_state = solution[0][1]
-        current_center_coord = grids[current_state].get_center_coord()
-        solution.pop(0)
+        # current_state = solution[0][1]
+        # current_center_coord = grids[current_state].get_center_coord()
+        # solution.pop(0)
         
-        # Draw circle in the spot we at
-        CIRCLE_RADIUS = self.grid_size / 6
-        pygame.draw.circle(screen, self.YELLOW, current_center_coord, CIRCLE_RADIUS)
+        # # Draw circle in the spot we at
+        # CIRCLE_RADIUS = self.grid_size / 6
+        # pygame.draw.circle(screen, self.YELLOW, current_center_coord, CIRCLE_RADIUS)
 
         # Draw line to next spot
         while solution:
 
-            next_state = solution.pop(0)[1]
-            next_center_coord = grids[next_state].get_center_coord()
-            pygame.draw.line(screen, self.YELLOW, current_center_coord, next_center_coord)
-            pygame.draw.circle(screen, self.YELLOW, next_center_coord, CIRCLE_RADIUS)
+            # next_state = solution.pop(0)[1]
+            # next_center_coord = grids[next_state].get_center_coord()
+            # pygame.draw.line(screen, self.YELLOW, current_center_coord, next_center_coord)
+            # pygame.draw.circle(screen, self.YELLOW, next_center_coord, CIRCLE_RADIUS)
 
-            current_state = next_state
-            current_center_coord = next_center_coord
+            # current_state = next_state
+            # current_center_coord = next_center_coord
+
+            current_grid = solution.pop(0)[1]
+            mark_grid(grids= grids,
+                      current_grid= current_grid,
+                      screen= self.screen,
+                      color= (255, 255, 0))
 
         # pygame.display.update()
 
@@ -111,7 +146,7 @@ class Tom(Character):
                scale: int = None,
                direction: str = None, 
                show_solution: bool = False, 
-               show_solving_process: bool = False,
+            # show_solving_process: bool = False,
                algorithm: str = 'DFS',
                 **kwargs) -> bool:
         """Update state of player
@@ -132,25 +167,35 @@ class Tom(Character):
                                                         self.position[1] * self.grid_size))
         if direction:
             self.move(direction= direction, grids= maze.grids)
-        if show_solution:
-            if show_solving_process:
-                solution = solve_maze(self, 
-                                       maze= maze,
-                                       algorithm= algorithm,
-                                       screen= self.screen)
-            else:
-                solution = solve_maze(self,
-                                       maze= maze,
-                                       algorithm= algorithm)
-            self.draw_solution(solution= solution, 
-                               grids= maze.grids, 
-                               screen= self.screen)
-        elif not show_solution and show_solving_process:
-            solve_maze(self, 
-                        maze= maze,
-                        algorithm= algorithm,
-                        screen= self.screen)
 
+        if show_solution:
+            solution = solve_maze(player= self, 
+                                  maze= maze, 
+                                  algorithm= algorithm)                
+            self.draw_solution(solution= solution,
+                                grids= maze.grids,
+                                screen= self.screen)  
+           
+        # try:
+        #     if show_solution:
+        #         if show_solving_process:
+        #             solution = solve_maze(self, 
+        #                                 maze= maze,
+        #                                 algorithm= algorithm,
+        #                                 screen= self.screen)
+        #         else:
+        #             solution = solve_maze(self,
+        #                                 maze= maze,
+        #                                 algorithm= algorithm)
+        #         self.draw_solution(solution= solution, 
+        #                         grids= maze.grids, 
+        #                         screen= self.screen)
+        #     elif not show_solution and show_solving_process:
+        #         solve_maze(self, 
+        #                     maze= maze,
+        #                     algorithm= algorithm,
+        #                     screen= self.screen)
+        # except KeyboardInterrupt: pass        
         # if 'show_solving_process' in kwargs:
         #     if 'algorithm' in kwargs:
         #         ...

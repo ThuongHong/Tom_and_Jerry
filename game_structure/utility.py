@@ -20,3 +20,16 @@ def get_diffirent_coord(direction: str, maze_grid_size: int):
     elif direction == 'R': return (maze_grid_size, 0)
     elif direction == 'B': return (0, maze_grid_size)
     elif direction == 'L': return (-maze_grid_size, 0)
+
+def get_direction(current_grid: tuple[int], 
+                       next_grid: tuple[int],
+                       maze_grid_size: int):
+    print(current_grid, next_grid)
+
+    delta_x = next_grid[0] - current_grid[1]
+    if delta_x == 1: return 'R'
+    elif delta_x == -1: return 'L'
+
+    delta_y = next_grid[1] - current_grid[1]
+    if delta_y == 1: return 'B'
+    elif delta_y == -1: return 'T'
