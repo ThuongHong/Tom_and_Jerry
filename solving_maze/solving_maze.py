@@ -37,12 +37,14 @@ def solve_maze(player, #: Character,
     elif algorithm == 'GBFS':
         return GBFS(grids= maze.grids,
                    player_current_position= player_current_position,
-                   player_winning_position= player_winning_position
+                   player_winning_position= player_winning_position,
+                   is_process= is_process
                    )
     elif algorithm == 'AStar':
         return AStar(grids=maze.grids,
                      player_current_position=player_current_position,
-                     player_winning_position=player_winning_position)
+                     player_winning_position=player_winning_position,
+                     is_process= is_process)
     # elif algorithm == 'HAKill':
     #     raise NotImplementedError
 

@@ -23,7 +23,9 @@ def BDFS(grids: dict,
 
     # Looping to find solution
     while True:
-        if frontier.empty(): return []
+        if frontier.empty():
+            if is_process: return all_player_moves
+            else: return []
 
         # Choose a node from frontier
         node = frontier.remove()

@@ -17,20 +17,36 @@ if __name__ == '__main__':
                     end_coord_screen= (500, 500),
                     screen= screen,
                     scale= 1)
-    Game.generate(ondraw= True)
+    Game.generate(ondraw= False)
     Game.spawn_random()
     i = 1
     j = 0
     while True:
         if i:
-            Game.visualize_process()
+            Game.visualize_process(algorithm= 'AStar')
 
             # Game.visualize_solution()
             i -= 1
         j += 1
         Game.run()
 
-        # if j == 100:
+        if j == 400:
+            Game.de_visualize_process()
+            Game.de_visualize_solution()
+            Game.update_screen()
+            Game.visualize_process(algorithm= 'BFS')
+        if j == 800:
+            Game.de_visualize_process()
+            Game.de_visualize_solution()
+            Game.update_screen()
+            Game.visualize_process(algorithm= 'GBFS')
+        if j == 1200:    
+            Game.de_visualize_process()
+            Game.de_visualize_solution()
+            Game.update_screen()
+            Game.visualize_process(algorithm= 'DFS')
+
+        # if j == 200:
         #     Game.de_visualize_process()
         # Game.de_visualize_process()
         # Game.de_visualize_solution()

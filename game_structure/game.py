@@ -65,6 +65,8 @@ class GamePlay():
         self.is_draw_solution = False
     
     def visualize_process(self, algorithm: str = 'BFS'):
+        self.is_move = True
+
         self.draw_solving_process = True
         
         self.solve_maze_algorithm = algorithm
@@ -76,6 +78,8 @@ class GamePlay():
             is_process= True,
             adjust_start_position= self.solve_position
         )
+
+        self.solve_index = 0
 
         self.is_stop_process = False
     def de_visualize_process(self):
@@ -168,8 +172,6 @@ class GamePlay():
 
         self.draw_solution()
 
-        # self.de_visualize_solution()                   
-
         self.check_win()
 
         pygame.display.update()
@@ -181,7 +183,6 @@ class GamePlay():
                                 scale= self.scale,
                                 show_solution= True,
                                 algorithm= self.solve_maze_algorithm)
-            print('heh')
 
     def draw_process(self):
         if not self.is_stop_process and self.solving_grid_process:
@@ -219,7 +220,6 @@ class GamePlay():
             self.solve_position = None
             self.solving_grid_process = []
             self.solve_index = 0
-
             # self.solving_grid_process = []
 
     def check_win(self):

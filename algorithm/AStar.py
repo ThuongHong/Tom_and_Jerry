@@ -7,11 +7,17 @@ from algorithm.utility import HyperNode, SortedList
 #   - h(node): distance from current node to goal node. Approximately , I use Manhattan distance to calcute this distance
 def h(fisrt_position: tuple, second_position: tuple):
     return abs(fisrt_position[0] - second_position[0]) + abs(fisrt_position[1] - second_position[1])
+
 def f(node: HyperNode, player_winning_position):
     return h(node.state, player_winning_position) + node.g
+
 def AStar(grids: dict,
           player_current_position: tuple[int],
-         player_winning_position: tuple[int]):
+          player_winning_position: tuple[int],
+          is_process: bool = False):
+    # Intialize all_moves list to keep track on process
+    all_player_moves = []
+
     # Intialize openlist and closelist
 
     # This list contains the nodes that we need to explore
@@ -22,15 +28,16 @@ def AStar(grids: dict,
     close_list = []
 
     #Initialize start node
-    start = HyperNode(state=player_current_position, 
-                      action=None, parent=None, g=0, 
-                      h=h(player_current_position,player_winning_position))
+    start = HyperNode(state= player_current_position, 
+                      action= None, parent= None, g= 0, 
+                      h= h(player_current_position, player_winning_position))
     open_list.append(start)
 
     # Loop until find the goal or open_list is empty
     while len(open_list) != 0:
         # Take the first node (means the lowest-cost node)
         node = open_list.pop(0)
+        all_player_moves.append(node.state)
 
         # If the node is goal -> return solution
         if node.state == player_winning_position:
@@ -41,14 +48,22 @@ def AStar(grids: dict,
                 actions.append(node.action)
                 states.append(node.state)
                 node = node.parent
+
             actions.reverse()
             states.reverse()
-            return list(zip(actions, states))
+            
+            all_player_moves.pop(0)
+
+            if is_process: return all_player_moves
+            else: return list(zip(actions, states))
+        
         # If not the goal, evaluate the neighbor of current node
         for action, state in grids[node.state].get_neighbors(is_get_direction= True):
             # As you know the meaning of close_list, we pass the node that has been in close_list
             if state not in close_list:
                 child = HyperNode(state=state, action=action, parent=node, g=node.g + 1, h=h(state,player_winning_position))
                 open_list.append(child)
+        
         close_list.append(node.state)
-        return None
+    if is_process: return all_player_moves
+    return []
