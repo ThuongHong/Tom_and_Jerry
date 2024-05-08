@@ -47,7 +47,7 @@ class Maze():
     
     def spawn_start_end_position(self, option= 'TOP_BOTTOM', 
                                  start_position= None, 
-                                 end_position= None):    
+                                 end_position= None) -> bool:    
         """This method create two class variable start_position and end_position in maze
 
         Args:
@@ -55,8 +55,11 @@ class Maze():
             start_position (tuple[int], optional): If the option is 'SELECT', Fill start_position. Defaults to None.
             end_position (tuple[int], optional): If the option is 'SELECT'. Defaults to None.
             IF DOES NOT PROVIDE ONE OF ARG(start_position or end_position) IF option is SELECT, Raise ValueError
+        Returns:
+            True if everythings work fine else False
         """
         if option == 'TOP_BOTTOM':
+            
             while True:
                 start = random.randint(0, self.maze_size - 1)
                 end = random.randint(0, self.maze_size - 1)
@@ -81,16 +84,22 @@ class Maze():
             self.grids[start, -1].walls['bottom'] = False
             self.grids[end, self.maze_size].walls['top'] = False
 
+            return True
+
         elif option == 'SELECT' and start_position and end_position:
+            
             if BDFS(grids= self.grids,
                     player_current_position= start_position,
                     player_winning_position= end_position,
                     algorithm= 'DFS'):
                 self.start_position = start_position
                 self.end_position = end_position
+
+                return True
+            
             else: return False
         
-        else: raise ValueError("Missing Inputs")
+        else: return False
     
     def check_grid_exist(self, position: tuple[int]) -> bool:
         """This method will check if a grid is valid or not
@@ -190,6 +199,8 @@ class Maze():
             is_last_grid = True if position[1] == self.maze_size else False
             self.grids[position].draw(self.screen, self.maze_grid_size, is_last= is_last_grid)
 
+        # pygame.display.update()
+
     def carve_wall_one_line(self, current_grid,
                             is_stack: bool = False,
                             stack: list = None,
@@ -222,6 +233,7 @@ class Maze():
                 if draw:
                     self.draw()
                     pygame.display.update()
+                    
                     if draw_speed == 'NORMAL':
                         pygame.time.wait(30)
                     elif draw_speed == 'FAST':
@@ -261,42 +273,6 @@ class Maze():
                                          stack= DFS_stack,
                                          draw= draw,
                                          draw_speed= draw_speed)
-                # Mark current grid visited
-                # self.grids[current_grid].is_visited = True
-                
-                # # Choose next grid by random neighbors that unvisited of current grid
-                # try:
-                #     next_grid = random.choice(self.get_unvisited_grid(current_grid))
-                # # There is a case that current grid does not have any neighbors that unvisited
-                # # Then will return [], and random.choice() will raise IndexError if input is a empty list
-                # except IndexError:
-                #     # Set next grid to NULL or Nothing
-                #     next_grid = None
-                
-                # if next_grid:
-                #     # Does not need this one. Fuhoa Sori:>>
-                #     # self.grids[current_grid].is_visited = True
-
-                #     # Because we will loop until all gird in maze is visited so if we can move to other grid, we increase th value of break_count to 1
-                #     break_count += 1
-
-                #     # Append to DFS_stack for backtracking later
-                #     DFS_stack.append(current_grid)
-
-                #     # Create connection between two grid
-                #     self.remove_wall_between_two_grid(current_grid= current_grid,
-                #                                       next_grid= next_grid)
-                #                     # Draw maze if you want to see the process
-                #     if draw:
-                #         self.draw(screen= screen)
-                #         pygame.display.update()
-                #         if draw_speed == 'NORMAL':
-                #             time.sleep(0.01)
-                #         elif draw_speed == 'FAST':
-                #             time.sleep(0.0001)
-
-                #     # Set current to next
-                #     current_grid = next_grid
                 
                 # If does not have next grid -> Backtrack
                 if len(DFS_stack) != 0:

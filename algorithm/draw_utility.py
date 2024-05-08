@@ -14,4 +14,13 @@ def draw_two_grids(grids,
     pygame.draw.line(screen, Color.RED, current_center_coord, next_center_coord)
     pygame.draw.circle(screen, Color.RED, next_center_coord, CIRCLE_RADIUS)
 
-    pygame.display.update()
+def mark_grid(grids,
+              screen,
+              current_grid: tuple[int],
+              color: tuple[int] = Color.GREEN):
+    left, top = grids[current_grid].grid_coord
+    size = grids[current_grid].grid_size
+    rect = pygame.Rect(left + 2, top + 2, size - 4, size - 4)
+    pygame.draw.rect(screen, color, rect)
+
+    # pygame.display.update()
