@@ -5,11 +5,11 @@ class Node:
         self.parent = parent
         
 class HyperNode:
-    def __init__(self, state, action, parent, f, g, h):
+    def __init__(self, state, action, parent, g, h):
         self.state = state
         self.action = action
         self.parent = parent
-        self.f = f
+        self.f = g + h
         self.g = g #cost
         self.h = h #heuristic
 
@@ -29,8 +29,6 @@ class StackFrontier:
             node = self.frontier[-1]
             self.frontier = self.frontier[:-1]
             return node
-
-
 class QueueFrontier(StackFrontier):
     def remove(self):
         if self.empty():
@@ -42,3 +40,7 @@ class QueueFrontier(StackFrontier):
 class StackFroniterGreedySearch(StackFrontier):
     def add(self, list_node):
         self.frontier.extend(list_node)
+class SortedList(list):
+    def append(self, node: HyperNode):
+        super().append(node)
+        self.sort(key= lambda x: x.f)

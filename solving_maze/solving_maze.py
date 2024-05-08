@@ -1,5 +1,6 @@
 from algorithm.BDFS import BDFS
 from algorithm.GBFS import GBFS
+from algorithm.AStar import AStar
 # from game_structure.character import Character
 
 def solve_maze(player, #: Character,
@@ -31,7 +32,9 @@ def solve_maze(player, #: Character,
                    player_winning_position= player_winning_position,
                    screen= screen)
     elif algorithm == 'AStar':
-        raise NotImplementedError
+        return AStar(grids=maze.grids,
+                     player_current_position=player_current_position,
+                     player_winning_position=player_winning_position)
     # elif algorithm == 'HAKill':
     #     raise NotImplementedError
 

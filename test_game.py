@@ -17,7 +17,7 @@ if __name__ == '__main__':
         # If anytime we want to draw solution or process
         Game.visualize_process()
 
-        # Game.visualize_solution()
+        # Game.visualize_solution(algo)
 
         Game.run()
 
