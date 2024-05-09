@@ -40,6 +40,7 @@ class GameScreen:
         button_music_on_img = create_img(self.image_source, 'button_music_on')
         button_music_off_img = create_img(self.image_source, 'button_music_off')
         background_img = create_img(self.image_source, 'background1')
+        login_signin_background_img = create_img(self.image_source, 'background2')
         game_title_img = create_img(self.image_source, 'game_title')
         main_menu_jerry_img = create_img(self.image_source, 'main_menu_jerry')
         main_menu_tom_img = create_img(self.image_source, 'main_menu_tom')
@@ -52,6 +53,7 @@ class GameScreen:
         button_back_img = create_img(self.image_source, 'button_back')
         box_login_img = create_img(self.image_source, 'box_login1')
         box_signin_img = create_img(self.image_source, 'box_signin1')
+
 
             # leaderboard
         button_leaderboard_easy_img = create_img(self.image_source, 'button_leaderboard_easy')
@@ -93,6 +95,7 @@ class GameScreen:
 
                 # create graphic
         self.background = graphic.Graphic(0, 0, background_img, 1.46)
+        self.login_signin_background = graphic.Graphic(0, 0, login_signin_background_img, 1.46)
         self.game_title = graphic.Graphic(100, 5, game_title_img, 0.3)
         self.main_menu_jerry = graphic.Graphic(170, 300, main_menu_jerry_img, 0.32)
         self.main_menu_tom = graphic.Graphic(900, 300, main_menu_tom_img, 0.32)
@@ -103,12 +106,14 @@ class GameScreen:
         self.button_signin = button.Button(620, 500, button_signin_img, self.click_sound_source, 0.3, 0.31)
         self.button_box_login = button.Button(496, 200, button_box_login_img, self.click_sound_source, 0.3, 0.31)
         self.button_box_signin = button.Button(701, 200, button_box_signin_img, self.click_sound_source, 0.3, 0.31)
-        self.button_back = button.Button(30, 690, button_back_img, self.click_sound_source, 0.3, 0.31)
+        self.button_back = button.Button(30, 40, button_back_img, self.click_sound_source, 0.3, 0.31)
+
                     # create login/ signin textbox
-        self.username_login_textbox = textbox.TextBox(600, 335, 300, 50, self.click_sound_source)
-        self.password_login_textbox = textbox.TextBox(600, 435, 300, 50, self.click_sound_source)
-        self.username_signin_textbox = textbox.TextBox(600, 335, 300, 50, self.click_sound_source)
-        self.password_signin_textbox = textbox.TextBox(600, 435, 300, 50, self.click_sound_source)
+        self.username_login_textbox = textbox.TextBox(600, 335, 300, 50, self.image_source, self.click_sound_source)
+        self.password_login_textbox = textbox.TextBox(600, 435, 300, 50, self.image_source, self.click_sound_source)
+        self.username_signin_textbox = textbox.TextBox(600, 335, 300, 50, self.image_source, self.click_sound_source)
+        self.password_signin_textbox = textbox.TextBox(600, 435, 300, 50, self.image_source, self.click_sound_source)
+        
 
                     # create graphic
         self.background = graphic.Graphic(0, 0, background_img, 1.46)
@@ -187,7 +192,9 @@ class GameScreen:
                 self.music = True
         
     def draw_login_signin(self):
-        self.background.draw(self.screen)
+        self.login_signin_background.draw(self.screen)
+        state = None
+
         if self.login_signin == 'log in':
             if self.button_box_signin.draw(self.screen):
                 self.login_signin = 'sign in'
@@ -195,15 +202,20 @@ class GameScreen:
                 self.password_login_textbox.text = ''
             self.box_login.draw(self.screen)
 
+            # Draw Textbox
             self.username_login_textbox.draw(self.screen, COLOR.GREY)
             self.username_login_textbox.draw_text(self.screen, COLOR.BLACK, False)
             self.password_login_textbox.draw(self.screen, COLOR.GREY)
             self.password_login_textbox.draw_text(self.screen, COLOR.BLACK, True)
 
-            self.username_login_textbox.get_text(self.screen)
-            self.password_login_textbox.get_text(self.screen, True)
+            # Get input
+            state = self.username_login_textbox.get_text(self.screen, 
+                                                 self.button_back, self.button_login)
+            state = self.password_login_textbox.get_text(self.screen,
+                                                 self.button_back, self.button_login,
+                                                 is_password=True, censored=True)
 
-            if self.button_login.draw(self.screen):
+            if self.button_login.draw(self.screen) or state == 'submit':
                 username = self.username_login_textbox.text
                 password = self.password_login_textbox.text
                 self.login = data.login(username, password)
@@ -218,15 +230,20 @@ class GameScreen:
                 self.password_signin_textbox.text = ''
             self.box_signin.draw(self.screen)
             
+            # Draw Textbox
             self.username_signin_textbox.draw(self.screen, COLOR.GREY)
             self.username_signin_textbox.draw_text(self.screen, COLOR.BLACK, False)
             self.password_signin_textbox.draw(self.screen, COLOR.GREY)
             self.password_signin_textbox.draw_text(self.screen, COLOR.BLACK, True)
 
-            self.username_signin_textbox.get_text(self.screen)
-            self.password_signin_textbox.get_text(self.screen, True)
+            # Get input
+            state = self.username_signin_textbox.get_text(self.screen, 
+                                                  self.button_back, self.button_signin)
+            state = self.password_signin_textbox.get_text(self.screen, 
+                                                  self.button_back, self.button_signin, 
+                                                  is_password=True, censored=True)
 
-            if self.button_signin.draw(self.screen):
+            if self.button_signin.draw(self.screen) or state == 'submit':
                 new_username = self.username_signin_textbox.text
                 new_password = self.password_signin_textbox.text
                 if new_username == "" or new_password == "":
@@ -236,7 +253,7 @@ class GameScreen:
                     self.username = new_username
                     self.game_state = 'main menu'
             
-        if self.button_back.draw(self.screen):
+        if self.button_back.draw(self.screen) or state == 'back':
             self.game_state = 'main menu'
             self.login_signin = 'log in'
             

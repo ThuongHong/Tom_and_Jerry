@@ -1,21 +1,32 @@
 import pygame
 import time
+import os
+from menu_objects import button
 from constants.INTERFACE_CONSTANTS import DISPLAY
 from constants.INTERFACE_CONSTANTS import COLOR
 
+def create_img(image_source, image_name):
+    image_name = image_name + '.png'
+    return pygame.image.load(os.path.join(image_source, image_name)).convert_alpha()
+
 class TextBox:
-    def __init__(self, x_coord, y_coord, length, width, sound):
+    def __init__(self, x_coord, y_coord, length, width, image_source, sound_source):
         self.x_coord = x_coord
         self.y_coord = y_coord
         self.length = length
         self.width = width
-        self.sound = sound
+        self.sound = sound_source
         self.rect = pygame.Rect(self.x_coord, self.y_coord, self.length, self.width)
         self.text = ""
-        self.font = pygame.font.SysFont('The fountain of wishes', 40)
+        self.font = pygame.font.SysFont('ShakyHandSomeComic-Bold', 38)
+
+        self.eye1_img = create_img(image_source, 'eye_1')
+        self.eye2_img = create_img(image_source, 'eye_2')
+        self.eye1_button = button.Button(850, 445, self.eye1_img, self.sound, 0.1, 0.11)
+        self.eye2_button = button.Button(850, 445, self.eye2_img, self.sound, 0.1, 0.11)
 
     def draw(self, surface, color): 
-        pygame.draw.rect(surface, color, self.rect)
+        pygame.draw.rect(surface, color, self.rect, border_radius=int(self.width * 0.2))
 
     def draw_text(self, surface, text_color, censored):
         if censored:
@@ -25,8 +36,8 @@ class TextBox:
 
         surface.blit(text, (self.x_coord + 10, self.y_coord + 10))
 
-    def draw_cursor(self, surface, cursor_color, censored):
-        if censored:
+    def draw_cursor(self, surface, cursor_color, is_password, censored):
+        if is_password and censored:
             text = self.font.render("*" * len(self.text), True, cursor_color)
         else: 
             text = self.font.render(self.text, True, cursor_color)
@@ -61,10 +72,24 @@ class TextBox:
 
         return False
     
-    def get_text(self, surface, censored = False):
+    def get_text(self, surface, back_button, submit_button, is_password=False, censored=False):
         activated = TextBox.clicked_inside_textbox(self)
 
         while activated:
+            if back_button.draw(surface):
+                return 'back'
+            
+            if submit_button.draw(surface):
+                return 'submit'
+            
+            if is_password:
+                if censored:
+                    if self.eye1_button.draw(surface):
+                        censored = False
+                else:
+                    if self.eye2_button.draw(surface):
+                        censored = True
+                        
             if not TextBox.clicked_outside_textbox(self):
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: 
@@ -77,11 +102,22 @@ class TextBox:
                         elif len(self.text) < DISPLAY.TEXT_LENGTH and TextBox.is_valid_char(self, event.unicode):
                             self.text += event.unicode
                 TextBox.draw(self, surface, COLOR.WHITE)
-                TextBox.draw_cursor(self, surface, COLOR.BLACK, censored)
+                TextBox.draw_cursor(self, surface, COLOR.BLACK, is_password, censored)
             else:
                 TextBox.draw(self, surface, COLOR.GREY)
                 activated = False
+            
+            if is_password:
+                if censored:
+                    if self.eye1_button.draw(surface):
+                        censored = False
+                else:
+                    if self.eye2_button.draw(surface):
+                        censored = True
 
             TextBox.draw_text(self, surface, COLOR.BLACK, censored)
 
-            pygame.display.update()
+            pygame.display.flip()
+
+        return None
+            
