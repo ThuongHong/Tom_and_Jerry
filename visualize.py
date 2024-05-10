@@ -5,6 +5,7 @@ from data import data
 import os
 import pygame
 from constants.INTERFACE_CONSTANTS import COLOR
+from constants.INTERFACE_CONSTANTS import DISPLAY
 
 def create_img(image_source, image_name):
     image_name = image_name + '.png'
@@ -82,16 +83,16 @@ class GameScreen:
         # create button and graphic for the game
             # main menu
                 # create buttons
-        self.button_newgame = button.Button(545, 280, button_newgame_img, self.click_sound_source, 0.3, 0.31)
-        self.button_loadgame = button.Button(545, 400, button_loadgame_img, self.click_sound_source, 0.3, 0.31)
-        self.button_leaderboard = button.Button(545, 520, button_leaderboard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_exit = button.Button(545, 640, button_exit_img, self.click_sound_source, 0.3, 0.31)
-        self.button_login_signin = button.Button(30, 690, button_login_signin_img, self.click_sound_source, 0.25, 0.26)
-        self.button_logout = button.Button(30, 690, button_logout_img, self.click_sound_source, 0.25, 0.26)
-        self.button_sound_on = button.Button(1110, 693, button_sound_on_img, self.click_sound_source, 0.25, 0.26)
-        self.button_sound_off = button.Button(1109, 693, button_sound_off_img, self.click_sound_source, 0.25, 0.26)
-        self.button_music_on = button.Button(1200, 690, button_music_on_img, self.click_sound_source, 0.25, 0.26)
-        self.button_music_off = button.Button(1201, 692, button_music_off_img, self.click_sound_source, 0.25, 0.26)
+        self.button_newgame = button.Button(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.4, button_newgame_img, self.click_sound_source, 0.3, 0.31)
+        self.button_loadgame = button.Button(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.55, button_loadgame_img, self.click_sound_source, 0.3, 0.31)
+        self.button_leaderboard = button.Button(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.7, button_leaderboard_img, self.click_sound_source, 0.3, 0.31)
+        self.button_exit = button.Button(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.85, button_exit_img, self.click_sound_source, 0.3, 0.31)
+        self.button_login_signin = button.Button(DISPLAY.SCREEN_WIDTH * 0.09, DISPLAY.SCREEN_HEIGHT * 0.92, button_login_signin_img, self.click_sound_source, 0.25, 0.26)
+        self.button_logout = button.Button(DISPLAY.SCREEN_WIDTH * 0.09, DISPLAY.SCREEN_HEIGHT * 0.92, button_logout_img, self.click_sound_source, 0.25, 0.26)
+        self.button_sound_on = button.Button(DISPLAY.SCREEN_WIDTH * 0.8, DISPLAY.SCREEN_HEIGHT * 0.92, button_sound_on_img, self.click_sound_source, 0.25, 0.26)
+        self.button_sound_off = button.Button(DISPLAY.SCREEN_WIDTH * 0.8, DISPLAY.SCREEN_HEIGHT * 0.92, button_sound_off_img, self.click_sound_source, 0.25, 0.26)
+        self.button_music_on = button.Button(DISPLAY.SCREEN_WIDTH * 0.87, DISPLAY.SCREEN_HEIGHT * 0.92, button_music_on_img, self.click_sound_source, 0.25, 0.26)
+        self.button_music_off = button.Button(DISPLAY.SCREEN_WIDTH * 0.87, DISPLAY.SCREEN_HEIGHT * 0.92, button_music_off_img, self.click_sound_source, 0.25, 0.26)
 
                 # create graphic
         self.background = graphic.Graphic(0, 0, background_img, 1.46)

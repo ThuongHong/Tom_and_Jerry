@@ -10,4 +10,4 @@ class Graphic:
 
     def draw(self, surface):
         # draw button on screen
-        surface.blit(self.image, (self.rect.x, self.rect.y))
+        surface.blit(self.image, self.rect)
