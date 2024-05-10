@@ -5,13 +5,13 @@ class Node:
         self.parent = parent
         
 class HyperNode:
-    def __init__(self, state, action, parent, g, h):
+    def __init__(self, state, action, parent, g, h = 0):
         self.state = state
         self.action = action
         self.parent = parent
         self.f = g + h
         self.g = g #cost
-        self.h = h #heuristic
+        self.h = h #heuristic, if h = 0 -> Dijkstra
 
 class StackFrontier:
     def __init__(self):

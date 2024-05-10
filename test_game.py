@@ -23,28 +23,24 @@ if __name__ == '__main__':
     j = 0
     while True:
         if i:
-            Game.visualize_process(algorithm= 'AStar')
-
+            Game.visualize_process(algorithm= 'BFS')
+            print("BFS")
             # Game.visualize_solution()
             i -= 1
         j += 1
         Game.run()
-
         if j == 400:
             Game.de_visualize_process()
             Game.de_visualize_solution()
             Game.update_screen()
-            Game.visualize_process(algorithm= 'BFS')
-        if j == 800:
+            Game.visualize_process(algorithm= 'AStar')
+            print("AStar")
+        if j == 800:    
             Game.de_visualize_process()
             Game.de_visualize_solution()
             Game.update_screen()
-            Game.visualize_process(algorithm= 'GBFS')
-        if j == 1200:    
-            Game.de_visualize_process()
-            Game.de_visualize_solution()
-            Game.update_screen()
-            Game.visualize_process(algorithm= 'DFS')
+            Game.visualize_process(algorithm= 'Dijkstra')
+            print("Dijkstra")
 
         # if j == 200:
         #     Game.de_visualize_process()
