@@ -34,9 +34,9 @@ def Dijkstra(grids: dict,
     open_list.append(start)
 
     # Loop until find the goal or open_list is empty
-    while len(open_list) != 0:
+    while not open_list.is_empty():
         # Take the first node (means the lowest-cost node)
-        node = open_list.pop(0)
+        node = open_list.pop()
         all_player_moves.append(node.state)
 
         # If the node is goal -> return solution
