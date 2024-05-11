@@ -1,3 +1,5 @@
+# JUST FUHOA TEST SQLITE LIBRARY. NOTHING IN HERE !!!
+
 import sqlite3
 def str_to_tuple(encode_str: str) -> tuple[int]:
     x, y = encode_str.lstrip('(').rstrip(')').split(',')

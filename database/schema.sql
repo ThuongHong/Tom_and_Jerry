@@ -1,3 +1,5 @@
+-- THIS IS FILE TO CREATE DATABASE !!! --
+
 CREATE TABLE "users" (
     "id" INTEGER NOT NULL,
     "username" TEXT NOT NULL,
@@ -109,21 +111,21 @@ WHERE "game_mode" = 'Hard';
 -- END;
 
 --------------SAMPLE DATABASE------------------
-INSERT INTO "users"("username", "password")
-VALUES
-('fuhoa', 'xinhdep'),
-('angela', 'xinkdep');
+-- INSERT INTO "users"("username", "password")
+-- VALUES
+-- ('fuhoa', 'xinhdep'),
+-- ('angela', 'xinkdep');
 
-INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "grid_size", "player_skin", "generate_algorithm")
-VALUES 
-(20, 'Easy', 1, 30, 'Normal', 'HAK'),
-(40, 'Medium', 1, 30, 'Normal', 'HAK'),
-(100, 'Hard', 1, 30, 'Limited S++', 'DFS');
+-- INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "grid_size", "player_skin", "generate_algorithm")
+-- VALUES 
+-- (20, 'Easy', 1, 30, 'Normal', 'HAK'),
+-- (40, 'Medium', 1, 30, 'Normal', 'HAK'),
+-- (100, 'Hard', 1, 30, 'Limited S++', 'DFS');
 
-INSERT INTO "played"("user_id", "game_id")
-VALUES
-(1, 1),
-(1, 2),
-(2, 3);
+-- INSERT INTO "played"("user_id", "game_id")
+-- VALUES
+-- (1, 1),
+-- (1, 2),
+-- (2, 3);
 
--- INSERT INTO 
+-- -- INSERT INTO 

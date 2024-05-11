@@ -49,17 +49,17 @@ class Character(pygame.sprite.Sprite):
             return True
         return False
     
-    def teleport(self, new_position):
-        direction = get_direction(current_grid= self.position,
-                                        next_grid= new_position,
-                                        maze_grid_size= self.grid_size)
-        self.position = new_position
-        move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.grid_size)
-        self.rect.move(move_coord[0], move_coord[1])
+    # def teleport(self, new_position):
+    #     direction = get_direction(current_grid= self.position,
+    #                                     next_grid= new_position,
+    #                                     maze_grid_size= self.grid_size)
+    #     self.position = new_position
+    #     move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.grid_size)
+    #     self.rect.move(move_coord[0], move_coord[1])
 
-        pygame.time.wait(10)
+    #     pygame.time.wait(10)
 
-        # self.step_moves += 1
+    #     # self.step_moves += 1
         
     def move(self, direction: str, grids):
         if self.is_valid_move(direction= direction, grids= grids):
@@ -92,48 +92,21 @@ class Tom(Character):
                          grid_size= grid_size,
                          screen= screen,
                          img_scale= scale)
-    
-    # def draw_process(self,
-    #                  processes: list[tuple[int]],
-    #                  grids = None,
-    #                  screen = None):
-    #     if not processes: return
         
-    #     for new_position in processes:
-    #         self.teleport(new_position)
-    
     def draw_solution(self, 
                       solution: list,
-                      grids = None,
-                      screen = None):
+                      grids = None):
+        """This method will draw a line from current position of Tom to the end position
+
+        Args:
+            solution (list): This solution include move and the grid after move
+            grids (_type_, optional): Take the information of grid like coord to draw. Defaults to None.
+        """
         # If do not have solution a.k.a you in the right spot
         if not solution: return
 
-        # for action, state in solution:
-        #     self.move(direction= action)
-            
-        #     pygame.display.update
-
-        # If there a way to come to end spot
-        # current_state = solution[0][1]
-        # current_center_coord = grids[current_state].get_center_coord()
-        # solution.pop(0)
-        
-        # # Draw circle in the spot we at
-        # CIRCLE_RADIUS = self.grid_size / 6
-        # pygame.draw.circle(screen, self.YELLOW, current_center_coord, CIRCLE_RADIUS)
-
-        # Draw line to next spot
         while solution:
-
-            # next_state = solution.pop(0)[1]
-            # next_center_coord = grids[next_state].get_center_coord()
-            # pygame.draw.line(screen, self.YELLOW, current_center_coord, next_center_coord)
-            # pygame.draw.circle(screen, self.YELLOW, next_center_coord, CIRCLE_RADIUS)
-
-            # current_state = next_state
-            # current_center_coord = next_center_coord
-
+            # Iterate for all grir and mark it
             current_grid = solution.pop(0)[1]
             mark_grid(grids= grids,
                       current_grid= current_grid,
@@ -146,7 +119,6 @@ class Tom(Character):
                scale: int = None,
                direction: str = None, 
                show_solution: bool = False, 
-            # show_solving_process: bool = False,
                algorithm: str = 'DFS',
                 **kwargs) -> bool:
         """Update state of player
@@ -157,6 +129,8 @@ class Tom(Character):
             draw_solution (pygame.Surface): Given screen if want to draw solution
         """
         # May be using for loop here, update later
+        
+        # If want to zoom change the scale -> If that scale != current scale zoom player
         if scale:
             if scale != self.scale:
                 self.set_scale(kwargs['scale'])
@@ -165,9 +139,12 @@ class Tom(Character):
 
                 self.rect = self.image.get_rect(topleft= (self.position[0] * self.grid_size,
                                                         self.position[1] * self.grid_size))
+                
+        # If direction is given so move the player
         if direction:
             self.move(direction= direction, grids= maze.grids)
 
+        # If show_solution so draw_solution
         if show_solution:
             solution = solve_maze(player= self, 
                                   maze= maze, 
@@ -176,59 +153,4 @@ class Tom(Character):
                                 grids= maze.grids,
                                 screen= self.screen)  
            
-        # try:
-        #     if show_solution:
-        #         if show_solving_process:
-        #             solution = solve_maze(self, 
-        #                                 maze= maze,
-        #                                 algorithm= algorithm,
-        #                                 screen= self.screen)
-        #         else:
-        #             solution = solve_maze(self,
-        #                                 maze= maze,
-        #                                 algorithm= algorithm)
-        #         self.draw_solution(solution= solution, 
-        #                         grids= maze.grids, 
-        #                         screen= self.screen)
-        #     elif not show_solution and show_solving_process:
-        #         solve_maze(self, 
-        #                     maze= maze,
-        #                     algorithm= algorithm,
-        #                     screen= self.screen)
-        # except KeyboardInterrupt: pass        
-        # if 'show_solving_process' in kwargs:
-        #     if 'algorithm' in kwargs:
-        #         ...
-        #     else:
-        #         self.draw_solution(
-        #             solution= solve_maze(self, 
-        #                                  maze= maze, 
-        #                                  algorithm= 'BFS',
-        #                                  screen= self.screen),
-        #             grids= maze.grids,
-        #             screen= self.screen
-        #         )
-
-        # if 'draw_solution' in kwargs:
-        #     if 'algorithm' in kwargs:
-        #         self.draw_solution(
-        #             solution= solve_maze(self, maze= maze, 
-        #                                  algorithm= kwargs['algorithm']
-        #                                 #  screen= kwargs['draw_solution']
-        #                                  ),
-        #             grids= maze.grids,
-        #             screen= kwargs['draw_solution']
-        #         )
-        #     else:
-        #         self.draw_solution(
-        #             solution= solve_maze(self, 
-        #                                  maze= maze, 
-        #                                  algorithm= 'DFS'
-        #                                 #  screen= kwargs['draw_solution']
-        #                                  ),
-        #             grids= maze.grids,
-        #             screen= kwargs['draw_solution']
-        #         )
-
-
-        # # More feature like draw, update img, state of character
+        # More feature like draw, update img, state of character

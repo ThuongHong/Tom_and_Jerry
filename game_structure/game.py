@@ -16,6 +16,7 @@ class GamePlay():
     Game_States = ['start', 'in_game', 'save_game', 'win_game']
     
     def __init__(self,
+                 user_id: int = 1,
                  maze_size: int = 20,
                  grid_size: int = 30,
                  start_coord_screen: tuple[int] = (0, 0),
@@ -25,12 +26,23 @@ class GamePlay():
                  energy: int = 0,
                  scale: int = 1,
                  **kwargs):
-        # self.id = 0
+        """Intialize the basic information of Game
 
+        Args:
+            maze_size (int, optional): Maze_size. Defaults to 20.
+            grid_size (int, optional): Grid_size. Defaults to 30.
+            start_coord_screen (tuple[int], optional): Start_coord_for draw_maze. Defaults to (0, 0).
+            end_coord_screen (tuple[int], optional): End_coord_for_draw_maze. Defaults to (700, 700).
+            screen (_type_, optional): The Game Screen. Defaults to None.
+            player_skin (str, optional): Feature. Defaults to 'Normal'.
+            energy (int, optional): Feature. Defaults to 0.
+            scale (int, optional): Scale. Defaults to 1.
+        """
         self.grid_size = grid_size
 
         self._maze_size = maze_size
         
+        # Set the game mode -> easy to store in database
         if self.maze_size == 20:
             self.game_mode = 'Easy'
         elif self.maze_size == 40:
@@ -84,9 +96,9 @@ class GamePlay():
     def step_moves(self):
         return self.player.sprite.step_moves
     
-    @property
-    def info(self):
-        return f"Game end in {self.get_time} after {self.step_moves} moves"
+    # @property
+    # def info(self):
+    #     return f"Game end in {self.get_time} after {self.step_moves} moves"
     
     @property
     def get_time(self):
@@ -121,27 +133,38 @@ class GamePlay():
     def de_visualize_process(self):
         self.is_stop_process = True
 
-    # def stop_process(self):
-    #     self.is_stop_process = True
-
     def generate(self, 
                  algorithm= 'DFS', 
                  ondraw: bool = True,
                  draw_speed: str = 'FAST'):
+        """This method will generate new game
+
+        Args:
+            algorithm (str, optional): Generate Algorithm. Defaults to 'DFS'.
+            ondraw (bool, optional): Want to see process or not. Defaults to True.
+            draw_speed (str, optional): Speed Showing Process. Defaults to 'FAST'.
+        """
+        # Intialize super basic maze
         self.Maze = Maze(
             maze_size= self.maze_size,
             maze_grid_size= self.grid_size,
             screen= self.screen,
             scale= self.scale
         )
+
+        # Generate that maze
         self.Maze.generate_new_maze(algorithm= algorithm,
                                     draw= ondraw,
                                     draw_speed= draw_speed)
+        
+        # After generate maze -> Ingame -> Save game data to Database
         # Insert to database
+        
+        # Set the connecttion with Game database
         db_connect = sqlite3.connect(r'database/TomJerry.db')
         db_cursor = db_connect.cursor()
 
-        # Insert to games
+        # Insert to table games (this table store game_information)
         db_cursor.execute('''INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "grid_size", "player_skin", "generate_algorithm")
         VALUES (?, ?, ?, ?, ?, ?)
         ''', (
@@ -154,10 +177,14 @@ class GamePlay():
         )            
         )
         
+        # Set the id for this game
+        # After insert to database. Database automatically give us an id for that game
         self.id = list(db_cursor.execute('SELECT "id" FROM "games" ORDER BY "id" DESC LIMIT 1'))[0][0]
 
-        self.game_state == 'in_game'
+        # Change the game_state to In game
+        self.set_new_game_state('in_game')
 
+        # Push all the change information to the real database
         db_connect.commit()
 
     def spawn_random(self):
@@ -174,6 +201,8 @@ class GamePlay():
         self.create_player()
 
     def create_player(self):
+        """This method will create player like Tom after Maze are generate and start_end is good
+        """
         self.player = pygame.sprite.GroupSingle()
         self.player.add(
             Tom(self.Maze.start_position, self.grid_size, self.screen, self.scale)
@@ -192,15 +221,23 @@ class GamePlay():
             self.game_state = new_state
 
     def update_screen(self):
+        # This one just for test -- DON'T HAVE ANY BEAUTIFUL !!!
         self.screen.fill((0, 0, 0))
 
-    def run(self):  
+    def run(self):
+        """This method will use in a while loop
+        Get all the event while th game is run and handle it
+        """  
+        # Draw background
         self.update_screen()
 
+        # Like normal
         for event in pygame.event.get():
+            # QUIT
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            # MOVE -> Dang mac dinh la khi move thi show process se bi dung
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     self.player.update(direction= 'L', maze= self.Maze)
@@ -223,22 +260,29 @@ class GamePlay():
                     self.de_visualize_solution()                  
                     self.is_move = True
 
+        # Update if change scale and draw all the maze
         self.Maze.update(scale= self.scale)
 
         self.Maze.draw()
         
+        # Same but for player
         self.player.draw(self.screen)
 
+        # If draw_process is True so this one will run
         self.draw_process()
 
+        # Same
         self.draw_solution()
 
+        # If the game is win -> Save to leaderboard
         if self.check_win():
             self.save_leaderboard()
 
         pygame.display.update()
 
     def draw_solution(self):
+        """Draw solution from player current position
+        """
         if self.is_draw_solution:
             self.player.update(maze= self.Maze,
                                 scale= self.scale,
@@ -246,6 +290,10 @@ class GamePlay():
                                 algorithm= self.solve_maze_algorithm)
 
     def draw_process(self):
+        """Each one loop through this method. This one will draw one more grid in process list
+        """
+
+        # Neu khong bi dung va co process_list -> Draw tang dan
         if not self.is_stop_process and self.solving_grid_process:
             for i in range(self.solve_index + 1):
                 mark_grid(self.Maze.grids,
@@ -263,7 +311,7 @@ class GamePlay():
 
                 self.visualize_solution(algorithm= self.solve_maze_algorithm)
 
-        
+        # Neu bi dung va co process list -> Draw nhung cai hien tai
         elif self.is_stop_process and self.solving_grid_process:
             self.solve_position = self.solving_grid_process[self.solve_index]
             if not self.is_move:
@@ -272,6 +320,7 @@ class GamePlay():
                                 self.screen,
                                 self.solving_grid_process[i])
 
+        # Neu nhan vat di chuyn hay khong co process_list va bi dung
         elif self.is_move:
             self.solve_position = None
             self.solving_grid_process = []
@@ -285,6 +334,8 @@ class GamePlay():
         return False
 
     def save_game(self):
+        """Save for the game for later load
+        """
         db_connect = sqlite3.connect(r'database/TomJerry.db')
 
         db_cursor = db_connect.cursor()
@@ -326,35 +377,39 @@ class GamePlay():
         db_connect.commit()
 
     def save_leaderboard(self):
+        """Save leaderboard after win the game
+        """
         # Connect to database
         db_connect = sqlite3.connect(r'database/TomJerry.db')
         
         db_cursor = db_connect.cursor()
         
+        # Insert to leaderboard
         insert_query = 'INSERT INTO "leaderboard"("game_id", "times", "moves") VALUES(?, ?, ?)'
 
         db_cursor.execute(insert_query, (self.id, self.get_time, self.step_moves))
 
+        # Push to Real Database
         db_connect.commit()
         # Done
-    
-    # @classmethod
-    # def load(cls, game_id, screen):
-    #     return load_game_from_json_file(game_id= game_id,
-    #                                     screen= screen)
 
+# Sadly cannot implement this in GamePlay class like a classmethod so this one is spilt outside 
 def load_GamePlay(game_id: int, screen) -> GamePlay:
-    # Read all the database
-
+    # Connect to database
     db_connect = sqlite3.connect(r'database/TomJerry.db')
 
     db_cursor = db_connect.cursor()
     
+    # Check if that game is save or not save ??
+    is_save = list(db_cursor.execute('SELECT * FROM "game_saves" WHERE "game_id" = ? AND "save_state" = 1', (game_id)))
+    if not is_save: raise FileNotFoundError('This game is no longer save!!!')
     
+    # If the game_id is fine -> Go Go to load
     game_data_1 = list(db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id}'))[0] # Get that row
 
-    game_data_2 = list(db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}'))[0]
+    game_data_2 = list(db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}'))[0] # Get that row
 
+    # Category the info that we get
     # Get the data that useful
     maze_size = int(game_data_2[2])
 
@@ -370,7 +425,7 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
 
     moves = int(game_data_1[-1])
 
-    # Intialize a gameplay
+    # Intialize a basic Game
     Game = GamePlay(
         maze_size= maze_size,
         grid_size= grid_size,
@@ -425,17 +480,19 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
     Game.Maze.start_position = start_position
     Game.Maze.end_position = end_position
 
+    # Create player
     Game.player = pygame.sprite.GroupSingle()
     Game.player.add(
         Tom(current_position, Game.grid_size, Game.screen, Game.scale)
     )
 
+    # Get the delta times and plus that to the times that player play
     Game.player.sprite.step_moves = moves
-
-    Game.set_new_game_state('in_game')
     Game.start_time = pygame.time.get_ticks() - times
 
-    Game.game_state = 'in_game'
+    # After load all the game -> Go to game
+    Game.set_new_game_state('in_game')
+
 
     return Game
 
