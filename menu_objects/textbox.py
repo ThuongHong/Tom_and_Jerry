@@ -18,12 +18,13 @@ class TextBox:
         self.sound = sound_source
         self.rect = pygame.Rect(self.x_coord, self.y_coord, self.length, self.width)
         self.text = ""
-        self.font = pygame.font.SysFont('ShakyHandSomeComic-Bold', 38)
+        fontsize = 38
+        self.font = pygame.font.SysFont('ShakyHandSomeComic-Bold', fontsize)
 
         self.eye1_img = create_img(image_source, 'eye_1')
         self.eye2_img = create_img(image_source, 'eye_2')
-        self.eye1_button = button.Button(850, 445, self.eye1_img, self.sound, 0.1, 0.11)
-        self.eye2_button = button.Button(850, 445, self.eye2_img, self.sound, 0.1, 0.11)
+        self.eye1_button = button.Button(self.x_coord + 270, self.y_coord + 23, self.eye1_img, self.sound, 0.1, 0.11)
+        self.eye2_button = button.Button(self.x_coord + 270, self.y_coord + 23, self.eye2_img, self.sound, 0.1, 0.11)
 
     def draw(self, surface, color): 
         pygame.draw.rect(surface, color, self.rect, border_radius=int(self.width * 0.2))

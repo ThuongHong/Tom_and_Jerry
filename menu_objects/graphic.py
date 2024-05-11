@@ -4,10 +4,12 @@ class Graphic:
     def __init__(self, x_coord, y_coord, image, scale=1):
         width = image.get_width()
         height = image.get_height()
-        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+        self.modified_width = int(width * scale)
+        self.modified_height = int(height * scale)
+        self.image = pygame.transform.scale(image, (self.modified_width, self.modified_height))
         self.rect = self.image.get_rect()
-        self.rect.topleft = (x_coord, y_coord)
+        self.rect.center = (x_coord, y_coord)
 
     def draw(self, surface):
         # draw button on screen
-        surface.blit(self.image, (self.rect.x, self.rect.y))
+        surface.blit(self.image, self.rect)

@@ -5,6 +5,12 @@ from data import data
 import os
 import pygame
 from constants.INTERFACE_CONSTANTS import COLOR
+from constants.INTERFACE_CONSTANTS import DISPLAY
+
+SCREEN_WIDTH = DISPLAY.SCREEN_WIDTH
+SCREEN_HEIGHT = DISPLAY.SCREEN_HEIGHT
+HALF_SCREEN_WIDTH = SCREEN_WIDTH * 0.5
+HALF_SCREEN_HEIGHT = SCREEN_HEIGHT * 0.5
 
 def create_img(image_source, image_name):
     image_name = image_name + '.png'
@@ -23,12 +29,12 @@ class GameScreen:
         self.login = False # do something with login system
         self.skip_login = False
         self.username = ''
-        self.login_signin = 'log in'
-        self.leaderboard = 'easy'
+        self.login_signin_state = 'log in'
+        self.leaderboard_state = 'easy'
         self.click_sound_source = pygame.mixer.Sound(os.path.join(sound_source, 'click.ogg'))
         
         # load button_img and graphic_img for the game
-            # main_menu
+        """ MAIN MENU """
         button_newgame_img = create_img(self.image_source, 'button_newgame')
         button_loadgame_img = create_img(self.image_source, 'button_loadgame')
         button_leaderboard_img = create_img(self.image_source, 'button_leaderboard')
@@ -45,26 +51,28 @@ class GameScreen:
         main_menu_jerry_img = create_img(self.image_source, 'main_menu_jerry')
         main_menu_tom_img = create_img(self.image_source, 'main_menu_tom')
         
-            # login_signin
+        """ LOGIN SIGNIN """
         button_login_img = create_img(self.image_source, 'button_login')
         button_signin_img = create_img(self.image_source, 'button_signin')
         button_box_login_img = create_img(self.image_source, 'box_login2')
         button_box_signin_img = create_img(self.image_source, 'box_signin2')
         button_back_img = create_img(self.image_source, 'button_back')
+        box_login_signin_img = create_img(self.image_source, 'box_login_signin')
         box_login_img = create_img(self.image_source, 'box_login1')
         box_signin_img = create_img(self.image_source, 'box_signin1')
 
 
-            # leaderboard
+        """ LEADERBOARD """
         button_leaderboard_easy_img = create_img(self.image_source, 'button_leaderboard_easy')
         button_leaderboard_medium_img = create_img(self.image_source, 'button_leaderboard_medium')
         button_leaderboard_hard_img = create_img(self.image_source, 'button_leaderboard_hard')
         button_back_img = create_img(self.image_source, 'button_back')
+        leaderboard_img = create_img(self.image_source, 'leaderboard')
         leaderboard_easy_img = create_img(self.image_source, 'leaderboard_easy')
         leaderboard_medium_img = create_img(self.image_source, 'leaderboard_medium')
         leaderboard_hard_img = create_img(self.image_source, 'leaderboard_hard')
                         
-            # new_game
+        """ NEW GAME """
         button_yes_img = create_img(self.image_source, 'button_yes')
         button_no_img = create_img(self.image_source, 'button_no')
         button_easy_img = create_img(self.image_source, 'button_easy')
@@ -80,77 +88,81 @@ class GameScreen:
         # gameplay video
         
         # create button and graphic for the game
-            # main menu
+        """ MAIN MENU """
                 # create buttons
-        self.button_newgame = button.Button(545, 280, button_newgame_img, self.click_sound_source, 0.3, 0.31)
-        self.button_loadgame = button.Button(545, 400, button_loadgame_img, self.click_sound_source, 0.3, 0.31)
-        self.button_leaderboard = button.Button(545, 520, button_leaderboard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_exit = button.Button(545, 640, button_exit_img, self.click_sound_source, 0.3, 0.31)
-        self.button_login_signin = button.Button(30, 690, button_login_signin_img, self.click_sound_source, 0.25, 0.26)
-        self.button_logout = button.Button(30, 690, button_logout_img, self.click_sound_source, 0.25, 0.26)
-        self.button_sound_on = button.Button(1110, 693, button_sound_on_img, self.click_sound_source, 0.25, 0.26)
-        self.button_sound_off = button.Button(1109, 693, button_sound_off_img, self.click_sound_source, 0.25, 0.26)
-        self.button_music_on = button.Button(1200, 690, button_music_on_img, self.click_sound_source, 0.25, 0.26)
-        self.button_music_off = button.Button(1201, 692, button_music_off_img, self.click_sound_source, 0.25, 0.26)
+        self.button_newgame = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.4, button_newgame_img, self.click_sound_source, 0.3, 0.31)
+        self.button_loadgame = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.55, button_loadgame_img, self.click_sound_source, 0.3, 0.31)
+        self.button_leaderboard = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.7, button_leaderboard_img, self.click_sound_source, 0.3, 0.31)
+        self.button_exit = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.85, button_exit_img, self.click_sound_source, 0.3, 0.31)
+        self.button_login_signin = button.Button(SCREEN_WIDTH * 0.09, SCREEN_HEIGHT * 0.92, button_login_signin_img, self.click_sound_source, 0.25, 0.26)
+        self.button_logout = button.Button(SCREEN_WIDTH * 0.09, SCREEN_HEIGHT * 0.92, button_logout_img, self.click_sound_source, 0.25, 0.26)
+        self.button_sound_on = button.Button(SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.92, button_sound_on_img, self.click_sound_source, 0.25, 0.26)
+        self.button_sound_off = button.Button(SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.92, button_sound_off_img, self.click_sound_source, 0.25, 0.26)
+        self.button_music_on = button.Button(SCREEN_WIDTH * 0.87, SCREEN_HEIGHT * 0.92, button_music_on_img, self.click_sound_source, 0.25, 0.26)
+        self.button_music_off = button.Button(SCREEN_WIDTH * 0.87, SCREEN_HEIGHT * 0.92, button_music_off_img, self.click_sound_source, 0.25, 0.26)
 
                 # create graphic
-        self.background = graphic.Graphic(0, 0, background_img, 1.46)
-        self.login_signin_background = graphic.Graphic(0, 0, login_signin_background_img, 1.46)
-        self.game_title = graphic.Graphic(100, 5, game_title_img, 0.3)
-        self.main_menu_jerry = graphic.Graphic(170, 300, main_menu_jerry_img, 0.32)
-        self.main_menu_tom = graphic.Graphic(900, 300, main_menu_tom_img, 0.32)
+        self.background = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, background_img, 1.46)
+        self.login_signin_background = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, login_signin_background_img, 1.46)
+        self.game_title = graphic.Graphic(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.15, game_title_img, 0.3)
+        self.main_menu_jerry = graphic.Graphic(SCREEN_WIDTH * 0.25, SCREEN_HEIGHT * 0.67, main_menu_jerry_img, 0.32)
+        self.main_menu_tom = graphic.Graphic(SCREEN_WIDTH * 0.77, SCREEN_HEIGHT * 0.63, main_menu_tom_img, 0.32)
         
-            # login signin
-                    # create buttons
-        self.button_login = button.Button(620, 500, button_login_img, self.click_sound_source, 0.3, 0.31)
-        self.button_signin = button.Button(620, 500, button_signin_img, self.click_sound_source, 0.3, 0.31)
-        self.button_box_login = button.Button(496, 200, button_box_login_img, self.click_sound_source, 0.3, 0.31)
-        self.button_box_signin = button.Button(701, 200, button_box_signin_img, self.click_sound_source, 0.3, 0.31)
-        self.button_back = button.Button(30, 40, button_back_img, self.click_sound_source, 0.3, 0.31)
-
-                    # create login/ signin textbox
-        self.username_login_textbox = textbox.TextBox(600, 335, 300, 50, self.image_source, self.click_sound_source)
-        self.password_login_textbox = textbox.TextBox(600, 435, 300, 50, self.image_source, self.click_sound_source)
-        self.username_signin_textbox = textbox.TextBox(600, 335, 300, 50, self.image_source, self.click_sound_source)
-        self.password_signin_textbox = textbox.TextBox(600, 435, 300, 50, self.image_source, self.click_sound_source)
-        
-
-                    # create graphic
-        self.background = graphic.Graphic(0, 0, background_img, 1.46)
-        self.box_login = graphic.Graphic(450, 200, box_login_img, 0.3)
-        self.box_signin = graphic.Graphic(450, 200, box_signin_img, 0.3)
-        
-            # leaderboard
-                # create buttons
-        self.button_leaderboard_easy = button.Button(892, 223, button_leaderboard_easy_img, self.click_sound_source, 0.3, 0.31)
-        self.button_leaderboard_medium = button.Button(892, 383, button_leaderboard_medium_img, self.click_sound_source, 0.3, 0.31)
-        self.button_leaderboard_hard = button.Button(892, 555, button_leaderboard_hard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_back = button.Button(30, 690, button_back_img, self.click_sound_source, 0.3, 0.31)
-
+        """ LOGIN SIGNIN """
                 # create graphic
-        self.background = graphic.Graphic(0, 0, background_img, 1.46)
-        self.leaderboard_easy = graphic.Graphic(330, -20, leaderboard_easy_img, 0.3)
-        self.leaderboard_medium = graphic.Graphic(330, -20, leaderboard_medium_img, 0.3)
-        self.leaderboard_hard = graphic.Graphic(330, -20, leaderboard_hard_img, 0.3)
+        self.box_login_signin = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_login_signin_img, 0.3)
+        box_width = self.box_login_signin.modified_width
+        box_height = self.box_login_signin.modified_height
+        self.box_login = graphic.Graphic(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.53, box_login_img, 0.3)
+        self.box_signin = graphic.Graphic(HALF_SCREEN_WIDTH + box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.53, box_signin_img, 0.3)
         
-            # new game
                 # create buttons
-        self.button_yes = button.Button(497, 450, button_yes_img, self.click_sound_source, 0.3, 0.31)
-        self.button_no = button.Button(716, 450, button_no_img, self.click_sound_source, 0.3, 0.31)
-        self.button_easy = button.Button(100, 230, button_easy_img, self.click_sound_source, 0.3, 0.31)
-        self.button_medium = button.Button(100, 390, button_medium_img, self.click_sound_source, 0.3, 0.31)
-        self.button_hard = button.Button(100, 550, button_hard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_back = button.Button(30, 690, button_back_img, self.click_sound_source, 0.3, 0.31)
+        self.button_login = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + box_height * 0.3, button_login_img, self.click_sound_source, 0.3, 0.31)
+        self.button_signin = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + box_height * 0.3, button_signin_img, self.click_sound_source, 0.3, 0.31)
+        self.button_box_login = button.Button(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.53, button_box_login_img, self.click_sound_source, 0.3, 0.31)
+        self.button_box_signin = button.Button(HALF_SCREEN_WIDTH + box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.53, button_box_signin_img, self.click_sound_source, 0.3, 0.31)
+        self.button_back = button.Button(SCREEN_WIDTH * 0.05, SCREEN_HEIGHT * 0.92, button_back_img, self.click_sound_source, 0.3, 0.31)
 
+                # create login/ signin textbox
+        self.username_login_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.33, 300, 50, self.image_source, self.click_sound_source)
+        self.password_login_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.02, 300, 50, self.image_source, self.click_sound_source)
+        self.username_signin_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.33, 300, 50, self.image_source, self.click_sound_source)
+        self.password_signin_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.02, 300, 50, self.image_source, self.click_sound_source)
+        
+        """ LEADERBOARD """
                 # create graphic
-        self.background = graphic.Graphic(0, 0, background_img, 1.46)
-        self.box_login_confirm = graphic.Graphic(425, 250, box_login_confirm_img, 0.3)
-        self.choose_difficulty = graphic.Graphic(50, 0, choose_difficulty_img, 0.3)
-        self.mood_easy = graphic.Graphic(800, 10, mood_easy_img, 0.3)
+        self.leaderboard = graphic.Graphic(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.47, leaderboard_img, 0.3)
+        leaderbboard_width = self.leaderboard.modified_width
+        leaderbboard_height = self.leaderboard.modified_height
+        self.leaderboard_easy = graphic.Graphic(HALF_SCREEN_WIDTH + leaderbboard_width * 0.367, HALF_SCREEN_HEIGHT - leaderbboard_height * 0.12, leaderboard_easy_img, 0.3)
+        self.leaderboard_medium = graphic.Graphic(HALF_SCREEN_WIDTH + leaderbboard_width * 0.367, HALF_SCREEN_HEIGHT + leaderbboard_height * 0.1, leaderboard_medium_img, 0.3)
+        self.leaderboard_hard = graphic.Graphic(HALF_SCREEN_WIDTH + leaderbboard_width * 0.367, HALF_SCREEN_HEIGHT + leaderbboard_height * 0.32, leaderboard_hard_img, 0.3)
+        
+                # create buttons
+        self.button_leaderboard_easy = button.Button(HALF_SCREEN_WIDTH + leaderbboard_width * 0.367, HALF_SCREEN_HEIGHT - leaderbboard_height * 0.12, button_leaderboard_easy_img, self.click_sound_source, 0.3, 0.31)
+        self.button_leaderboard_medium = button.Button(HALF_SCREEN_WIDTH + leaderbboard_width * 0.367, HALF_SCREEN_HEIGHT + leaderbboard_height * 0.1, button_leaderboard_medium_img, self.click_sound_source, 0.3, 0.31)
+        self.button_leaderboard_hard = button.Button(HALF_SCREEN_WIDTH + leaderbboard_width * 0.367, HALF_SCREEN_HEIGHT + leaderbboard_height * 0.32, button_leaderboard_hard_img, self.click_sound_source, 0.3, 0.31)
+
+        
+        """ NEW GAME"""
+                # create graphic
+        self.box_login_confirm = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_login_confirm_img, 0.3) # 425, 250
+        box_login_confirm_width = self.box_login_confirm.modified_width
+        box_login_confirm_height = self.box_login_confirm.modified_height
+        self.choose_difficulty = graphic.Graphic(SCREEN_WIDTH * 0.27, SCREEN_HEIGHT * 0.15, choose_difficulty_img, 0.3)
+        self.mood_easy = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_easy_img, 0.3)
         # self.mood_medium = graphic.Graphic(800, 10, mood_medium_img, 0.3)
         # no suitable img
-        self.mood_hard = graphic.Graphic(800, 10, mood_hard_img, 0.3)
+        self.mood_hard = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_hard_img, 0.3)
         # gameplay video
+        
+                # create buttons
+        self.button_yes = button.Button(HALF_SCREEN_WIDTH - box_login_confirm_width * 0.2, HALF_SCREEN_HEIGHT + box_login_confirm_height * 0.25, button_yes_img, self.click_sound_source, 0.3, 0.31)
+        self.button_no = button.Button(HALF_SCREEN_WIDTH + box_login_confirm_width * 0.2, HALF_SCREEN_HEIGHT + box_login_confirm_height * 0.25, button_no_img, self.click_sound_source, 0.3, 0.31)
+        self.button_easy = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.35, button_easy_img, self.click_sound_source, 0.3, 0.31)
+        self.button_medium = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.55, button_medium_img, self.click_sound_source, 0.3, 0.31)
+        self.button_hard = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.75, button_hard_img, self.click_sound_source, 0.3, 0.31)
+
 
     def draw_main_menu(self):
         self.background.draw(self.screen)
@@ -176,7 +188,7 @@ class GameScreen:
             if self.button_logout.draw(self.screen):
                 self.username = ''
                 self.login = False
-                self.login_signin = 'log in'
+                self.login_signin_state = 'log in'
             
         if self.sound == True:
             if self.button_sound_on.draw(self.screen):
@@ -195,11 +207,12 @@ class GameScreen:
         self.login_signin_background.draw(self.screen)
         state = None
 
-        if self.login_signin == 'log in':
+        if self.login_signin_state == 'log in':
             if self.button_box_signin.draw(self.screen):
-                self.login_signin = 'sign in'
+                self.login_signin_state = 'sign in'
                 self.username_login_textbox.text = ''
                 self.password_login_textbox.text = ''
+            self.box_login_signin.draw(self.screen)
             self.box_login.draw(self.screen)
 
             # Draw Textbox
@@ -223,11 +236,12 @@ class GameScreen:
                     self.username = username
                     self.game_state = 'main menu'
             
-        if self.login_signin == 'sign in':
+        if self.login_signin_state == 'sign in':
             if self.button_box_login.draw(self.screen):
-                self.login_signin = 'log in'
+                self.login_signin_state = 'log in'
                 self.username_signin_textbox.text = ''
                 self.password_signin_textbox.text = ''
+            self.box_login_signin.draw(self.screen)
             self.box_signin.draw(self.screen)
             
             # Draw Textbox
@@ -255,7 +269,7 @@ class GameScreen:
             
         if self.button_back.draw(self.screen) or state == 'back':
             self.game_state = 'main menu'
-            self.login_signin = 'log in'
+            self.login_signin_state = 'log in'
             
         if self.game_state == 'main menu':
             self.username_login_textbox.text = ''
@@ -266,30 +280,33 @@ class GameScreen:
         
     def draw_leaderboard(self):
         self.background.draw(self.screen)
-        if self.leaderboard == 'easy':
+        if self.leaderboard_state == 'easy':
             if self.button_leaderboard_medium.draw(self.screen):
-                self.leaderboard = 'medium'
+                self.leaderboard_state = 'medium'
             if self.button_leaderboard_hard.draw(self.screen):
-                self.leaderboard = 'hard'
+                self.leaderboard_state = 'hard'
+            self.leaderboard.draw(self.screen)
             self.leaderboard_easy.draw(self.screen)
                 
-        if self.leaderboard == 'medium':
+        if self.leaderboard_state == 'medium':
             if self.button_leaderboard_easy.draw(self.screen):
-                self.leaderboard = 'easy'
+                self.leaderboard_state = 'easy'
             if self.button_leaderboard_hard.draw(self.screen):
-                self.leaderboard = 'hard'
+                self.leaderboard_state = 'hard'
+            self.leaderboard.draw(self.screen)
             self.leaderboard_medium.draw(self.screen)
                 
-        if self.leaderboard == 'hard':
+        if self.leaderboard_state == 'hard':
             if self.button_leaderboard_easy.draw(self.screen):
-                self.leaderboard = 'easy'
+                self.leaderboard_state = 'easy'
             if self.button_leaderboard_medium.draw(self.screen):
-                self.leaderboard = 'medium'
+                self.leaderboard_state = 'medium'
+            self.leaderboard.draw(self.screen)
             self.leaderboard_hard.draw(self.screen)
         
         if self.button_back.draw(self.screen):
             self.game_state = 'main menu'
-            self.leaderboard = 'easy'
+            self.leaderboard_state = 'easy'
             
     def draw_new_game(self):
         # draw 
@@ -300,9 +317,14 @@ class GameScreen:
                 self.game_state = 'login signin'
             if self.button_no.draw(self.screen):
                 self.skip_login = True
-        if self.skip_login == True or self.login == True:
-            self.mood_hard.draw(self.screen)
+        else:
+            pos = pygame.mouse.get_pos()
+            # self.mood_hard.draw(self.screen)
             self.choose_difficulty.draw(self.screen)
+            if self.button_easy.image_rect.collidepoint(pos):
+                self.mood_easy.draw(self.screen)
+            if self.button_hard.image_rect.collidepoint(pos):
+                self.mood_hard.draw(self.screen)
             if self.button_easy.draw(self.screen):
                 pass # do something here
             if self.button_medium.draw(self.screen):
