@@ -23,21 +23,22 @@ def register(new_username: str, new_password: str):
     # return register_flag
 
     # FUHOA UPDATE USING DATABASE
+    # new_username = str(new_username)
+    # new_password = str(new_password)
+
+    print(type(new_username))
+
     db_connect = sqlite3.connect(r'database/TomJerry.db')
 
     db_cursor = db_connect.cursor()
 
     # Check name in Database
-    is_name_in_database = db_cursor.execute('SELECT * FROM "users" WHERE "username" = ?', [new_username])
-    for r in is_name_in_database: print(r)
-
-    if is_name_in_database: 
-        return False
-    
+    is_name_in_database = list(db_cursor.execute('SELECT * FROM "users" WHERE "username" = ?', [new_username]))
+        
     # Check name not in Database
-    hash_password = generate_password_hash(new_password)
+    hash_password = str(generate_password_hash(new_password))
 
-    db_cursor.execute('INSERT INTO "users"("username", "password") VALUES (?, ?)', ((username,), (hash_password,)))
+    db_cursor.execute('INSERT INTO "users"("username", "password") VALUES(?, ?)', (new_username, hash_password))
 
     db_connect.commit()
 
