@@ -4,12 +4,14 @@ def str_to_tuple(encode_str: str) -> tuple[int]:
     return (int(x), int(y))
 
 if __name__ == '__main__':
-    db = sqlite3.connect(r'database/TomJerry.db').cursor()
+    db = sqlite3.connect(r'database/TomJerry.db')
     name = 'hoa'
-    user_in_data = list(db.execute(f'''SELECT "password" FROM "users" WHERE "username" = {name}'''))
+    umg = 'kkk'
 
-    if user_in_data:
-        print('hehe')
+    db.cursor().execute('INSERT INTO "users"("username", "password") VALUES(?, ?)', (name, umg))
+
+    db.commit()
+    
     # db.execute('''INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "grid_size", "player_skin", "generate_algorithm")
     #     VALUES (?, ?, ?, ?, ?, ?)
     #     ''',

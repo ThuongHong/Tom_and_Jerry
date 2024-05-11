@@ -289,7 +289,6 @@ class GamePlay():
 
         db_cursor = db_connect.cursor()
 
-        print(self.Maze.grids[self.Maze.end_position].walls)
         maze_data = []
         for i in range(self.Maze.maze_size):
             for j in range(self.Maze.maze_size):
