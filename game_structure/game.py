@@ -289,6 +289,7 @@ class GamePlay():
 
         db_cursor = db_connect.cursor()
 
+        print(self.Maze.grids[self.Maze.end_position].walls)
         maze_data = []
         for i in range(self.Maze.maze_size):
             for j in range(self.Maze.maze_size):
@@ -297,11 +298,11 @@ class GamePlay():
                 )
 
         maze_data.append(
-            self.Maze.grids[self.Maze.start_position[0], self.Maze.start_position[1] - 1].walls
+            self.Maze.grids[self.Maze.start_position[0], -1].walls
         )
         
         maze_data.append(
-            self.Maze.grids[self.Maze.end_position[0], self.Maze.end_position[1] + 1].walls
+            self.Maze.grids[self.Maze.end_position[0], self.maze_size].walls
         )
 
         maze_data_str = json.dumps(maze_data, indent= 4) 
@@ -391,7 +392,8 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
     tmp_maze = Maze(
         maze_size= Game.maze_size,
         maze_grid_size= grid_size,
-        screen= screen
+        screen= screen,
+        scale= scale
     )
 
     maze_info = json.loads(game_data_1[1])
@@ -411,7 +413,10 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
         scale= scale
     )
     tmp_maze.grids[start_position[0], start_position[1] - 1].walls = maze_info[-2].copy()
-    tmp_maze.grids[end_position].walls = maze_info[-1].copy()
+    tmp_maze.grids[end_position[0], maze_size].walls = maze_info[-1].copy()
+
+    print(tmp_maze.grids[end_position].walls)
+    print(end_position)
 
     for grid in tmp_maze.grids:
         tmp_maze.grids[grid].is_visited = True
@@ -420,7 +425,6 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
     
     Game.Maze.start_position = start_position
     Game.Maze.end_position = end_position
-
 
     Game.player = pygame.sprite.GroupSingle()
     Game.player.add(

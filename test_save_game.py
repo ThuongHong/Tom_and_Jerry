@@ -12,12 +12,12 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
 
     Game = GamePlay(maze_size= 20,
-                    grid_size= 15,
+                    grid_size= 30,
                     start_coord_screen= (0, 0),
                     end_coord_screen= (500, 500),
                     screen= screen,
                     scale= 1)
-    Game.generate(ondraw= False)
+    Game.generate(ondraw= True)
     Game.spawn_random()
     i = 1
     j = 0    

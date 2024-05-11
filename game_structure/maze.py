@@ -197,7 +197,9 @@ class Maze():
 
         for position in self.grids:
             is_last_grid = True if position[1] == self.maze_size else False
-            self.grids[position].draw(self.screen, self.maze_grid_size, is_last= is_last_grid)
+            is_first_grid = True if position[1] == -1 else False
+            
+            self.grids[position].draw(self.screen, self.maze_grid_size, is_last= is_last_grid, is_first= is_first_grid)
 
         # pygame.display.update()
 
