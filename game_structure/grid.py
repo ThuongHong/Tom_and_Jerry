@@ -126,15 +126,15 @@ class GridCell():
 
         return '-'.join(features)
 
-    def draw(self, screen, grid_source, is_last= False):
+    def draw(self, screen, grid_source, is_last= False, is_first= False):
         """This method for drawing a grid"""
 
         # grid_name = self.get_feature() + '.png' # May be jpg or sth, Fuhoa do not know about thys hee he
         """For test, do not have beautiful display"""
         x, y = self.grid_coord
-
-        if self.walls['top']:
-            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x, y), (x + self.grid_size, y), self.thickness)
+        if not is_first:
+            if self.walls['top']:
+                pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x, y), (x + self.grid_size, y), self.thickness)
         if self.walls['right']:
             pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x + self.grid_size, y), (x + self.grid_size, y + self.grid_size), self.thickness)
         if not is_last:
