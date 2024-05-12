@@ -4,6 +4,7 @@ from menu_objects import textbox
 from data import data
 import os
 import pygame
+import music
 from constants.INTERFACE_CONSTANTS import COLOR
 
 def create_img(image_source, image_name):
@@ -25,8 +26,11 @@ class GameScreen:
         self.username = ''
         self.login_signin = 'log in'
         self.leaderboard = 'easy'
+        # music and sound player
         self.click_sound_source = pygame.mixer.Sound(os.path.join(sound_source, 'click.ogg'))
-        
+
+        self.music_player = music.MusicController()
+        self.music_player.play_music(self.game_state)
         # load button_img and graphic_img for the game
             # main_menu
         button_newgame_img = create_img(self.image_source, 'button_newgame')
@@ -63,7 +67,7 @@ class GameScreen:
         leaderboard_easy_img = create_img(self.image_source, 'leaderboard_easy')
         leaderboard_medium_img = create_img(self.image_source, 'leaderboard_medium')
         leaderboard_hard_img = create_img(self.image_source, 'leaderboard_hard')
-                        
+
             # new_game
         button_yes_img = create_img(self.image_source, 'button_yes')
         button_no_img = create_img(self.image_source, 'button_no')
@@ -177,7 +181,7 @@ class GameScreen:
                 self.username = ''
                 self.login = False
                 self.login_signin = 'log in'
-            
+
         if self.sound == True:
             if self.button_sound_on.draw(self.screen):
                 self.sound = False
@@ -186,9 +190,11 @@ class GameScreen:
                 self.sound = True
         if self.music == True:
             if self.button_music_on.draw(self.screen):
+                self.music_player.pause_music()
                 self.music = False
         else:
             if self.button_music_off.draw(self.screen):
+                self.music_player.unpause_music()
                 self.music = True
         
     def draw_login_signin(self):
@@ -262,8 +268,7 @@ class GameScreen:
             self.username_signin_textbox.text = ''
             self.password_login_textbox.text = ''
             self.password_signin_textbox.text = ''
-            
-        
+
     def draw_leaderboard(self):
         self.background.draw(self.screen)
         if self.leaderboard == 'easy':
@@ -290,9 +295,9 @@ class GameScreen:
         if self.button_back.draw(self.screen):
             self.game_state = 'main menu'
             self.leaderboard = 'easy'
-            
+
     def draw_new_game(self):
-        # draw 
+        # draw
         self.background.draw(self.screen)
         if self.skip_login == False and self.login == False:
             self.box_login_confirm.draw(self.screen)
@@ -304,11 +309,15 @@ class GameScreen:
             self.mood_hard.draw(self.screen)
             self.choose_difficulty.draw(self.screen)
             if self.button_easy.draw(self.screen):
+                self.music_player.play_music('easy mode')
                 pass # do something here
             if self.button_medium.draw(self.screen):
+                self.music_player.play_music('medium mode')
                 pass # do something here
             if self.button_hard.draw(self.screen):
+                self.music_player.play_music('hard mode')
                 pass # do something here
         if self.button_back.draw(self.screen):
             self.game_state = 'main menu'
+            self.music_player.play_music(self.game_state)
             self.skip_login = False
