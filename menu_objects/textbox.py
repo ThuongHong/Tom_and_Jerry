@@ -77,18 +77,19 @@ class TextBox:
         activated = TextBox.clicked_inside_textbox(self)
 
         while activated:
-            if back_button.draw(surface):
+            pos = pygame.mouse.get_pos()
+            if back_button.draw(surface, pos):
                 return 'back'
             
-            if submit_button.draw(surface):
+            if submit_button.draw(surface, pos):
                 return 'submit'
             
             if is_password:
                 if censored:
-                    if self.eye1_button.draw(surface):
+                    if self.eye1_button.draw(surface, pos):
                         censored = False
                 else:
-                    if self.eye2_button.draw(surface):
+                    if self.eye2_button.draw(surface, pos):
                         censored = True
                         
             if not TextBox.clicked_outside_textbox(self):
@@ -110,10 +111,10 @@ class TextBox:
             
             if is_password:
                 if censored:
-                    if self.eye1_button.draw(surface):
+                    if self.eye1_button.draw(surface, pos):
                         censored = False
                 else:
-                    if self.eye2_button.draw(surface):
+                    if self.eye2_button.draw(surface, pos):
                         censored = True
 
             TextBox.draw_text(self, surface, COLOR.BLACK, censored)

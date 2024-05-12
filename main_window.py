@@ -23,18 +23,15 @@ while game_window.running:
     elif game_window.game_state == 'new game':
         game_window.draw_new_game()
     elif game_window.game_state == 'load game':
-        # game_window.draw_load_game()
-        # do something here
-        game_window.game_state = 'main menu'
+        game_window.draw_load_game()
     elif game_window.game_state == 'leaderboard':
         game_window.draw_leaderboard()
     elif game_window.game_state == 'login signin':
         game_window.draw_login_signin()
         
-        
     # event handler
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: # close button
+        if event.type == pygame.QUIT:
             game_window.running = False
             
     pygame.display.update()

@@ -1,6 +1,7 @@
 from menu_objects import button
 from menu_objects import graphic
 from menu_objects import textbox
+from menu_objects import saveslot
 from data import data
 import os
 import pygame
@@ -31,6 +32,8 @@ class GameScreen:
         self.username = ''
         self.login_signin_state = 'log in'
         self.leaderboard_state = 'easy'
+        self.new_game_state = 'choose difficulty'
+        self.load_game_state = 'easy'
         self.click_sound_source = pygame.mixer.Sound(os.path.join(sound_source, 'click.ogg'))
         
         # load button_img and graphic_img for the game
@@ -77,6 +80,8 @@ class GameScreen:
         button_easy_img = create_img(self.image_source, 'button_easy')
         button_medium_img = create_img(self.image_source, 'button_medium')
         button_hard_img = create_img(self.image_source, 'button_hard')
+        button_help_img = create_img(self.image_source, 'button_help')
+        button_close_img = create_img(self.image_source, 'button_close')
         box_login_confirm_img = create_img(self.image_source, 'box_login_confirm')
         choose_difficulty_img = create_img(self.image_source, 'choose_difficulty')
         mood_easy_img = create_img(self.image_source, 'mood_easy')
@@ -84,12 +89,16 @@ class GameScreen:
         # no suitable img
         mood_hard_img = create_img(self.image_source, 'mood_hard')
         # gameplay video
-        
+        game_description_img = create_img(self.image_source, 'game_description')
         
         """ LOAD GAME """
         button_save_img = create_img(self.image_source, 'button_save')
         button_load_img = create_img(self.image_source, 'button_load')
         button_delete_img = create_img(self.image_source, 'button_delete')
+        background_load_game_img = create_img(self.image_source, 'background_load_game')
+        frame_img = create_img(self.image_source, 'frame')
+        overlay_img = create_img(self.image_source, 'overlay')
+        easy_snapshot_1_img = create_img(self.image_source, 'temp_maze_snapshot')
         
         # create button and graphic for the game
         """ MAIN MENU """
@@ -150,7 +159,7 @@ class GameScreen:
         
         """ NEW GAME"""
                 # create graphic
-        self.box_login_confirm = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_login_confirm_img, 0.3) # 425, 250
+        self.box_login_confirm = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_login_confirm_img, 0.3)
         box_login_confirm_width = self.box_login_confirm.modified_width
         box_login_confirm_height = self.box_login_confirm.modified_height
         self.choose_difficulty = graphic.Graphic(SCREEN_WIDTH * 0.27, SCREEN_HEIGHT * 0.15, choose_difficulty_img, 0.3)
@@ -159,6 +168,9 @@ class GameScreen:
         # no suitable img
         self.mood_hard = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_hard_img, 0.3)
         # gameplay video
+        self.game_description = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, game_description_img, 0.3)
+        game_description_width = self.game_description.modified_width
+        game_description_height = self.game_description.modified_height
         
                 # create buttons
         self.button_yes = button.Button(HALF_SCREEN_WIDTH - box_login_confirm_width * 0.2, HALF_SCREEN_HEIGHT + box_login_confirm_height * 0.25, button_yes_img, self.click_sound_source, 0.3, 0.31)
@@ -166,10 +178,26 @@ class GameScreen:
         self.button_easy = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.35, button_easy_img, self.click_sound_source, 0.3, 0.31)
         self.button_medium = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.55, button_medium_img, self.click_sound_source, 0.3, 0.31)
         self.button_hard = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.75, button_hard_img, self.click_sound_source, 0.3, 0.31)
+        self.button_help = button.Button(SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0.92, button_help_img, self.click_sound_source, 0.3, 0.31)
+        self.button_close = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + game_description_height * 0.38, button_close_img, self.click_sound_source, 0.3, 0.31)
 
         """ LOAD GAME """
-                # create 
+                # create graphic
+        self.background_load_game = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, background_load_game_img, 1.5)
+        self.saveslot_easy_1 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
+        self.saveslot_easy_2 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 1.3, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
+        self.saveslot_medium_1 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
+        self.saveslot_medium_2 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 1.3, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
+        self.saveslot_hard_1 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
+        self.saveslot_hard_2 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 1.3, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
+        self.easy_snapshot_1 = graphic.Graphic(HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, easy_snapshot_1_img, 1.5)
 
+                # create buttons
+        self.button_easy_load_game = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.15, button_easy_img, self.click_sound_source, 0.3, 0.31)
+        self.button_medium_load_game = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.15, button_medium_img, self.click_sound_source, 0.3, 0.31)
+        self.button_hard_load_game = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.15, button_hard_img, self.click_sound_source, 0.3, 0.31)
+        
+        
     def draw_main_menu(self):
         pos = pygame.mouse.get_pos()
         
@@ -192,7 +220,7 @@ class GameScreen:
         else:
             font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
             greeting = font.render(f'Hello {self.username}', True, (255, 255, 255))
-            self.screen.blit(greeting, (180, 708))
+            self.screen.blit(greeting, (SCREEN_WIDTH * 0.15, SCREEN_HEIGHT * 0.9))
             if self.button_logout.draw(self.screen, pos):
                 self.username = ''
                 self.login = False
@@ -234,7 +262,7 @@ class GameScreen:
             # Get input
             state = self.username_login_textbox.get_text(self.screen, 
                                                  self.button_back, self.button_login)
-            state = self.password_login_textbox.get_text(self.screen,
+            state = self.password_login_textbox.get_text(self.screen, 
                                                  self.button_back, self.button_login,
                                                  is_password=True, censored=True)
 
@@ -330,21 +358,56 @@ class GameScreen:
                 self.game_state = 'login signin'
             if self.button_no.draw(self.screen, pos):
                 self.skip_login = True
+            if self.button_back.draw(self.screen, pos):
+                    self.game_state = 'main menu'
+                    self.skip_login = False
         else:
-            self.choose_difficulty.draw(self.screen)
-            if self.button_easy.image_rect.collidepoint(pos):
-                self.mood_easy.draw(self.screen)
-            # if self.button_medium.image_rect.collidepoint(pos):
-            #     self.mood_medium.draw(self.screen)
-            if self.button_hard.image_rect.collidepoint(pos):
-                self.mood_hard.draw(self.screen)
-                
-            if self.button_easy.draw(self.screen, pos):
-                pass # do something here
-            if self.button_medium.draw(self.screen, pos):
-                pass # do something here
-            if self.button_hard.draw(self.screen, pos):
-                pass # do something here
+            if self.new_game_state == 'choose difficulty':
+                self.choose_difficulty.draw(self.screen)
+                if self.button_easy.image_rect.collidepoint(pos):
+                    self.mood_easy.draw(self.screen)
+                # if self.button_medium.image_rect.collidepoint(pos):
+                #     self.mood_medium.draw(self.screen)
+                if self.button_hard.image_rect.collidepoint(pos):
+                    self.mood_hard.draw(self.screen)
+                    
+                if self.button_easy.draw(self.screen, pos):
+                    pass # do something here
+                if self.button_medium.draw(self.screen, pos):
+                    pass # do something here
+                if self.button_hard.draw(self.screen, pos):
+                    pass # do something here
+                if self.button_help.draw(self.screen, pos):
+                    self.new_game_state = 'help'
+                if self.button_back.draw(self.screen, pos):
+                    self.game_state = 'main menu'
+                    self.skip_login = False
+                    
+            if self.new_game_state == 'help':
+                self.game_description.draw(self.screen)
+                if self.button_close.draw(self.screen, pos):
+                    self.new_game_state = 'choose difficulty'
+            
+            
+    def draw_load_game(self):
+        pos = pygame.mouse.get_pos()
+        
+        self.background_load_game.draw(self.screen)
+        if self.load_game_state == 'easy':
+            self.easy_snapshot_1.draw(self.screen)
+            self.saveslot_easy_1.manage_save(self.screen, pos)
+            self.saveslot_easy_2.manage_save(self.screen, pos)
+            if self.button_easy_load_game.draw(self.screen, pos):
+                self.load_game_state = 'medium'
+        if self.load_game_state == 'medium':
+            self.saveslot_medium_1.manage_save(self.screen, pos)
+            self.saveslot_medium_2.manage_save(self.screen, pos)
+            if self.button_medium_load_game.draw(self.screen, pos):
+                self.load_game_state = 'hard'
+        if self.load_game_state == 'hard':
+            self.saveslot_hard_1.manage_save(self.screen, pos)
+            self.saveslot_hard_2.manage_save(self.screen, pos)
+            if self.button_hard_load_game.draw(self.screen, pos):
+                self.load_game_state = 'easy'
         if self.button_back.draw(self.screen, pos):
             self.game_state = 'main menu'
-            self.skip_login = False
