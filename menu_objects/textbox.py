@@ -18,12 +18,13 @@ class TextBox:
         self.sound = sound_source
         self.rect = pygame.Rect(self.x_coord, self.y_coord, self.length, self.width)
         self.text = ""
-        self.font = pygame.font.SysFont('ShakyHandSomeComic-Bold', 38)
+        fontsize = 38
+        self.font = pygame.font.SysFont('ShakyHandSomeComic-Bold', fontsize)
 
         self.eye1_img = create_img(image_source, 'eye_1')
         self.eye2_img = create_img(image_source, 'eye_2')
-        self.eye1_button = button.Button(850, 445, self.eye1_img, self.sound, 0.1, 0.11)
-        self.eye2_button = button.Button(850, 445, self.eye2_img, self.sound, 0.1, 0.11)
+        self.eye1_button = button.Button(self.x_coord + 270, self.y_coord + 23, self.eye1_img, self.sound, 0.1, 0.11)
+        self.eye2_button = button.Button(self.x_coord + 270, self.y_coord + 23, self.eye2_img, self.sound, 0.1, 0.11)
 
     def draw(self, surface, color): 
         pygame.draw.rect(surface, color, self.rect, border_radius=int(self.width * 0.2))
@@ -76,18 +77,19 @@ class TextBox:
         activated = TextBox.clicked_inside_textbox(self)
 
         while activated:
-            if back_button.draw(surface):
+            pos = pygame.mouse.get_pos()
+            if back_button.draw(surface, pos):
                 return 'back'
             
-            if submit_button.draw(surface):
+            if submit_button.draw(surface, pos):
                 return 'submit'
             
             if is_password:
                 if censored:
-                    if self.eye1_button.draw(surface):
+                    if self.eye1_button.draw(surface, pos):
                         censored = False
                 else:
-                    if self.eye2_button.draw(surface):
+                    if self.eye2_button.draw(surface, pos):
                         censored = True
                         
             if not TextBox.clicked_outside_textbox(self):
@@ -109,10 +111,10 @@ class TextBox:
             
             if is_password:
                 if censored:
-                    if self.eye1_button.draw(surface):
+                    if self.eye1_button.draw(surface, pos):
                         censored = False
                 else:
-                    if self.eye2_button.draw(surface):
+                    if self.eye2_button.draw(surface, pos):
                         censored = True
 
             TextBox.draw_text(self, surface, COLOR.BLACK, censored)

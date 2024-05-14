@@ -8,33 +8,31 @@ class Button:
         self.modified_height = int(height * scale)
         self.modified_hover_width = int(width * hover_scale)
         self.modified_hover_height = int(height * hover_scale)
-        self.hover_x_coord = int(x_coord - (self.modified_hover_width - self.modified_width) / 2)
         
         self.sound = sound
         self.image = pygame.transform.scale(image, (self.modified_width, self.modified_height))
         self.hover_image = pygame.transform.scale(image, (self.modified_hover_width, self.modified_hover_height))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x_coord, y_coord)
+        self.image_rect = self.image.get_rect()
+        self.hover_image_rect = self.hover_image.get_rect()
+        self.image_rect.center = (x_coord, y_coord)
+        self.hover_image_rect.center = (x_coord, y_coord)
         self.mouse_down = False
         self.mouse_click = False
     
-    def draw(self, surface):
+    def draw(self, surface, pos):
         action = False
-        pos = pygame.mouse.get_pos()
-        
         # check mouseover and clicked conditions
-        if self.rect.collidepoint(pos):
-            if self.mouse_click == False:
-                surface.blit(self.hover_image, (self.hover_x_coord, self.rect.y))
-                for event in pygame.event.get():
-                    pos = pygame.mouse.get_pos()
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        self.mouse_down = True
-                    if event.type == pygame.MOUSEBUTTONUP and self.mouse_down == True:
-                        self.mouse_click = True
+        if self.image_rect.collidepoint(pos) and self.mouse_click == False:
+            surface.blit(self.hover_image, self.hover_image_rect)
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.mouse_down = True
+                if event.type == pygame.MOUSEBUTTONUP and self.mouse_down == True:
+                    self.mouse_click = True
                 
         else:
-            surface.blit(self.image, (self.rect.x, self.rect.y))
+            surface.blit(self.image, self.image_rect)
             self.mouse_down = False
         
         if self.mouse_click == True:
