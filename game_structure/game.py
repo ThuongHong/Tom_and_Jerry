@@ -292,13 +292,13 @@ class GamePlay():
                 elif event.key == pygame.K_f:
                     self.scale -= 0.1
                 elif event.key == pygame.K_w:
-                    self.scale_surface_offset.y += 10 * self.scale
+                    self.scale_surface_offset.y += 50 * self.scale
                 elif event.key == pygame.K_a:
-                    self.scale_surface_offset.x += 10 * self.scale
+                    self.scale_surface_offset.x += 50 * self.scale
                 elif event.key == pygame.K_s:
-                    self.scale_surface_offset.y -= 10 * self.scale
+                    self.scale_surface_offset.y -= 50 * self.scale
                 elif event.key == pygame.K_d:
-                    self.scale_surface_offset.x -= 10 * self.scale
+                    self.scale_surface_offset.x -= 50 * self.scale
 
         # Update if change scale and draw all the maze
         self.Maze.update(scale= self.scale)
@@ -321,7 +321,8 @@ class GamePlay():
         if self.check_win():
             self.save_leaderboard()
 
-        scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
+        # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
+        scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
         scale_rect = scale_surface.get_rect(center= (500, 325))
 
         self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)

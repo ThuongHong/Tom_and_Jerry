@@ -2,7 +2,7 @@ from game_structure.maze import Maze
 from game_structure.utility import get_position_after_move, get_diffirent_coord, get_direction
 from solving_maze.solving_maze import solve_maze
 from algorithm.draw_utility import mark_grid
-from Game_Constant.Color import Color
+
 
 import pygame
 import os
@@ -13,6 +13,7 @@ class Character(pygame.sprite.Sprite):
                  start_position: tuple[int],
                  grid_size: int,
                  imgs_directory: str = None,
+                 direction = None,
                  img_scale: int = 1,
                  screen= None,
                  group= None,
@@ -25,7 +26,7 @@ class Character(pygame.sprite.Sprite):
         # Default
         self._grid_size = grid_size
         self.scale = img_scale
-        
+        self.direction = direction
         self.screen = screen
         self.screen_vector = pygame.math.Vector2(self.screen.get_size())
 
@@ -36,7 +37,7 @@ class Character(pygame.sprite.Sprite):
         self.step_moves = 0
         
         # Rect will be draw while we using GroupSingle then add this character
-        img_tmp = pygame.image.load(r'./Graphics/Tom/stay.png').convert_alpha()
+        img_tmp = pygame.image.load(r'./images/Tom/StandDown/1.png').convert_alpha()
         
         bigger_size = img_tmp.get_height() if (img_tmp.get_height() > img_tmp.get_width()) else img_tmp.get_width()
         scale_index = bigger_size / self.grid_size
@@ -46,7 +47,7 @@ class Character(pygame.sprite.Sprite):
         coord_adjust = (self._grid_size - real_img_size) / 2
 
         self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
-                                                  self.position[1] * self._grid_size + 40 - coord_adjust))
+                                                  self.position[1] * self._grid_size + 40 - coord_adjust * 2))
         
         self.is_center = False
 
@@ -92,6 +93,7 @@ class Character(pygame.sprite.Sprite):
                 self.screen.blit(self.image, self.rect)
 
                 scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
+                # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
                 scale_rect = scale_surface.get_rect(center= (500, 325))
 
                 self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
@@ -121,16 +123,28 @@ class Tom(Character):
                          img_scale= scale,
                          screen= screen,
                          window_screen=window_screen)
-        folder_left = r'./Graphics/Tom/Left'
-        folder_right = r'./Graphics/Tom/Right'
-        folder_up = r'./Graphics/Tom/Up'
-        folder_down = r'./Graphics/Tom/Down'
-        folder_stand = r'./Graphics/Tom/Stand'
+        self.current_sprite = 0
+
+        folder_left = r'./images/Tom/Left'
+        folder_right = r'./images/Tom/Right'
+        folder_up = r'./images/Tom/Up'
+        folder_down = r'./images/Tom/Down'
+        folder_stand = r'./images/Tom/Stand'
+
+        folder_stand_left = r'./images/Tom/StandLeft'
+        folder_stand_right = r'./images/Tom/StandRight'
+        folder_stand_up = r'./images/Tom/StandUp'
+        folder_stand_down = r'./images/Tom/StandDown'
 
         self.sprites_left = []
         self.sprites_right = []
         self.sprites_up = []
         self.sprites_down = []
+
+        self.sprites_stand_left = []
+        self.sprites_stand_right = []
+        self.sprites_stand_up = []
+        self.sprites_stand_down = []
 
         for file in os.listdir(folder_left):
             tmp_img = pygame.image.load(folder_left + '/' + file)
@@ -159,15 +173,37 @@ class Tom(Character):
             scale_index = bigger_size / self.grid_size
             image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
 
-            self.sprites_down.append(image)
-        for file in os.listdir(folder_stand):
-            tmp_img = pygame.image.load(folder_stand + '/' + file)
+            self.sprites_down.append(image)     
+
+        ######## STAND ANIMATION IMPORT ########
+        for file in os.listdir(folder_stand_left):
+            tmp_img = pygame.image.load(folder_stand_left + '/' + file)
             bigger_size = tmp_img.get_height() if (tmp_img.get_height() > tmp_img.get_width()) else tmp_img.get_width()
             scale_index = bigger_size / self.grid_size
             image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
-            
-            self.sprites_down.append(image)        
 
+            self.sprites_stand_left.append(image)
+        for file in os.listdir(folder_stand_right):
+            tmp_img = pygame.image.load(folder_stand_right + '/' + file)
+            bigger_size = tmp_img.get_height() if (tmp_img.get_height() > tmp_img.get_width()) else tmp_img.get_width()
+            scale_index = bigger_size / self.grid_size
+            image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
+
+            self.sprites_stand_right.append(image)
+        for file in os.listdir(folder_stand_up):
+            tmp_img = pygame.image.load(folder_stand_up + '/' + file)
+            bigger_size = tmp_img.get_height() if (tmp_img.get_height() > tmp_img.get_width()) else tmp_img.get_width()
+            scale_index = bigger_size / self.grid_size
+            image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
+
+            self.sprites_stand_up.append(image)
+        for file in os.listdir(folder_stand_down):
+            tmp_img = pygame.image.load(folder_stand_down + '/' + file)
+            bigger_size = tmp_img.get_height() if (tmp_img.get_height() > tmp_img.get_width()) else tmp_img.get_width()
+            scale_index = bigger_size / self.grid_size
+            image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
+
+            self.sprites_stand_down.append(image)
         
 
     def centering(self, maze):
@@ -204,7 +240,7 @@ class Tom(Character):
             mark_grid(grids= grids,
                       current_grid= current_grid,
                       screen= self.screen,
-                      color= (255, 255, 0))
+                      COLOR= (255, 255, 0))
 
         # pygame.display.update()
     def update(self, maze,
@@ -243,13 +279,43 @@ class Tom(Character):
                 
         # If direction is given so move the player
         if direction == 'T':
+            self.direction = 'T'
             self.normal_move(self.sprites_up, direction= direction, maze= maze)
         elif direction == 'B':
+            self.direction = 'B'
             self.normal_move(self.sprites_down, direction= direction, maze= maze)
         elif direction == 'L':
+            self.direction = 'L'
             self.normal_move(self.sprites_left, direction= direction, maze= maze)
         elif direction == 'R':
+            self.direction = 'R'
             self.normal_move(self.sprites_right, direction= direction, maze= maze)
+        elif direction == None:
+            if self.direction == 'T':
+                self.current_sprite += 0.1
+                if int(self.current_sprite) >= len(self.sprites_stand_up):
+                    self.current_sprite = 0
+                self.image = self.sprites_stand_up[int(self.current_sprite)]
+            elif self.direction == 'B':
+                self.current_sprite += 0.1
+                if int(self.current_sprite) >= len(self.sprites_stand_down):
+                    self.current_sprite = 0
+                self.image = self.sprites_stand_down[int(self.current_sprite)]
+            elif self.direction == 'L':
+                self.current_sprite += 0.1
+                if int(self.current_sprite) >= len(self.sprites_stand_left):
+                    self.current_sprite = 0
+                self.image = self.sprites_stand_left[int(self.current_sprite)]
+            elif self.direction == 'R':
+                self.current_sprite += 0.1
+                if int(self.current_sprite) >= len(self.sprites_stand_right):
+                    self.current_sprite = 0
+                self.image = self.sprites_stand_right[int(self.current_sprite)]
+            else:
+                self.current_sprite += 0.1
+                if int(self.current_sprite) >= len(self.sprites_stand_down):
+                    self.current_sprite = 0
+                self.image = self.sprites_stand_down[int(self.current_sprite)]
 
         # If show_solution so draw_solution
         if show_solution:

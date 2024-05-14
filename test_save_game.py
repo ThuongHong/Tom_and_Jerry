@@ -20,7 +20,7 @@ if __name__ == '__main__':
     Game.generate(algorithm= 'HAK', ondraw= False)
     Game.spawn_random()
     Game.game_centering()
-    pygame.time.wait(1000)
+    # pygame.time.wait(1000)
     i = 0
     j = 0 
     Game.visualize_process('GBFS')

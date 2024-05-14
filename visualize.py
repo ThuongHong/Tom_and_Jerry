@@ -2,12 +2,13 @@ from menu_objects import button
 from menu_objects import graphic
 from menu_objects import textbox
 from menu_objects import saveslot
+from menu_objects import music
 from data import data
 import os
 import pygame
-import music
-from constants.INTERFACE_CONSTANTS import COLOR
-from constants.INTERFACE_CONSTANTS import DISPLAY
+
+from CONSTANTS import COLOR
+from CONSTANTS import DISPLAY
 
 SCREEN_WIDTH = DISPLAY.SCREEN_WIDTH
 SCREEN_HEIGHT = DISPLAY.SCREEN_HEIGHT

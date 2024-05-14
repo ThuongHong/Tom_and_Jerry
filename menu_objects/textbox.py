@@ -2,8 +2,8 @@ import pygame
 import time
 import os
 from menu_objects import button
-from constants.INTERFACE_CONSTANTS import DISPLAY
-from constants.INTERFACE_CONSTANTS import COLOR
+from CONSTANTS import DISPLAY
+from CONSTANTS import COLOR
 
 def create_img(image_source, image_name):
     image_name = image_name + '.png'
