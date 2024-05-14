@@ -19,10 +19,11 @@ if __name__ == '__main__':
     #                 scale= 1)
     # Game.generate(ondraw= False)
     # Game.spawn_random()
-    Game = load_GamePlay(game_id= 8, screen= screen)
+    Game = load_GamePlay(game_id= 8)
     i = 1
     j = 0
     # Game.save_game()
+    Game.scale = 2
     
     while Game.game_state == 'in_game':
         if i:

@@ -1,3 +1,5 @@
+import pygame
+
 def get_position_after_move(position: tuple[int],
                             direction: str):
     """Function take position and direction as inputs, return position after move follow that direction. This function does not check if it is a valid move or not. Be careful
@@ -16,10 +18,10 @@ def get_position_after_move(position: tuple[int],
     else: raise ValueError
 
 def get_diffirent_coord(direction: str, maze_grid_size: int):
-    if direction == 'T': return (0, -maze_grid_size)
-    elif direction == 'R': return (maze_grid_size, 0)
-    elif direction == 'B': return (0, maze_grid_size)
-    elif direction == 'L': return (-maze_grid_size, 0)
+    if direction == 'T': return pygame.math.Vector2(0, -maze_grid_size)
+    elif direction == 'R': return pygame.math.Vector2(maze_grid_size, 0)
+    elif direction == 'B': return pygame.math.Vector2(0, maze_grid_size)
+    elif direction == 'L': return pygame.math.Vector2(-maze_grid_size, 0)
 
 def get_direction(current_grid: tuple[int], 
                        next_grid: tuple[int],

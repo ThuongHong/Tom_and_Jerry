@@ -11,28 +11,28 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = GamePlay(maze_size= 20,
-                    grid_size= 30,
+    Game = GamePlay(maze_size= 40,
+                    grid_size= 28,
                     start_coord_screen= (0, 0),
                     end_coord_screen= (500, 500),
-                    screen= screen,
-                    scale= 1)
-    Game.generate(ondraw= True)
+                    scale= 1,
+                    window_screen= screen)
+    Game.generate(algorithm= 'HAK', ondraw= False)
     Game.spawn_random()
-    i = 1
-    j = 0    
+    Game.game_centering()
+    pygame.time.wait(1000)
+    i = 0
+    j = 0 
+    Game.visualize_process('GBFS')
+
     while Game.game_state == 'in_game':
-        if i:
-            Game.visualize_process(algorithm= 'BFS')
-
-            # Game.visualize_solution()
-            i -= 1
-        j += 1
+        Game.center_zoom_linear(100)
         Game.run()
+        i += 1
+        # if i == 50:
+        #     Game.de_visualize_process()
+        #     Game.visualize_process('DFS')
+        #     Game.game_normal_view()
 
-        if j == 1200:    
-            Game.save_game()
-
-            pygame.quit()
 
         pygame.display.update()

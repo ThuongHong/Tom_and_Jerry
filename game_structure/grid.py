@@ -1,16 +1,23 @@
 from game_structure.utility import get_position_after_move
+from os.path import join
 import pygame
 
-class GridCell():
+class GridCell(pygame.sprite.Sprite):
     def __init__(self,
+                 group,
                  grid_position: tuple[int],
                  grid_size: int,
                  scale: int = 1
                  ):
+        super().__init__(group)
+
+        self.offset = pygame.math.Vector2(0, 40)
+
+        self.position = grid_position
         self.scale = scale
         self._grid_size = grid_size
         self._grid_coord = (grid_position[0] * self.grid_size, grid_position[1] * self.grid_size)
-        self.thickness = int(self.grid_size * 4 / 30)
+        # self.thickness = int(self.grid_size * 4 / 30) // 2
 
         # Variable check if cell is go over or not in generate maze by using DFS algorithm
         self.is_visited = False
@@ -23,33 +30,17 @@ class GridCell():
             'bottom': True,
             'left': True
         }
+        self.old_feature = ""
+        self.set_image()
     
     @property
     def grid_size(self):
         return self._grid_size * self.scale
-
     @property
     def grid_coord(self):
-        return (self._grid_coord[0] * self.scale, self._grid_coord[1] * self.scale)
+        return (self._grid_coord[0] * self.scale + self.offset[0], 
+                self._grid_coord[1] * self.scale + self.offset[1])
     
-    def set_scale(self, new_scale):
-        self.scale = new_scale
-
-    def update(self, **kwargs):
-        if kwargs['scale']:
-            self.set_scale(kwargs['scale'])
-
-    def get_position(self) -> tuple[int]:
-        """This method return index of this grid in maze
-
-        Returns:
-            tuple[int]: None description
-        """
-        return self.grid_coord[0] // self.grid_size, self.grid_coord[1] // self.grid_size
-    
-    def get_center_coord(self):
-        return (self.grid_coord[0] + self.grid_size // 2, self.grid_coord[1] + self.grid_size // 2)
-
     def get_wall_direction(self) -> list[str]:
         """This method support for DFS algorithm in generate maze. Opposite with the method below
 
@@ -109,7 +100,21 @@ class GridCell():
         
         # Otherwise
         return neighbors
+    
+    def get_position(self) -> tuple[int]:
+        """This method return index of this grid in maze
 
+        Returns:
+            tuple[int]: None description
+        """
+        return self.position
+
+    def set_scale(self, new_scale):
+        if new_scale != self.scale:
+            self.scale = new_scale
+            self.set_image()
+
+    @property
     def get_feature(self) -> str:
         """Thie method return feature of this cell to be easier for visualize. Perform clockwise
 
@@ -124,24 +129,30 @@ class GridCell():
         if self.walls['bottom']: features.append('bottom')
         if self.walls['left']: features.append('left')
 
-        return '-'.join(features)
+        if not features: return 'no-wall' + '.png'
 
-    def draw(self, screen, grid_source, is_last= False, is_first= False):
-        """This method for drawing a grid"""
+        return '-'.join(features) + '.png'
 
-        # grid_name = self.get_feature() + '.png' # May be jpg or sth, Fuhoa do not know about thys hee he
-        """For test, do not have beautiful display"""
-        x, y = self.grid_coord
-        if not is_first:
-            if self.walls['top']:
-                pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x, y), (x + self.grid_size, y), self.thickness)
-        if self.walls['right']:
-            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x + self.grid_size, y), (x + self.grid_size, y + self.grid_size), self.thickness)
-        if not is_last:
-            if self.walls['bottom']:
-                pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x + self.grid_size, y + self.grid_size), (x, y + self.grid_size), self.thickness)
-        if self.walls['left']:
-            pygame.draw.line(screen, pygame.Color((255, 255, 255)), (x, y + self.grid_size), (x, y), self.thickness)
+    def set_image(self):
+        """Use this method after generate maze
+        """
+        if self.get_feature != self.old_feature:
+            self.image = pygame.image.load(join('Graphics', 'Grids', self.get_feature)).convert_alpha()
+            self.old_feature = self.get_feature
+            # self._grid_size = self.image.get_height()
+            self.image = pygame.transform.rotozoom(self.image, 0, self.grid_size / self.image.get_height())
             
-        """Do some thing to visualize this grid""" 
-        # raise NotImplementedError       
+            self.rect = self.image.get_rect(topleft= self.grid_coord)
+    
+    # @property
+    # def rect(self):
+    #     return self._rect.topleft - self.offset
+    
+    def update(self,scale = None, offset_change = None, **kwargs):
+        # if scale:
+            # if scale != self.scale:
+            #     self.set_scale(scale)
+        if offset_change:
+            self.offset = self.offset - offset_change
+        
+        self.set_image()

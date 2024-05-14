@@ -2,24 +2,53 @@ from game_structure.grid import GridCell
 from algorithm.BDFS import BDFS
 import random
 import pygame
+from os import listdir
+from os.path import join
 import time    
 
-class Maze():
+class Maze(pygame.sprite.Group):
     def __init__(self,
                  maze_size: int,
                  maze_grid_size: int,
-                 screen,
-                 scale: int = 1):
+                 scale: int = 1,
+                 screen= None,
+                 window_screen= None):
+        super().__init__()
+
         self.maze_size = maze_size
         self._maze_grid_size = maze_grid_size
         self.scale = scale
+
         self.screen = screen
+        self.screen_vector = pygame.math.Vector2(self.screen.get_size())
+
+        self.window_screen = window_screen
+
+        self.scale_surface_offset = pygame.math.Vector2()
         
         self.grids = {}
 
         for i in range(self.maze_size):
             for j in range(self.maze_size):
-                self.grids[i, j] = GridCell(grid_position= (i, j), grid_size= self.maze_grid_size)
+                self.grids[i, j] = GridCell(grid_position= (i, j), grid_size= self.maze_grid_size, group= self)
+                self.add(
+                    self.grids[i, j]
+                )
+
+        # Camera offset
+        self.offset = pygame.math.Vector2()
+        self.half_w = self.screen.get_size()[0] // 2
+        self.half_h = self.screen.get_size()[1] // 2
+
+    def center_target_camera(self, target):
+        self.offset.x = target.rect.centerx - self.half_w
+        self.offset.y = target.rect.centery - self.half_h
+
+    def custom_draw(self, player):
+        self.center_target_camera(player)
+        for sprite in self.sprites():
+            offset_pos = sprite.rect.topleft + self.offset
+            self.screen.blit(sprite.image, offset_pos)
 
     @property
     def maze_grid_size(self):
@@ -27,12 +56,6 @@ class Maze():
 
     def set_scale(self, new_scale):
         self.scale = new_scale
-
-    def update(self, **kwargs):
-        if 'scale' in kwargs:
-            self.set_scale(kwargs['scale'])
-            for grid in self.grids:
-                self.grids[grid].update(scale= self.scale)
 
     def spawn_start_position_for_generate_maze(self) -> tuple[int]:
         """This methos will randomly create start position for generate maze
@@ -78,8 +101,12 @@ class Maze():
             self.grids[self.start_position].walls['top'] = False
             self.grids[self.end_position].walls['bottom'] = False
 
-            self.grids[start, -1] = GridCell((start, -1), self.maze_grid_size)
-            self.grids[end, self.maze_size] = GridCell((end, self.maze_size), self.maze_grid_size)
+            self.grids[start, -1] = GridCell(grid_position= (start, -1), 
+                                             grid_size= self.maze_grid_size,
+                                             group= self)
+            self.grids[end, self.maze_size] = GridCell(grid_position= (end, self.maze_size), 
+                                                       grid_size= self.maze_grid_size, 
+                                                       group= self)
 
             self.grids[start, -1].walls['bottom'] = False
             self.grids[end, self.maze_size].walls['top'] = False
@@ -190,24 +217,16 @@ class Maze():
         
         return unvisited_grids
 
-    def draw(self):
-        """For test, no use for real game"""
-        # Background blit
-        self.screen.fill((0, 0, 0))
-
-        for position in self.grids:
-            is_last_grid = True if position[1] == self.maze_size else False
-            is_first_grid = True if position[1] == -1 else False
-            
-            self.grids[position].draw(self.screen, self.maze_grid_size, is_last= is_last_grid, is_first= is_first_grid)
-
-        # pygame.display.update()
-
     def carve_wall_one_line(self, current_grid,
                             is_stack: bool = False,
                             stack: list = None,
                             draw: bool = False, 
                             draw_speed = 'NORMAL'):
+        generate_adjust_scale = 0
+        if self.maze_size == 20: generate_adjust_scale = 1
+        elif self.maze_size == 40: generate_adjust_scale = 0.5
+        elif generate_adjust_scale == 100: generate_adjust_scale = 0.2
+
         while current_grid:
             # Mark current grid visited
             self.grids[current_grid].is_visited = True
@@ -233,15 +252,25 @@ class Maze():
                 
                 # Draw maze if you want to see the process
                 if draw:
-                    self.draw()
-                    pygame.display.update()
+                    self.update()
+                    self.draw(self.screen)
                     
+                    # scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
+                    scale_surface = pygame.transform.scale(self.screen, self.screen_vector * generate_adjust_scale)
+
+                    scale_rect = scale_surface.get_rect(center= (500, 325))
+
+                    # self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
+                    self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
+
+                    pygame.display.update()
+
                     if draw_speed == 'NORMAL':
-                        pygame.time.wait(30)
+                        pygame.time.wait(20)
                     elif draw_speed == 'FAST':
-                        pygame.time.wait(10)
+                        pygame.time.wait(5)
                     elif draw_speed == 'SLOW':
-                        pygame.time.wait(100)
+                        pygame.time.wait(50)
 
             # Set current to next
             current_grid = next_grid
@@ -310,4 +339,7 @@ class Maze():
                         self.carve_wall_one_line(current_grid= (col, row),
                                                  draw= draw,
                                                  draw_speed= draw_speed)
+                        
+        for grid in self.grids:
+            self.grids[grid].set_image()
 

@@ -21,10 +21,10 @@ class GamePlay():
                  grid_size: int = 30,
                  start_coord_screen: tuple[int] = (0, 0),
                  end_coord_screen: tuple[int] = (700, 700),
-                 screen = None,
                  player_skin: str = 'Normal',
                  energy: int = 0,
                  scale: int = 1,
+                 window_screen= None,
                  **kwargs):
         """Intialize the basic information of Game
 
@@ -38,9 +38,15 @@ class GamePlay():
             energy (int, optional): Feature. Defaults to 0.
             scale (int, optional): Scale. Defaults to 1.
         """
+        self.user_id = user_id
+
+        # self.grid_size = int(20 * 28 / maze_size)
         self.grid_size = grid_size
+        # 20 -> 28
 
         self._maze_size = maze_size
+
+        self.window_screen = window_screen
         
         # Set the game mode -> easy to store in database
         if self.maze_size == 20:
@@ -56,7 +62,14 @@ class GamePlay():
 
         self.player_skin = player_skin
         
-        self.screen = screen
+        self.screen_size = (maze_size * 28, (maze_size + 2) * 28)
+        self.screen = pygame.Surface(self.screen_size)
+        self.screen_vector = pygame.math.Vector2(self.screen_size)
+        self.screen_rect = self.screen.get_rect(center= (500, 325))
+
+        self.maze_surface = pygame.Surface((650, 650))
+
+        self.scale_surface_offset = pygame.math.Vector2()
         
         self.scale = scale
         
@@ -73,6 +86,8 @@ class GamePlay():
         self.is_move = False
 
         self.is_stop_process = True
+
+        self.frame = 0
     
     @property
     def maze_size(self):
@@ -132,6 +147,7 @@ class GamePlay():
         self.is_stop_process = False
     def de_visualize_process(self):
         self.is_stop_process = True
+        self.solve_position = self.solving_grid_process[self.solve_index]
 
     def generate(self, 
                  algorithm= 'DFS', 
@@ -148,8 +164,9 @@ class GamePlay():
         self.Maze = Maze(
             maze_size= self.maze_size,
             maze_grid_size= self.grid_size,
+            scale= self.scale,
             screen= self.screen,
-            scale= self.scale
+            window_screen= self.window_screen
         )
 
         # Generate that maze
@@ -184,6 +201,9 @@ class GamePlay():
         # Change the game_state to In game
         self.set_new_game_state('in_game')
 
+        # Insert relative between user and game
+        db_cursor.execute('INSERT INTO "played" VALUES(?, ?)', (self.user_id, self.id))
+
         # Push all the change information to the real database
         db_connect.commit()
 
@@ -205,7 +225,11 @@ class GamePlay():
         """
         self.player = pygame.sprite.GroupSingle()
         self.player.add(
-            Tom(self.Maze.start_position, self.grid_size, self.screen, self.scale)
+            Tom(self.Maze.start_position, 
+                self.grid_size, 
+                self.scale,
+                screen= self.screen,
+                window_screen = self.window_screen)
         )
 
         self.set_new_game_state('in_game')
@@ -222,6 +246,7 @@ class GamePlay():
 
     def update_screen(self):
         # This one just for test -- DON'T HAVE ANY BEAUTIFUL !!!
+        self.window_screen.fill((0, 0, 0))
         self.screen.fill((0, 0, 0))
 
     def run(self):
@@ -230,6 +255,9 @@ class GamePlay():
         """  
         # Draw background
         self.update_screen()
+        self.Maze.draw(self.screen)
+        self.player.draw(self.screen)
+
 
         # Like normal
         for event in pygame.event.get():
@@ -259,13 +287,28 @@ class GamePlay():
                     self.de_visualize_process()                      
                     self.de_visualize_solution()                  
                     self.is_move = True
+                elif event.key == pygame.K_e:
+                    self.scale += 0.1
+                elif event.key == pygame.K_f:
+                    self.scale -= 0.1
+                elif event.key == pygame.K_w:
+                    self.scale_surface_offset.y += 10 * self.scale
+                elif event.key == pygame.K_a:
+                    self.scale_surface_offset.x += 10 * self.scale
+                elif event.key == pygame.K_s:
+                    self.scale_surface_offset.y -= 10 * self.scale
+                elif event.key == pygame.K_d:
+                    self.scale_surface_offset.x -= 10 * self.scale
 
         # Update if change scale and draw all the maze
         self.Maze.update(scale= self.scale)
 
-        self.Maze.draw()
-        
+        self.Maze.draw(self.screen)
         # Same but for player
+        self.player.update(scale= self.scale, 
+                           maze= self.Maze, 
+                           offset= self.scale_surface_offset)
+
         self.player.draw(self.screen)
 
         # If draw_process is True so this one will run
@@ -277,6 +320,11 @@ class GamePlay():
         # If the game is win -> Save to leaderboard
         if self.check_win():
             self.save_leaderboard()
+
+        scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
+        scale_rect = scale_surface.get_rect(center= (500, 325))
+
+        self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
 
         pygame.display.update()
 
@@ -300,7 +348,7 @@ class GamePlay():
                           self.screen,
                           self.solving_grid_process[i])
                             
-            pygame.time.wait(10)
+            pygame.time.wait(5)
 
             self.solve_index += 1
             if self.solve_index == len(self.solving_grid_process):
@@ -313,7 +361,6 @@ class GamePlay():
 
         # Neu bi dung va co process list -> Draw nhung cai hien tai
         elif self.is_stop_process and self.solving_grid_process:
-            self.solve_position = self.solving_grid_process[self.solve_index]
             if not self.is_move:
                 for i in range(self.solve_index):
                     mark_grid(self.Maze.grids,
@@ -392,16 +439,38 @@ class GamePlay():
         # Push to Real Database
         db_connect.commit()
         # Done
+    
+    def game_centering(self):
+        virtual_player_x_coord = (self.player.sprite.rect.centerx - self.screen_size[0] / 2) * self.scale
+        virtual_player_y_coord = (self.screen_size[1] / 2) * self.scale
+        self.scale_surface_offset = pygame.math.Vector2(- virtual_player_x_coord, virtual_player_y_coord)
+        # self.scale_surface_offset = pygame.math.Vector2(0, self.screen_size[1] / 2)
+
+    def game_normal_view(self):
+        self.scale_surface_offset = pygame.math.Vector2()
+
+    def center_zoom_linear(self, max_frame):
+        if self.frame == 0:
+            self.scale = 0
+        if self.frame < max_frame:
+            self.scale += 1 / max_frame
+            self.game_centering()
+            self.frame += 1
+    # def draw(self):
+    #     # pygame.display.get_surface().blit()
+    #     for y in range(-1, self.maze_size):
+    #         for x in range
 
 # Sadly cannot implement this in GamePlay class like a classmethod so this one is spilt outside 
-def load_GamePlay(game_id: int, screen) -> GamePlay:
+def load_GamePlay(game_id: int) -> GamePlay:
+    screen = pygame.display.get_surface()
     # Connect to database
     db_connect = sqlite3.connect(r'database/TomJerry.db')
 
     db_cursor = db_connect.cursor()
     
     # Check if that game is save or not save ??
-    is_save = list(db_cursor.execute('SELECT * FROM "game_saves" WHERE "game_id" = ? AND "save_state" = 1', (game_id)))
+    is_save = list(db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id} AND "save_state" = 1'))
     if not is_save: raise FileNotFoundError('This game is no longer save!!!')
     
     # If the game_id is fine -> Go Go to load
@@ -429,7 +498,6 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
     Game = GamePlay(
         maze_size= maze_size,
         grid_size= grid_size,
-        screen= screen,
         player_skin= player_skin,
         energy= is_energy,
         scale= scale
@@ -446,7 +514,6 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
     tmp_maze = Maze(
         maze_size= Game.maze_size,
         maze_grid_size= grid_size,
-        screen= screen,
         scale= scale
     )
 
@@ -459,12 +526,14 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
     tmp_maze.grids[start_position[0], -1] = GridCell(
         grid_position= (start_position[0], -1),
         grid_size= grid_size,
-        scale= scale
+        scale= scale,
+        group= tmp_maze
     )
     tmp_maze.grids[end_position[0], maze_size] = GridCell(
         grid_position= (end_position[0], maze_size),
         grid_size= grid_size,
-        scale= scale
+        scale= scale,        
+        group= tmp_maze
     )
     tmp_maze.grids[start_position[0], start_position[1] - 1].walls = maze_info[-2].copy()
     tmp_maze.grids[end_position[0], maze_size].walls = maze_info[-1].copy()
@@ -474,6 +543,7 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
 
     for grid in tmp_maze.grids:
         tmp_maze.grids[grid].is_visited = True
+        tmp_maze.grids[grid].set_image()
 
     Game.Maze = tmp_maze
     
@@ -483,7 +553,10 @@ def load_GamePlay(game_id: int, screen) -> GamePlay:
     # Create player
     Game.player = pygame.sprite.GroupSingle()
     Game.player.add(
-        Tom(current_position, Game.grid_size, Game.screen, Game.scale)
+        Tom(current_position, 
+            Game.grid_size, 
+            Game.scale,
+            screen= Game.screen)
     )
 
     # Get the delta times and plus that to the times that player play
