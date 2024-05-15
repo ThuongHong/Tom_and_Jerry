@@ -1,6 +1,7 @@
 import pygame
 import visualize
-from constants.INTERFACE_CONSTANTS import DISPLAY
+from CONSTANTS import DISPLAY
+from game_structure.game import GamePlay
 
 # initialize
 pygame.init()
@@ -23,18 +24,20 @@ while game_window.running:
     elif game_window.game_state == 'new game':
         game_window.draw_new_game()
     elif game_window.game_state == 'load game':
-        # game_window.draw_load_game()
-        # do something here
-        game_window.game_state = 'main menu'
+        game_window.draw_load_game()
     elif game_window.game_state == 'leaderboard':
         game_window.draw_leaderboard()
     elif game_window.game_state == 'login signin':
         game_window.draw_login_signin()
+    elif game_window.game_state == 'ingame':
+        screen.fill((0, 0, 0))
+        Game = GamePlay(game_window.difficulty, 20, (0, 0), (500, 500), [True, False], screen, 1)
+        Game.run(screen)
         
         
     # event handler
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: # close button
+        if event.type == pygame.QUIT:
             game_window.running = False
             
     pygame.display.update()

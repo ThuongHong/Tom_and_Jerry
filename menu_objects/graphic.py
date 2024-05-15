@@ -11,5 +11,5 @@ class Graphic:
         self.rect.center = (x_coord, y_coord)
 
     def draw(self, surface):
-        # draw button on screen
+        # draw graphic on screen
         surface.blit(self.image, self.rect)

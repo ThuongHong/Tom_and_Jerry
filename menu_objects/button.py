@@ -19,15 +19,12 @@ class Button:
         self.mouse_down = False
         self.mouse_click = False
     
-    def draw(self, surface):
+    def draw(self, surface, pos, sound_on):
         action = False
-        pos = pygame.mouse.get_pos()
-        
         # check mouseover and clicked conditions
         if self.image_rect.collidepoint(pos) and self.mouse_click == False:
             surface.blit(self.hover_image, self.hover_image_rect)
             for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.mouse_down = True
                 if event.type == pygame.MOUSEBUTTONUP and self.mouse_down == True:
@@ -38,7 +35,8 @@ class Button:
             self.mouse_down = False
         
         if self.mouse_click == True:
-            pygame.mixer.Sound.play(self.sound)
+            if sound_on == True:
+                pygame.mixer.Sound.play(self.sound)
             action = True
             self.mouse_down = False
             self.mouse_click = False
