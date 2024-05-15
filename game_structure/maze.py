@@ -119,8 +119,8 @@ class Maze(pygame.sprite.Group):
                     player_current_position= start_position,
                     player_winning_position= end_position,
                     algorithm= 'DFS'):
-                self.start_position = start_position
-                self.end_position = end_position
+                # self.start_position = start_position
+                # self.end_position = end_position
 
                 return True
             
@@ -343,3 +343,14 @@ class Maze(pygame.sprite.Group):
         for grid in self.grids:
             self.grids[grid].set_image()
 
+    def is_have_start(self):
+        for grid in self.grids:
+            if self.grids[grid].is_start:
+                return True
+        return False
+
+    def is_have_end(self):
+        for grid in self.grids:
+            if self.grids[grid].is_end:
+                return True
+        return False

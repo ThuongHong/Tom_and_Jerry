@@ -62,7 +62,7 @@ class GamePlay():
 
         self.player_skin = player_skin
         
-        self.screen_size = (maze_size * 28, (maze_size + 2) * 28)
+        self.screen_size = (maze_size * 28, (maze_size + 2) * 28 + 40)
         self.screen = pygame.Surface(self.screen_size)
         self.screen_vector = pygame.math.Vector2(self.screen_size)
         self.screen_rect = self.screen.get_rect(center= (500, 325))
@@ -211,14 +211,64 @@ class GamePlay():
         self.Maze.spawn_start_end_position('TOP_BOTTOM')
         self.create_player()
 
-    def select_position_spawn(self, 
-                              start: tuple[int],
-                              end: tuple[int]):
-        is_posible =  self.Maze.spawn_start_end_position('SELECT', 
-                                           start_position= start,
-                                           end_position= end)    
-        if not is_posible: return False
+    def select_position_spawn(self):
+        self.scale = 20 / self.Maze.maze_size
+
+        while True:
+            counter = 0
+
+            self.update_screen()            
+            self.Maze.update(scale= self.scale)
+            self.Maze.draw(self.screen)
+            
+            if self.Maze.is_have_start():
+                mark_grid(self.Maze.grids,
+                          self.screen,
+                          self.Maze.start_position,
+                          COLOR= (0, 0, 255))
+                counter += 1
+            
+            if self.Maze.is_have_end():
+                mark_grid(self.Maze.grids,
+                          self.screen,
+                          self.Maze.end_position,
+                          COLOR= (255, 0, 0))
+                counter += 1
+            
+            if counter == 2:
+                if self.Maze.spawn_start_end_position(
+                    option= 'SELECT',
+                    start_position= self.Maze.start_position,
+                    end_position= self.Maze.end_position
+                ):
+                    break
+                else:
+                    self.Maze.grids[self.Maze.start_position].is_start = False
+                    self.Maze.grids[self.Maze.end_position].is_end = False
+                    self.Maze.start_position = None
+                    self.Maze.end_position = None
+
+            scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
+            scale_rect = scale_surface.get_rect(center= (500, 325))
+
+            self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
+
+            events = pygame.event.get()
+
+            for event in events:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.Maze.update(maze= self.Maze,
+                                     scale= self.scale, events= events, 
+                                     screen= self.screen, 
+                                     topleft_info= scale_rect.topleft + pygame.math.Vector2(0, 40) * self.scale)
+            
+
+                        
+            pygame.display.update()
+        
         self.create_player()
+        
+        self.scale = 1
 
     def create_player(self):
         """This method will create player like Tom after Maze are generate and start_end is good
@@ -260,7 +310,8 @@ class GamePlay():
 
 
         # Like normal
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             # QUIT
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -299,6 +350,8 @@ class GamePlay():
                     self.scale_surface_offset.y -= 50 * self.scale
                 elif event.key == pygame.K_d:
                     self.scale_surface_offset.x -= 50 * self.scale
+            # elif event.type == pygame.MOUSEBUTTONDOWN:
+            #     self.Maze.update(events= events)
 
         # Update if change scale and draw all the maze
         self.Maze.update(scale= self.scale)
@@ -457,10 +510,6 @@ class GamePlay():
             self.scale += 1 / max_frame
             self.game_centering()
             self.frame += 1
-    # def draw(self):
-    #     # pygame.display.get_surface().blit()
-    #     for y in range(-1, self.maze_size):
-    #         for x in range
 
 # Sadly cannot implement this in GamePlay class like a classmethod so this one is spilt outside 
 def load_GamePlay(game_id: int) -> GamePlay:
