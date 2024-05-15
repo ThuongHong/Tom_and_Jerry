@@ -6,12 +6,6 @@ from algorithm.utility import HyperNode, SortedList
 
 # note: g(node): cost that we consume to 'come' to 'node'. In this code, I suppose the cost is number of moves needing to come to that node
 
-def h(fisrt_position: tuple, second_position: tuple):
-    return abs(fisrt_position[0] - second_position[0]) + abs(fisrt_position[1] - second_position[1])
-
-def f(node: HyperNode, player_winning_position):
-    return h(node.state, player_winning_position) + node.g
-
 def Dijkstra(grids: dict,
           player_current_position: tuple[int],
           player_winning_position: tuple[int],

@@ -269,23 +269,23 @@ class GamePlay():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     self.player.update(direction= 'L', maze= self.Maze)
-                    self.de_visualize_process()
-                    self.de_visualize_solution()
+                    # self.de_visualize_process()
+                    # self.de_visualize_solution()
                     self.is_move = True
                 elif event.key == pygame.K_RIGHT:
                     self.player.update(direction= 'R', maze= self.Maze)
-                    self.de_visualize_process()
-                    self.de_visualize_solution()
+                    # self.de_visualize_process()
+                    # self.de_visualize_solution()
                     self.is_move = True
                 elif event.key == pygame.K_UP:
                     self.player.update(direction= 'T', maze= self.Maze)
-                    self.de_visualize_process()                     
-                    self.de_visualize_solution()                   
+                    # self.de_visualize_process()                     
+                    # self.de_visualize_solution()                   
                     self.is_move = True
                 elif event.key == pygame.K_DOWN:
                     self.player.update(direction= 'B', maze= self.Maze)
-                    self.de_visualize_process()                      
-                    self.de_visualize_solution()                  
+                    # self.de_visualize_process()                      
+                    # self.de_visualize_solution()                  
                     self.is_move = True
                 elif event.key == pygame.K_e:
                     self.scale += 0.1
@@ -327,7 +327,7 @@ class GamePlay():
 
         self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
 
-        pygame.display.update()
+        # pygame.display.update()
 
     def draw_solution(self):
         """Draw solution from player current position
