@@ -131,7 +131,7 @@ class GameScreen:
         self.button_sound_off = button.Button(SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.92, button_sound_off_img, self.click_sound_source, 0.25, 0.26)
         self.button_music_on = button.Button(SCREEN_WIDTH * 0.87, SCREEN_HEIGHT * 0.92, button_music_on_img, self.click_sound_source, 0.25, 0.26)
         self.button_music_off = button.Button(SCREEN_WIDTH * 0.87, SCREEN_HEIGHT * 0.92, button_music_off_img, self.click_sound_source, 0.25, 0.26)
-        self.button_help = button.Button(SCREEN_WIDTH * 0.72, SCREEN_HEIGHT * 0.92, button_help_img, self.click_sound_source, 0.25, 0.26)
+        self.button_help = button.Button(SCREEN_WIDTH * 0.73, SCREEN_HEIGHT * 0.92, button_help_img, self.click_sound_source, 0.25, 0.26)
         self.button_close = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + game_description_height * 0.38, button_close_img, self.click_sound_source, 0.3, 0.31)
 
         
