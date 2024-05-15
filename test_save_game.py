@@ -11,23 +11,24 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = GamePlay(maze_size= 20,
+    Game = GamePlay(maze_size= 100,
                     grid_size= 28,
                     start_coord_screen= (0, 0),
                     end_coord_screen= (500, 500),
                     scale= 1,
                     window_screen= screen)
     Game.generate(algorithm= 'HAK', ondraw= False)
-    Game.select_position_spawn()
-    # Game.spawn_random()
-    # Game.game_centering()
+    # Game.select_position_spawn()
+    Game.spawn_random()
+    Game.game_centering()
     # pygame.time.wait(1000)
     i = 0
     j = 0 
-    Game.visualize_process('GBFS')
+    Game.visualize_process('DFS')
+    clock.tick(120)
 
     while Game.game_state == 'in_game':
-        # Game.center_zoom_linear(100)
+        # Game.center_zoom_linear(10)
         Game.run()
         i += 1
         # if i == 50:

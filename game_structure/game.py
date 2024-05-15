@@ -42,6 +42,8 @@ class GamePlay():
 
         # self.grid_size = int(20 * 28 / maze_size)
         self.grid_size = grid_size
+        if maze_size == 100:
+            self.grid_size = 19
         # 20 -> 28
 
         self._maze_size = maze_size
@@ -62,8 +64,8 @@ class GamePlay():
 
         self.player_skin = player_skin
         
-        self.screen_size = (maze_size * 28, (maze_size + 2) * 28 + 40)
-        self.screen = pygame.Surface(self.screen_size)
+        self.screen_size = (maze_size * self.grid_size, (maze_size + 2) * self.grid_size + 40)
+        self.screen = pygame.Surface(self.screen_size, pygame.SCALED)
         self.screen_vector = pygame.math.Vector2(self.screen_size)
         self.screen_rect = self.screen.get_rect(center= (500, 325))
 
@@ -105,7 +107,6 @@ class GamePlay():
             self.game_mode = 'Hard'
         else:
             self.game_mode = 'NULL'
-
 
     @property
     def step_moves(self):
@@ -265,11 +266,10 @@ class GamePlay():
 
                         
             pygame.display.update()
-        
-        self.create_player()
-        
         self.scale = 1
 
+        self.create_player()
+        
     def create_player(self):
         """This method will create player like Tom after Maze are generate and start_end is good
         """
@@ -283,6 +283,12 @@ class GamePlay():
         )
 
         self.set_new_game_state('in_game')
+
+        self.Maze.draw(self.screen)
+        pygame.image.save(self.screen, f'database/maze_images/Game_{self.id}.png')
+
+        self.Maze.image = pygame.image.load(f'database/maze_images/Game_{self.id}.png').convert_alpha()
+
         self.start_time = pygame.time.get_ticks()
 
     def set_new_game_state(self, new_state: str):
@@ -304,8 +310,14 @@ class GamePlay():
         Get all the event while th game is run and handle it
         """  
         # Draw background
-        self.update_screen()
-        self.Maze.draw(self.screen)
+        self.update_screen()        
+        self.Maze.update(scale= self.scale)
+        self.player.update(scale= self.scale, 
+                           maze= self.Maze, 
+                           offset= self.scale_surface_offset)
+
+        # self.Maze.draw(self.screen)
+        self.Maze.image_draw(self.screen)
         self.player.draw(self.screen)
 
 
@@ -354,15 +366,16 @@ class GamePlay():
             #     self.Maze.update(events= events)
 
         # Update if change scale and draw all the maze
-        self.Maze.update(scale= self.scale)
+        # self.Maze.update(scale= self.scale)
 
-        self.Maze.draw(self.screen)
+        # self.Maze.draw(self.screen)
+        # self.Maze.image_draw(self.screen)
         # Same but for player
-        self.player.update(scale= self.scale, 
-                           maze= self.Maze, 
-                           offset= self.scale_surface_offset)
+        # self.player.update(scale= self.scale, 
+        #                    maze= self.Maze, 
+        #                    offset= self.scale_surface_offset)
 
-        self.player.draw(self.screen)
+        # self.player.draw(self.screen)
 
         # If draw_process is True so this one will run
         self.draw_process()
@@ -474,6 +487,7 @@ class GamePlay():
                 self.step_moves
             )
         )
+        pygame.image.save(self.window_screen, 'test.jpeg')
 
         db_connect.commit()
 
@@ -493,11 +507,14 @@ class GamePlay():
         # Push to Real Database
         db_connect.commit()
         # Done
+
+        pygame.image.save(self.screen, f'database/save_game_images/Game_{self.id}.png')
+
     
     def game_centering(self):
         virtual_player_x_coord = (self.player.sprite.rect.centerx - self.screen_size[0] / 2) * self.scale
-        virtual_player_y_coord = (self.screen_size[1] / 2) * self.scale
-        self.scale_surface_offset = pygame.math.Vector2(- virtual_player_x_coord, virtual_player_y_coord)
+        virtual_player_y_coord = (self.player.sprite.rect.centery - self.screen_size[1] / 2) * self.scale
+        self.scale_surface_offset = pygame.math.Vector2(- virtual_player_x_coord, - virtual_player_y_coord)
         # self.scale_surface_offset = pygame.math.Vector2(0, self.screen_size[1] / 2)
 
     def game_normal_view(self):

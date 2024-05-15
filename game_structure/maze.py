@@ -40,6 +40,8 @@ class Maze(pygame.sprite.Group):
         self.half_w = self.screen.get_size()[0] // 2
         self.half_h = self.screen.get_size()[1] // 2
 
+        self.image = None
+
     def center_target_camera(self, target):
         self.offset.x = target.rect.centerx - self.half_w
         self.offset.y = target.rect.centery - self.half_h
@@ -49,6 +51,9 @@ class Maze(pygame.sprite.Group):
         for sprite in self.sprites():
             offset_pos = sprite.rect.topleft + self.offset
             self.screen.blit(sprite.image, offset_pos)
+        
+    def image_draw(self, screen):
+        screen.blit(self.image, (0, 0))
 
     @property
     def maze_grid_size(self):

@@ -74,7 +74,8 @@ class Character(pygame.sprite.Sprite):
                 self.image = sprites[int(current_sprite)]
                 self.rect.topleft = self.rect.topleft + move_coord 
                 
-                maze.draw(self.screen)
+                # maze.draw(self.screen)
+                maze.image_draw(self.screen)
                 self.screen.blit(self.image, self.rect)
 
                 scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
@@ -139,10 +140,6 @@ class Tom(Character):
                 self.animation_images[folder].append(image)
         # Set default image
         # Rect will be draw while we using GroupSingle then add this character
-        # img_tmp = pygame.image.load(r'./images/Tom/StandDown/1.png').convert_alpha()
-        
-        # bigger_size = img_tmp.get_height() if (img_tmp.get_height() > img_tmp.get_width()) else img_tmp.get_width()
-        # scale_index = bigger_size / self.grid_size
         self.image = self.animation_images['StandDown'][0]
 
         real_img_size = (self._grid_size / 28) * bigger_size
@@ -211,6 +208,7 @@ class Tom(Character):
             self.scale_surface_offset = offset
         if scale:
             if scale != self.scale:
+                # pass
                 self.scale = scale
                 # old_scale = self.scale
 
