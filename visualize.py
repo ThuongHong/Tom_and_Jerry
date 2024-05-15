@@ -27,22 +27,24 @@ class GameScreen:
         self.running = True
         
         self.game_state = 'main menu'
+        self.help_state = False
         self.difficulty = ''
+        self.login_signin_state = 'log in'
+        self.leaderboard_state = 'easy'
+        self.new_game_state = 'choose difficulty'
+        self.load_game_state = 'easy'
         self.music = True
         self.sound = True
         self.login = False # do something with login system
         self.skip_login = False
         self.username = ''
-        self.login_signin_state = 'log in'
-        self.leaderboard_state = 'easy'
-        self.new_game_state = 'choose difficulty'
-        self.load_game_state = 'easy'
+
         # music and sound player
         self.click_sound_source = pygame.mixer.Sound(os.path.join(sound_source, 'click.ogg'))
-
         self.music_player = music.MusicController()
         self.music_player.play_music(self.game_state)
-        # load button_img and graphic_img for the game
+        
+        """ load button_img and graphic_img for the game """
         """ MAIN MENU """
         button_newgame_img = create_img(self.image_source, 'button_newgame')
         button_loadgame_img = create_img(self.image_source, 'button_loadgame')
@@ -54,11 +56,14 @@ class GameScreen:
         button_sound_off_img = create_img(self.image_source, 'button_sound_off')
         button_music_on_img = create_img(self.image_source, 'button_music_on')
         button_music_off_img = create_img(self.image_source, 'button_music_off')
+        button_help_img = create_img(self.image_source, 'button_help')
+        button_close_img = create_img(self.image_source, 'button_close')
         background_img = create_img(self.image_source, 'background1')
         login_signin_background_img = create_img(self.image_source, 'background2')
         game_title_img = create_img(self.image_source, 'game_title')
         main_menu_jerry_img = create_img(self.image_source, 'main_menu_jerry')
         main_menu_tom_img = create_img(self.image_source, 'main_menu_tom')
+        game_description_img = create_img(self.image_source, 'game_description')
         
         """ LOGIN SIGNIN """
         button_login_img = create_img(self.image_source, 'button_login')
@@ -86,8 +91,6 @@ class GameScreen:
         button_easy_img = create_img(self.image_source, 'button_easy')
         button_medium_img = create_img(self.image_source, 'button_medium')
         button_hard_img = create_img(self.image_source, 'button_hard')
-        button_help_img = create_img(self.image_source, 'button_help')
-        button_close_img = create_img(self.image_source, 'button_close')
         box_login_confirm_img = create_img(self.image_source, 'box_login_confirm')
         choose_difficulty_img = create_img(self.image_source, 'choose_difficulty')
         mood_easy_img = create_img(self.image_source, 'mood_easy')
@@ -95,7 +98,6 @@ class GameScreen:
         # no suitable img
         mood_hard_img = create_img(self.image_source, 'mood_hard')
         # gameplay video
-        game_description_img = create_img(self.image_source, 'game_description')
         
         """ LOAD GAME """
         button_save_img = create_img(self.image_source, 'button_save')
@@ -106,26 +108,32 @@ class GameScreen:
         overlay_img = create_img(self.image_source, 'overlay')
         easy_snapshot_1_img = create_img(self.image_source, 'temp_maze_snapshot')
         
-        # create button and graphic for the game
+        """ create button and graphic for the game """
         """ MAIN MENU """
-                # create buttons
-        self.button_newgame = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.4, button_newgame_img, self.click_sound_source, 0.3, 0.31)
-        self.button_loadgame = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.55, button_loadgame_img, self.click_sound_source, 0.3, 0.31)
-        self.button_leaderboard = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.7, button_leaderboard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_exit = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.85, button_exit_img, self.click_sound_source, 0.3, 0.31)
-        self.button_login_signin = button.Button(SCREEN_WIDTH * 0.09, SCREEN_HEIGHT * 0.92, button_login_signin_img, self.click_sound_source, 0.25, 0.26)
-        self.button_logout = button.Button(SCREEN_WIDTH * 0.09, SCREEN_HEIGHT * 0.92, button_logout_img, self.click_sound_source, 0.25, 0.26)
-        self.button_sound_on = button.Button(SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.92, button_sound_on_img, self.click_sound_source, 0.25, 0.26)
-        self.button_sound_off = button.Button(SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.92, button_sound_off_img, self.click_sound_source, 0.25, 0.26)
-        self.button_music_on = button.Button(SCREEN_WIDTH * 0.87, SCREEN_HEIGHT * 0.92, button_music_on_img, self.click_sound_source, 0.25, 0.26)
-        self.button_music_off = button.Button(SCREEN_WIDTH * 0.87, SCREEN_HEIGHT * 0.92, button_music_off_img, self.click_sound_source, 0.25, 0.26)
-
                 # create graphic
         self.background = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, background_img, 1.46)
         self.login_signin_background = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, login_signin_background_img, 1.46)
         self.game_title = graphic.Graphic(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.15, game_title_img, 0.3)
         self.main_menu_jerry = graphic.Graphic(SCREEN_WIDTH * 0.25, SCREEN_HEIGHT * 0.67, main_menu_jerry_img, 0.32)
         self.main_menu_tom = graphic.Graphic(SCREEN_WIDTH * 0.77, SCREEN_HEIGHT * 0.63, main_menu_tom_img, 0.32)
+        self.game_description = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, game_description_img, 0.3)
+        game_description_width = self.game_description.modified_width
+        game_description_height = self.game_description.modified_height
+        
+                # create buttons
+        self.button_newgame = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.4, button_newgame_img, self.click_sound_source, 0.3, 0.31)
+        self.button_loadgame = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.55, button_loadgame_img, self.click_sound_source, 0.3, 0.31)
+        self.button_leaderboard = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.7, button_leaderboard_img, self.click_sound_source, 0.3, 0.31)
+        self.button_exit = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.85, button_exit_img, self.click_sound_source,  0.3, 0.31)
+        self.button_login_signin = button.Button(SCREEN_WIDTH * 0.09, SCREEN_HEIGHT * 0.92, button_login_signin_img, self.click_sound_source, 0.25, 0.26)
+        self.button_logout = button.Button(SCREEN_WIDTH * 0.09, SCREEN_HEIGHT * 0.92, button_logout_img, self.click_sound_source, 0.25, 0.26)
+        self.button_sound_on = button.Button(SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.92, button_sound_on_img, self.click_sound_source, 0.25, 0.26)
+        self.button_sound_off = button.Button(SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.92, button_sound_off_img, self.click_sound_source, 0.25, 0.26)
+        self.button_music_on = button.Button(SCREEN_WIDTH * 0.87, SCREEN_HEIGHT * 0.92, button_music_on_img, self.click_sound_source, 0.25, 0.26)
+        self.button_music_off = button.Button(SCREEN_WIDTH * 0.87, SCREEN_HEIGHT * 0.92, button_music_off_img, self.click_sound_source, 0.25, 0.26)
+        self.button_help = button.Button(SCREEN_WIDTH * 0.72, SCREEN_HEIGHT * 0.92, button_help_img, self.click_sound_source, 0.25, 0.26)
+        self.button_close = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + game_description_height * 0.38, button_close_img, self.click_sound_source, 0.3, 0.31)
+
         
         """ LOGIN SIGNIN """
                 # create graphic
@@ -174,9 +182,6 @@ class GameScreen:
         # no suitable img
         self.mood_hard = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_hard_img, 0.3)
         # gameplay video
-        self.game_description = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, game_description_img, 0.3)
-        game_description_width = self.game_description.modified_width
-        game_description_height = self.game_description.modified_height
         
                 # create buttons
         self.button_yes = button.Button(HALF_SCREEN_WIDTH - box_login_confirm_width * 0.2, HALF_SCREEN_HEIGHT + box_login_confirm_height * 0.25, button_yes_img, self.click_sound_source, 0.3, 0.31)
@@ -184,8 +189,6 @@ class GameScreen:
         self.button_easy = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.35, button_easy_img, self.click_sound_source, 0.3, 0.31)
         self.button_medium = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.55, button_medium_img, self.click_sound_source, 0.3, 0.31)
         self.button_hard = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.75, button_hard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_help = button.Button(SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0.92, button_help_img, self.click_sound_source, 0.3, 0.31)
-        self.button_close = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + game_description_height * 0.38, button_close_img, self.click_sound_source, 0.3, 0.31)
 
         """ LOAD GAME """
                 # create graphic
@@ -206,46 +209,54 @@ class GameScreen:
         
     def draw_main_menu(self):
         pos = pygame.mouse.get_pos()
-        
         self.background.draw(self.screen)
-        self.game_title.draw(self.screen)
-        self.main_menu_jerry.draw(self.screen)
-        self.main_menu_tom.draw(self.screen)
         
-        if self.button_newgame.draw(self.screen, pos):
-            self.game_state = 'new game'
-        if self.button_loadgame.draw(self.screen, pos):
-            self.game_state = 'load game'
-        if self.button_leaderboard.draw(self.screen, pos):
-            self.game_state = 'leaderboard'
-        if self.button_exit.draw(self.screen, pos):
-            self.running = False
-        if self.login == False:
-            if self.button_login_signin.draw(self.screen, pos):
-                self.game_state = 'login signin'
-        else:
-            font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
-            greeting = font.render(f'Hello {self.username}', True, (255, 255, 255))
-            self.screen.blit(greeting, (SCREEN_WIDTH * 0.15, SCREEN_HEIGHT * 0.9))
-            if self.button_logout.draw(self.screen, pos):
-                self.username = ''
-                self.login = False
-                self.login_signin_state = 'log in'
+        
+        if self.help_state == False:
+            self.game_title.draw(self.screen)
+            self.main_menu_jerry.draw(self.screen)
+            self.main_menu_tom.draw(self.screen)
+            if self.button_newgame.draw(self.screen, pos, self.sound):
+                self.game_state = 'new game'
+            if self.button_loadgame.draw(self.screen, pos, self.sound):
+                self.game_state = 'load game'
+            if self.button_leaderboard.draw(self.screen, pos, self.sound):
+                self.game_state = 'leaderboard'
+            if self.button_exit.draw(self.screen, pos, self.sound):
+                self.running = False
+            if self.login == False:
+                if self.button_login_signin.draw(self.screen, pos, self.sound):
+                    self.game_state = 'login signin'
+            else:
+                font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
+                greeting = font.render(f'Hello {self.username}', True, (255, 255, 255))
+                self.screen.blit(greeting, (SCREEN_WIDTH * 0.15, SCREEN_HEIGHT * 0.9))
+                if self.button_logout.draw(self.screen, pos, self.sound):
+                    self.username = ''
+                    self.login = False
+                    self.login_signin_state = 'log in'
 
-        if self.sound == True:
-            if self.button_sound_on.draw(self.screen, pos):
-                self.sound = False
-        else:
-            if self.button_sound_off.draw(self.screen, pos):
-                self.sound = True
-        if self.music == True:
-            if self.button_music_on.draw(self.screen, pos):
-                self.music_player.pause_music()
-                self.music = False
-        else:
-            if self.button_music_off.draw(self.screen, pos):
-                self.music_player.unpause_music()
-                self.music = True
+            if self.sound == True:
+                if self.button_sound_on.draw(self.screen, pos, self.sound):
+                    self.sound = False
+            else:
+                if self.button_sound_off.draw(self.screen, pos, self.sound):
+                    self.sound = True
+            if self.music == True:
+                if self.button_music_on.draw(self.screen, pos, self.sound):
+                    self.music_player.pause_music()
+                    self.music = False
+            else:
+                if self.button_music_off.draw(self.screen, pos, self.sound):
+                    self.music_player.unpause_music()
+                    self.music = True
+            if self.button_help.draw(self.screen, pos, self.sound):
+                self.help_state = True    
+        if self.help_state == True:
+            self.game_description.draw(self.screen)
+            if self.button_close.draw(self.screen, pos, self.sound):
+                self.game_state = 'main menu'
+                self.help_state = False
         
     def draw_login_signin(self):
         pos = pygame.mouse.get_pos()
@@ -254,7 +265,7 @@ class GameScreen:
         state = None
 
         if self.login_signin_state == 'log in':
-            if self.button_box_signin.draw(self.screen, pos):
+            if self.button_box_signin.draw(self.screen, pos, self.sound):
                 self.login_signin_state = 'sign in'
                 self.username_login_textbox.text = ''
                 self.password_login_textbox.text = ''
@@ -263,18 +274,20 @@ class GameScreen:
 
             # Draw Textbox
             self.username_login_textbox.draw(self.screen, COLOR.GREY)
-            self.username_login_textbox.draw_text(self.screen, COLOR.BLACK, False)
+            self.username_login_textbox.draw_text(self.screen, COLOR.BLACK, 
+                                                  is_password=False, censored=False, activated=False)
             self.password_login_textbox.draw(self.screen, COLOR.GREY)
-            self.password_login_textbox.draw_text(self.screen, COLOR.BLACK, True)
+            self.password_login_textbox.draw_text(self.screen, COLOR.BLACK, 
+                                                  is_password=True, censored=True, activated=False)
 
             # Get input
             state = self.username_login_textbox.get_text(self.screen, 
-                                                 self.button_back, self.button_login)
+                                                 self.button_back, self.button_login, sound_on = self.sound)
             state = self.password_login_textbox.get_text(self.screen, 
                                                  self.button_back, self.button_login,
-                                                 is_password=True, censored=True)
+                                                 is_password=True, censored=True, sound_on = self.sound)
 
-            if self.button_login.draw(self.screen, pos) or state == 'submit':
+            if self.button_login.draw(self.screen, pos, self.sound) or state == 'submit':
                 username = self.username_login_textbox.text
                 password = self.password_login_textbox.text
                 self.login = data.login(username, password)
@@ -283,7 +296,7 @@ class GameScreen:
                     self.game_state = 'main menu'
             
         if self.login_signin_state == 'sign in':
-            if self.button_box_login.draw(self.screen, pos):
+            if self.button_box_login.draw(self.screen, pos, self.sound):
                 self.login_signin_state = 'log in'
                 self.username_signin_textbox.text = ''
                 self.password_signin_textbox.text = ''
@@ -292,18 +305,20 @@ class GameScreen:
             
             # Draw Textbox
             self.username_signin_textbox.draw(self.screen, COLOR.GREY)
-            self.username_signin_textbox.draw_text(self.screen, COLOR.BLACK, False)
+            self.username_signin_textbox.draw_text(self.screen, COLOR.BLACK, 
+                                                   is_password=False, censored=False, activated=False)
             self.password_signin_textbox.draw(self.screen, COLOR.GREY)
-            self.password_signin_textbox.draw_text(self.screen, COLOR.BLACK, True)
+            self.password_signin_textbox.draw_text(self.screen, COLOR.BLACK, 
+                                                   is_password=True, censored=False, activated=False)
 
             # Get input
             state = self.username_signin_textbox.get_text(self.screen, 
-                                                  self.button_back, self.button_signin)
+                                                  self.button_back, self.button_signin, sound_on = self.sound)
             state = self.password_signin_textbox.get_text(self.screen, 
                                                   self.button_back, self.button_signin, 
-                                                  is_password=True, censored=True)
+                                                  is_password=True, censored=True, sound_on = self.sound)
 
-            if self.button_signin.draw(self.screen, pos) or state == 'submit':
+            if self.button_signin.draw(self.screen, pos, self.sound) or state == 'submit':
                 new_username = self.username_signin_textbox.text
                 new_password = self.password_signin_textbox.text
                 if new_username == "" or new_password == "":
@@ -313,7 +328,7 @@ class GameScreen:
                     self.username = new_username
                     self.game_state = 'main menu'
             
-        if self.button_back.draw(self.screen, pos) or state == 'back':
+        if self.button_back.draw(self.screen, pos, self.sound) or state == 'back':
             self.game_state = 'main menu'
             self.login_signin_state = 'log in'
             
@@ -328,30 +343,30 @@ class GameScreen:
         
         self.background.draw(self.screen)
         if self.leaderboard_state == 'easy':
-            if self.button_leaderboard_medium.draw(self.screen, pos):
+            if self.button_leaderboard_medium.draw(self.screen, pos, self.sound):
                 self.leaderboard_state = 'medium'
-            if self.button_leaderboard_hard.draw(self.screen, pos):
+            if self.button_leaderboard_hard.draw(self.screen, pos, self.sound):
                 self.leaderboard_state = 'hard'
             self.leaderboard.draw(self.screen)
             self.leaderboard_easy.draw(self.screen)
                 
         if self.leaderboard_state == 'medium':
-            if self.button_leaderboard_easy.draw(self.screen, pos):
+            if self.button_leaderboard_easy.draw(self.screen, pos, self.sound):
                 self.leaderboard_state = 'easy'
-            if self.button_leaderboard_hard.draw(self.screen, pos):
+            if self.button_leaderboard_hard.draw(self.screen, pos, self.sound):
                 self.leaderboard_state = 'hard'
             self.leaderboard.draw(self.screen)
             self.leaderboard_medium.draw(self.screen)
                 
         if self.leaderboard_state == 'hard':
-            if self.button_leaderboard_easy.draw(self.screen, pos):
+            if self.button_leaderboard_easy.draw(self.screen, pos, self.sound):
                 self.leaderboard_state = 'easy'
-            if self.button_leaderboard_medium.draw(self.screen, pos):
+            if self.button_leaderboard_medium.draw(self.screen, pos, self.sound):
                 self.leaderboard_state = 'medium'
             self.leaderboard.draw(self.screen)
             self.leaderboard_hard.draw(self.screen)
         
-        if self.button_back.draw(self.screen, pos):
+        if self.button_back.draw(self.screen, pos, self.sound):
             self.game_state = 'main menu'
             self.leaderboard_state = 'easy'
             
@@ -361,11 +376,11 @@ class GameScreen:
         self.background.draw(self.screen)
         if self.skip_login == False and self.login == False:
             self.box_login_confirm.draw(self.screen)
-            if self.button_yes.draw(self.screen, pos):
+            if self.button_yes.draw(self.screen, pos, self.sound):
                 self.game_state = 'login signin'
-            if self.button_no.draw(self.screen, pos):
+            if self.button_no.draw(self.screen, pos, self.sound):
                 self.skip_login = True
-            if self.button_back.draw(self.screen, pos):
+            if self.button_back.draw(self.screen, pos, self.sound):
                     self.game_state = 'main menu'
                     self.skip_login = False
         else:
@@ -378,22 +393,15 @@ class GameScreen:
                 if self.button_hard.image_rect.collidepoint(pos):
                     self.mood_hard.draw(self.screen)
                     
-                if self.button_easy.draw(self.screen, pos):
+                if self.button_easy.draw(self.screen, pos, self.sound):
                     pass # do something here
-                if self.button_medium.draw(self.screen, pos):
+                if self.button_medium.draw(self.screen, pos, self.sound):
                     pass # do something here
-                if self.button_hard.draw(self.screen, pos):
+                if self.button_hard.draw(self.screen, pos, self.sound):
                     pass # do something here
-                if self.button_help.draw(self.screen, pos):
-                    self.new_game_state = 'help'
-                if self.button_back.draw(self.screen, pos):
+                if self.button_back.draw(self.screen, pos, self.sound):
                     self.game_state = 'main menu'
                     self.skip_login = False
-                    
-            if self.new_game_state == 'help':
-                self.game_description.draw(self.screen)
-                if self.button_close.draw(self.screen, pos):
-                    self.new_game_state = 'choose difficulty'
             
             
     def draw_load_game(self):
@@ -404,19 +412,19 @@ class GameScreen:
             self.easy_snapshot_1.draw(self.screen)
             self.saveslot_easy_1.manage_save(self.screen, pos)
             self.saveslot_easy_2.manage_save(self.screen, pos)
-            if self.button_easy_load_game.draw(self.screen, pos):
+            if self.button_easy_load_game.draw(self.screen, pos, self.sound):
                 self.load_game_state = 'medium'
         if self.load_game_state == 'medium':
             self.saveslot_medium_1.manage_save(self.screen, pos)
             self.saveslot_medium_2.manage_save(self.screen, pos)
-            if self.button_medium_load_game.draw(self.screen, pos):
+            if self.button_medium_load_game.draw(self.screen, pos, self.sound):
                 self.load_game_state = 'hard'
         if self.load_game_state == 'hard':
             self.saveslot_hard_1.manage_save(self.screen, pos)
             self.saveslot_hard_2.manage_save(self.screen, pos)
-            if self.button_hard_load_game.draw(self.screen, pos):
+            if self.button_hard_load_game.draw(self.screen, pos, self.sound):
                 self.load_game_state = 'easy'
-        if self.button_back.draw(self.screen, pos):
+        if self.button_back.draw(self.screen, pos, self.sound):
             self.game_state = 'main menu'
             self.music_player.play_music(self.game_state)
             self.skip_login = False

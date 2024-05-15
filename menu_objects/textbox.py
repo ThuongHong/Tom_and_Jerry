@@ -29,30 +29,34 @@ class TextBox:
     def draw(self, surface, color): 
         pygame.draw.rect(surface, color, self.rect, border_radius=int(self.width * 0.2))
 
-    def draw_text(self, surface, text_color, censored):
-        if censored:
-            text = self.font.render("*" * len(self.text), True, text_color)
-        else:
-            text = self.font.render(self.text, True, text_color)
+    # def draw_text(self, surface, text_color, censored):
+    #     if censored:
+    #         text = self.font.render("*" * len(self.text), True, text_color)
+    #     else:
+    #         text = self.font.render(self.text, True, text_color)
 
-        surface.blit(text, (self.x_coord + 10, self.y_coord + 10))
+    #     surface.blit(text, (self.x_coord + 10, self.y_coord + 10))
 
-    def draw_cursor(self, surface, cursor_color, is_password, censored):
+    def draw_text(self, surface, cursor_color, is_password, censored, activated=False):
         if is_password and censored:
             text = self.font.render("*" * len(self.text), True, cursor_color)
         else: 
             text = self.font.render(self.text, True, cursor_color)
 
-        cursor = self.font.render("|", True, cursor_color)
+        surface.blit(text, (self.x_coord + 10, self.y_coord + 10))
 
-        if time.time() % 1 > 0.5:
-            surface.blit(cursor, (self.x_coord + text.get_rect().width + 10, self.y_coord + 10))
+        if activated:
+            cursor = self.font.render("|", True, cursor_color)
 
-    def clicked_inside_textbox(self):
+            if time.time() % 1 > 0.5:
+                surface.blit(cursor, (self.x_coord + text.get_rect().width + 10, self.y_coord + 10))
+
+    def clicked_inside_textbox(self, sound_on = True):
 
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
-            pygame.mixer.Sound.play(self.sound)
+            if sound_on == True:
+                pygame.mixer.Sound.play(self.sound)
             return True
         
         return False
@@ -73,24 +77,19 @@ class TextBox:
 
         return False
     
-    def get_text(self, surface, back_button, submit_button, is_password=False, censored=False):
-        activated = TextBox.clicked_inside_textbox(self)
+    def get_text(self, surface, back_button, submit_button, is_password=False, censored=False, sound_on = True):
+        activated = TextBox.clicked_inside_textbox(self, sound_on)
 
         while activated:
             pos = pygame.mouse.get_pos()
-            if back_button.draw(surface, pos):
-                return 'back'
             
-            if submit_button.draw(surface, pos):
-                return 'submit'
-            
-            if is_password:
-                if censored:
-                    if self.eye1_button.draw(surface, pos):
-                        censored = False
-                else:
-                    if self.eye2_button.draw(surface, pos):
-                        censored = True
+            # if is_password:
+            #     if censored:
+            #         if self.eye1_button.draw(surface, pos):
+            #             censored = False
+            #     else:
+            #         if self.eye2_button.draw(surface, pos):
+            #             censored = True
                         
             if not TextBox.clicked_outside_textbox(self):
                 for event in pygame.event.get():
@@ -104,20 +103,28 @@ class TextBox:
                         elif len(self.text) < DISPLAY.TEXT_LENGTH and TextBox.is_valid_char(self, event.unicode):
                             self.text += event.unicode
                 TextBox.draw(self, surface, COLOR.WHITE)
-                TextBox.draw_cursor(self, surface, COLOR.BLACK, is_password, censored)
+                # TextBox.draw_cursor(self, surface, COLOR.BLACK, is_password, censored)
             else:
                 TextBox.draw(self, surface, COLOR.GREY)
                 activated = False
             
             if is_password:
                 if censored:
-                    if self.eye1_button.draw(surface, pos):
+                    if self.eye1_button.draw(surface, pos, sound_on):
+                        print("1")
                         censored = False
                 else:
-                    if self.eye2_button.draw(surface, pos):
+                    if self.eye2_button.draw(surface, pos, sound_on):
+                        print("2")
                         censored = True
 
-            TextBox.draw_text(self, surface, COLOR.BLACK, censored)
+            TextBox.draw_text(self, surface, COLOR.BLACK, is_password, censored, activated)
+
+            if back_button.draw(surface, pos, sound_on):
+                return 'back'
+            
+            if submit_button.draw(surface, pos, sound_on):
+                return 'submit'
 
             pygame.display.flip()
 
