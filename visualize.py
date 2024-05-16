@@ -278,7 +278,7 @@ class GameScreen:
 
             # Draw Textbox
             self.username_login_textbox.draw(self.screen, COLOR.GREY)
-            self.username_login_textbox.draw_text(self.screen, COLOR.BLACK, 
+            self.username_login_textbox.draw_text(self.screen, COLOR.BLACK,
                                                   is_password=False, censored=False, activated=False)
             self.password_login_textbox.draw(self.screen, COLOR.GREY)
             self.password_login_textbox.draw_text(self.screen, COLOR.BLACK, 
@@ -286,9 +286,9 @@ class GameScreen:
 
             # Get input
             state = self.username_login_textbox.get_text(self.screen, 
-                                                 self.button_back, self.button_login, sound_on = self.sound)
+                                                 self.button_back, self.button_login, pos = pos, sound_on = self.sound)
             state = self.password_login_textbox.get_text(self.screen, 
-                                                 self.button_back, self.button_login,
+                                                 self.button_back, self.button_login, pos = pos,
                                                  is_password=True, censored=True, sound_on = self.sound)
 
             if self.button_login.draw(self.screen, pos, self.sound) or state == 'submit':
@@ -317,9 +317,9 @@ class GameScreen:
 
             # Get input
             state = self.username_signin_textbox.get_text(self.screen, 
-                                                  self.button_back, self.button_signin, sound_on = self.sound)
+                                                  self.button_back, self.button_signin, pos = pos, sound_on = self.sound)
             state = self.password_signin_textbox.get_text(self.screen, 
-                                                  self.button_back, self.button_signin, 
+                                                  self.button_back, self.button_signin, pos = pos,
                                                   is_password=True, censored=True, sound_on = self.sound)
 
             if self.button_signin.draw(self.screen, pos, self.sound) or state == 'submit':

@@ -21,7 +21,7 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = GamePlay(maze_size= 40,
+    Game = GamePlay(maze_size= 20,
                     grid_size= 28,
                     start_coord_screen= (0, 0),
                     end_coord_screen= (500, 500),
@@ -64,30 +64,26 @@ if __name__ == '__main__':
         i += 1
         pos = pygame.mouse.get_pos()
         if not Game.is_draw_solution:
-            if button_hint_off.draw(screen, pos, False):
+            if button_hint_off.draw_lite(screen, pos, False):
                 Game.visualize_solution(algorithm=current_algo)
         else:
-            if button_hint_on.draw(screen, pos, False):
+            if button_hint_on.draw_lite(screen, pos, False):
                 Game.de_visualize_solution()
 
         if current_algo == 'AStar':
-            if button_algo_astar.draw(screen, pos, False):
+            if button_algo_astar.draw_lite(screen, pos, False):
                 current_algo = 'BFS'
                 if Game.is_draw_solution: Game.visualize_solution(algorithm=current_algo)
         elif current_algo == 'BFS':
-            if button_algo_bfs.draw(screen, pos, False):
+            if button_algo_bfs.draw_lite(screen, pos, False):
                 current_algo = 'DFS'
                 if Game.is_draw_solution: Game.visualize_solution(algorithm=current_algo)
         elif current_algo == 'DFS':
-            if button_algo_dfs.draw(screen, pos, False):
+            if button_algo_dfs.draw_lite(screen, pos, False):
                 current_algo = 'GBFS'
                 if Game.is_draw_solution: Game.visualize_solution(algorithm=current_algo)
         elif current_algo == 'GBFS':
-            if button_algo_gbfs.draw(screen, pos, False):
-                current_algo = 'Dijkstra'
-                if Game.is_draw_solution: Game.visualize_solution(algorithm=current_algo)
-        elif current_algo == 'Dijkstra':
-            if button_algo_dijkstra.draw(screen, pos, False):
+            if button_algo_gbfs.draw_lite(screen, pos, False):
                 current_algo = 'AStar'
                 if Game.is_draw_solution: Game.visualize_solution(algorithm=current_algo)
         

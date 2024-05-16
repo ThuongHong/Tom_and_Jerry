@@ -42,3 +42,21 @@ class Button:
             self.mouse_click = False
         
         return action
+    
+    def draw_lite(self, surface, pos, sound_on):
+        action = False
+        if self.image_rect.collidepoint(pos):
+            surface.blit(self.hover_image, self.hover_image_rect)
+            if pygame.mouse.get_pressed()[0] == 1 and self.mouse_click == False:
+                action = True
+                self.mouse_click = True
+        else:
+            surface.blit(self.image, self.image_rect)
+        
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.mouse_click = False
+        
+        if action and sound_on:
+            pygame.mixer.Sound.play(self.sound)
+        
+        return action
