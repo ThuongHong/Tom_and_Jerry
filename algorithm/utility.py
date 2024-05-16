@@ -44,7 +44,7 @@ class StackFroniterGreedySearch(StackFrontier):
     def add(self, list_node):
         self.frontier.extend(list_node)
 
-class SortedList(list):
+class OrderedList():
     def __init__(self):
         self.head = None
         self.tail = None
@@ -79,7 +79,7 @@ class SortedList(list):
                 self.head = newNode
             else:
                 while curNode is not self.tail:
-                    if curNode.f <= newNode.f <= curNode.next.f:
+                    if curNode.f < newNode.f < curNode.next.f:
                         # Add at this pos
                         newNode.next = curNode.next
                         curNode.next = newNode
@@ -88,4 +88,3 @@ class SortedList(list):
                 # Add Tail
                 self.tail.next = newNode
                 self.tail = newNode
-

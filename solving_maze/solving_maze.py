@@ -1,7 +1,7 @@
 from algorithm.BDFS import BDFS
 from algorithm.GBFS import GBFS
 from algorithm.AStar import AStar
-from algorithm.Dijkstra import Dijkstra
+
 # from game_structure.character import Character
 
 def solve_maze(player, #: Character,
@@ -43,11 +43,6 @@ def solve_maze(player, #: Character,
                    )
     elif algorithm == 'AStar':
         return AStar(grids=maze.grids,
-                     player_current_position=player_current_position,
-                     player_winning_position=player_winning_position,
-                     is_process= is_process)
-    elif algorithm == "Dijkstra":
-        return Dijkstra(grids=maze.grids,
                      player_current_position=player_current_position,
                      player_winning_position=player_winning_position,
                      is_process= is_process)

@@ -1,4 +1,4 @@
-from algorithm.utility import HyperNode, SortedList
+from algorithm.utility import HyperNode, OrderedList
 # A* use a 'f' function to evaluate a node to choose right direction
 # f(node) = g(node) + h(node)
 # with:
@@ -21,8 +21,8 @@ def AStar(grids: dict,
     # Intialize openlist and closelist
 
     # This list contains the nodes that we need to explore
-    # Class SortedList() helps us when append new node, the list automatically sort increasingly
-    open_list = SortedList() 
+    # Class OrderedList() helps us when append new node, the list automatically sort increasingly
+    open_list = OrderedList() 
     # This list contains the nodes that we have explored and evaluated. 
     # When a node is in this list, it means the lowest-cost path to that node has been found
     close_list = []
