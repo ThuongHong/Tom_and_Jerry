@@ -41,11 +41,18 @@ def solve_maze(player, #: Character,
                    player_winning_position= player_winning_position,
                    is_process= is_process
                    )
-    elif algorithm == 'AStar':
+    elif algorithm == 'AStar_OrderedList':
         return AStar(grids=maze.grids,
                      player_current_position=player_current_position,
                      player_winning_position=player_winning_position,
-                     is_process= is_process)
+                     is_process= is_process,
+                     data_structure = 'OrderedList')
+    elif algorithm == 'AStar_MinBinaryHeap':
+        return AStar(grids=maze.grids,
+                     player_current_position=player_current_position,
+                     player_winning_position=player_winning_position,
+                     is_process= is_process,
+                     data_structure = 'MinBinaryHeap')
     # elif algorithm == 'HAKill':
     #     raise NotImplementedError
 

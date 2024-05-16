@@ -11,7 +11,7 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = GamePlay(maze_size= 100,
+    Game = GamePlay(maze_size= 40,
                     grid_size= 28,
                     start_coord_screen= (0, 0),
                     end_coord_screen= (500, 500),
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # pygame.time.wait(1000)
     i = 0
     j = 0 
-    Game.visualize_process('DFS')
+    Game.visualize_process('AStar_MinBinaryHeap')
     clock.tick(120)
 
     while Game.game_state == 'in_game':
