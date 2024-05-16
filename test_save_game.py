@@ -28,6 +28,7 @@ if __name__ == '__main__':
                     scale= 1,
                     window_screen= screen)
     Game.generate(algorithm= 'HAK', ondraw= False)
+    # Game.select_position_spawn()
     Game.spawn_random()
     Game.game_centering()
     # pygame.time.wait(1000)

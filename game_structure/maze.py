@@ -40,6 +40,8 @@ class Maze(pygame.sprite.Group):
         self.half_w = self.screen.get_size()[0] // 2
         self.half_h = self.screen.get_size()[1] // 2
 
+        self.image = None
+
     def center_target_camera(self, target):
         self.offset.x = target.rect.centerx - self.half_w
         self.offset.y = target.rect.centery - self.half_h
@@ -49,6 +51,9 @@ class Maze(pygame.sprite.Group):
         for sprite in self.sprites():
             offset_pos = sprite.rect.topleft + self.offset
             self.screen.blit(sprite.image, offset_pos)
+        
+    def image_draw(self, screen):
+        screen.blit(self.image, (0, 0))
 
     @property
     def maze_grid_size(self):
@@ -119,8 +124,8 @@ class Maze(pygame.sprite.Group):
                     player_current_position= start_position,
                     player_winning_position= end_position,
                     algorithm= 'DFS'):
-                self.start_position = start_position
-                self.end_position = end_position
+                # self.start_position = start_position
+                # self.end_position = end_position
 
                 return True
             
@@ -343,3 +348,14 @@ class Maze(pygame.sprite.Group):
         for grid in self.grids:
             self.grids[grid].set_image()
 
+    def is_have_start(self):
+        for grid in self.grids:
+            if self.grids[grid].is_start:
+                return True
+        return False
+
+    def is_have_end(self):
+        for grid in self.grids:
+            if self.grids[grid].is_end:
+                return True
+        return False

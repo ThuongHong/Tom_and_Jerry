@@ -1,4 +1,4 @@
-from algorithm.utility import HyperNode, SortedList
+from algorithm.utility import HyperNode, OrderedList, MinBinaryHeap
 # A* use a 'f' function to evaluate a node to choose right direction
 # f(node) = g(node) + h(node)
 # with:
@@ -14,24 +14,26 @@ def f(node: HyperNode, player_winning_position):
 def AStar(grids: dict,
           player_current_position: tuple[int],
           player_winning_position: tuple[int],
-          is_process: bool = False):
+          is_process: bool = False,
+          data_structure = 'OrderedList'):
     # Intialize all_moves list to keep track on process
     all_player_moves = []
 
     # Intialize openlist and closelist
 
     # This list contains the nodes that we need to explore
-    # Class SortedList() helps us when append new node, the list automatically sort increasingly
-    open_list = SortedList() 
+    # Class OrderedList() helps us when append new node, the list automatically sort increasingly
+    if data_structure == 'OrderedList': open_list = OrderedList() 
+    else: open_list = MinBinaryHeap()
     # This list contains the nodes that we have explored and evaluated. 
     # When a node is in this list, it means the lowest-cost path to that node has been found
-    close_list = []
+    close_list = set()
 
     #Initialize start node
     start = HyperNode(state= player_current_position, 
                       action= None, parent= None, g= 0, 
                       h= h(player_current_position, player_winning_position))
-    open_list.append(start)
+    open_list.add(start)
 
     # Loop until find the goal or open_list is empty
     while not open_list.is_empty():
@@ -62,8 +64,8 @@ def AStar(grids: dict,
             # As you know the meaning of close_list, we pass the node that has been in close_list
             if state not in close_list:
                 child = HyperNode(state=state, action=action, parent=node, g=node.g + 1, h=h(state,player_winning_position))
-                open_list.append(child)
+                open_list.add(child)
         
-        close_list.append(node.state)
+        close_list.add(node.state)
     if is_process: return all_player_moves
     return []
