@@ -42,16 +42,6 @@ class TextBox:
 
             if time.time() % 1 > 0.5:
                 surface.blit(cursor, (self.x_coord + text.get_rect().width + 10, self.y_coord + 10))
-
-    # def clicked_inside_textbox(self, sound_on = True):
-
-    #     pos = pygame.mouse.get_pos()
-    #     if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
-    #         if sound_on == True:
-    #             pygame.mixer.Sound.play(self.sound)
-    #         return True
-        
-    #     return False
     
     def clicked_inside_textbox(self, event=None, sound_on = True):
         pos = pygame.mouse.get_pos()
@@ -85,8 +75,7 @@ class TextBox:
             
                         
             if not TextBox.clicked_outside_textbox(self, event):
-                for action in pygame.event.get():
-                    event = action
+                for event in pygame.event.get():
                     if event.type == pygame.QUIT: 
                         pygame.quit() 
                     if event.type == pygame.KEYDOWN: 
@@ -103,10 +92,10 @@ class TextBox:
             
             if is_password:
                 if censored:
-                    if self.eye1_button.draw_lite(surface, pos, sound_on = False):
+                    if self.eye1_button.draw(surface, pos, event, sound_on):
                         censored = False
                 else:
-                    if self.eye2_button.draw_lite(surface, pos, sound_on = False):
+                    if self.eye2_button.draw(surface, pos, event, sound_on):
                         censored = True
 
             TextBox.draw_text(self, surface, COLOR.BLACK, is_password, censored, activated)

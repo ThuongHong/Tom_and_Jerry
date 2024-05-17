@@ -396,19 +396,19 @@ class GameScreen:
                 if self.button_hard.image_rect.collidepoint(pos):
                     self.mood_hard.draw(self.screen)
                     
-                if self.button_easy.draw(self.screen, pos, self.sound):
+                if self.button_easy.draw(self.screen, pos, event, self.sound):
                     self.difficulty = DIFFICULTY.EASY
                     self.game_state = 'ingame'
                     self.music_player.play_music('easy mode')
-                if self.button_medium.draw(self.screen, pos, self.sound):
+                if self.button_medium.draw(self.screen, pos, event, self.sound):
                     self.difficulty = DIFFICULTY.MEDIUM
                     self.game_state = 'ingame'
                     self.music_player.play_music('medium mode')
-                if self.button_hard.draw(self.screen, pos, self.sound):
+                if self.button_hard.draw(self.screen, pos, event, self.sound):
                     self.difficulty = DIFFICULTY.HARD
                     self.game_state = 'ingame'
                     self.music_player.play_music('hard mode')
-                if self.button_back.draw(self.screen, pos, self.sound):
+                if self.button_back.draw(self.screen, pos, event, self.sound):
                     self.game_state = 'main menu'
                     self.skip_login = False
             
