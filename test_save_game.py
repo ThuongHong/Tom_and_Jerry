@@ -21,7 +21,7 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = GamePlay(maze_size= 20,
+    Game = GamePlay(maze_size= 100,
                     grid_size= 28,
                     start_coord_screen= (0, 0),
                     end_coord_screen= (500, 500),
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     button_algo_dijkstra = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_dijkstra_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
     button_algo_gbfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_gbfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
 
-    current_algo = 'AStar'
+    current_algo = 'AStar_OrderedList'
     while Game.game_state == 'in_game':
         # if Game.is_draw_solution:
         #     if button_hint_on.draw(screen, pygame.mouse.get_pos(), False):
@@ -71,7 +71,7 @@ if __name__ == '__main__':
             if button_hint_on.draw_lite(screen, pos, False):
                 Game.de_visualize_solution()
 
-        if current_algo == 'AStar':
+        if current_algo == 'AStar_OrderedList':
             if button_algo_astar.draw_lite(screen, pos, False):
                 current_algo = 'BFS'
                 if Game.is_draw_solution: Game.visualize_solution(algorithm=current_algo)
@@ -85,7 +85,7 @@ if __name__ == '__main__':
                 if Game.is_draw_solution: Game.visualize_solution(algorithm=current_algo)
         elif current_algo == 'GBFS':
             if button_algo_gbfs.draw_lite(screen, pos, False):
-                current_algo = 'AStar'
+                current_algo = 'AStar_OrderedList'
                 if Game.is_draw_solution: Game.visualize_solution(algorithm=current_algo)
         
         # if i == 50:

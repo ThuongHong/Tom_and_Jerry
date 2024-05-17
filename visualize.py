@@ -9,6 +9,7 @@ import pygame
 
 from CONSTANTS import COLOR
 from CONSTANTS import DISPLAY
+from CONSTANTS import DIFFICULTY
 
 SCREEN_WIDTH = DISPLAY.SCREEN_WIDTH
 SCREEN_HEIGHT = DISPLAY.SCREEN_HEIGHT
@@ -398,11 +399,17 @@ class GameScreen:
                     self.mood_hard.draw(self.screen)
                     
                 if self.button_easy.draw(self.screen, pos, self.sound):
-                    pass # do something here
+                    self.difficulty = DIFFICULTY.EASY
+                    self.game_state = 'ingame'
+                    self.music_player.play_music('easy mode')
                 if self.button_medium.draw(self.screen, pos, self.sound):
-                    pass # do something here
+                    self.difficulty = DIFFICULTY.MEDIUM
+                    self.game_state = 'ingame'
+                    self.music_player.play_music('medium mode')
                 if self.button_hard.draw(self.screen, pos, self.sound):
-                    pass # do something here
+                    self.difficulty = DIFFICULTY.HARD
+                    self.game_state = 'ingame'
+                    self.music_player.play_music('hard mode')
                 if self.button_back.draw(self.screen, pos, self.sound):
                     self.game_state = 'main menu'
                     self.skip_login = False
