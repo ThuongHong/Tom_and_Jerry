@@ -271,3 +271,67 @@ class Tom(Character):
                                 )  
            
         # More feature like draw, update img, state of character
+
+class Jerry(Character):
+    YELLOW = (255, 255, 0)
+
+    def __init__(self,
+                #  maze: Maze,
+                 end_position: tuple[int],
+                 grid_size: int,
+                 scale: int,
+                 screen= None,
+                 window_screen = None,
+                 img_directory: str = r'./images/Jerry'
+                 ):
+        super().__init__(start_position= end_position,
+                         grid_size= grid_size,
+                         img_scale= scale,
+                         screen= screen,
+                         window_screen=window_screen)
+        self.current_sprite = 0
+
+        self.animation_images = {
+            'StandDown': []
+        }
+
+        # Load all the image
+        for folder in os.listdir(img_directory, ):
+            for file in os.listdir(os.path.join(img_directory, folder)):
+                tmp_img = pygame.image.load(os.path.join(img_directory, folder, file))
+                
+                tmp_img_height = tmp_img.get_height()
+                tmp_img_width = tmp_img.get_width()
+                
+                bigger_size = tmp_img_height if (tmp_img_height > tmp_img_width) else tmp_img_width
+                scale_index = bigger_size / self.grid_size
+                
+                image = pygame.transform.scale(tmp_img, (tmp_img_width / scale_index, tmp_img_height / scale_index))
+                # image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
+
+                self.animation_images[folder].append(image)
+        # Set default image
+        # Rect will be draw while we using GroupSingle then add this character
+        self.image = self.animation_images['StandDown'][0]
+
+        real_img_size = (self._grid_size / 28) * bigger_size
+        coord_adjust = (self._grid_size - real_img_size) / 2
+
+        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
+                                                  self.position[1] * self._grid_size + 40 - coord_adjust * 2))        
+    
+    def update(self,
+               scale: int = None,
+               offset: int = None,
+                **kwargs) -> bool:
+        if offset:
+            self.scale_surface_offset = offset
+        if scale:
+            if scale != self.scale:
+                # pass
+                self.scale = scale
+
+        self.current_sprite += 0.05
+        if int(self.current_sprite) >= len(self.animation_images['StandDown']):
+            self.current_sprite = 0
+        self.image = self.animation_images['StandDown'][int(self.current_sprite)]

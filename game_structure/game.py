@@ -2,7 +2,7 @@ import pygame
 import sqlite3
 from game_structure.grid import GridCell
 from game_structure.maze import Maze
-from game_structure.character import Tom
+from game_structure.character import Tom, Jerry
 from algorithm.draw_utility import mark_grid
 from solving_maze.solving_maze import solve_maze
 import json
@@ -281,6 +281,14 @@ class GamePlay():
                 screen= self.screen,
                 window_screen = self.window_screen)
         )
+        self.npc = pygame.sprite.GroupSingle()
+        self.npc.add(
+            Jerry(self.Maze.end_position, 
+                  self.grid_size, 
+                  self.scale,
+                  screen= self.screen,
+                  window_screen = self.window_screen)
+        )
 
         self.set_new_game_state('in_game')
 
@@ -315,10 +323,14 @@ class GamePlay():
         self.player.update(scale= self.scale, 
                            maze= self.Maze, 
                            offset= self.scale_surface_offset)
-
+        self.npc.update(scale= self.scale,
+                        offset= self.scale_surface_offset)
+        
         # self.Maze.draw(self.screen)
         self.Maze.image_draw(self.screen)
+        self.npc.draw(self.screen)
         self.player.draw(self.screen)
+        
 
 
         # Like normal
