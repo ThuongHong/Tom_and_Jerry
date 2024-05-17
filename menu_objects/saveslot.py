@@ -28,7 +28,7 @@ class SaveSlot:
         pass
     """"""
     
-    def manage_save(self, surface, pos, sound_on = True):
+    def manage_save(self, surface, pos, event, sound_on = True):
         """ PSEUDO CODE """
         if self.snapshot is not None:
             self.snapshot.draw(surface)
@@ -38,12 +38,12 @@ class SaveSlot:
             if not self.frame.image_rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
                 self.manage = False
             self.overlay.draw(surface)
-            if self.button_load.draw(surface, pos, sound_on):
+            if self.button_load.draw(surface, pos, event, sound_on):
                 pass
                 # do something here with save file
-            if self.button_delete.draw(surface, pos, sound_on):
+            if self.button_delete.draw(surface, pos, event, sound_on):
                 pass
                 # do something here with save file
-        if self.frame.draw(surface, pos, sound_on):# and self.snapshot == True:
+        if self.frame.draw(surface, pos, event, sound_on):# and self.snapshot == True:
             self.manage = True
             
