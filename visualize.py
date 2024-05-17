@@ -284,9 +284,9 @@ class GameScreen:
 
             # Get input
             state = self.username_login_textbox.get_text(self.screen, 
-                                                 self.button_back, self.button_login, sound_on = self.sound)
+                                                 self.button_back, self.button_login, event, sound_on = self.sound)
             state = self.password_login_textbox.get_text(self.screen, 
-                                                 self.button_back, self.button_login,
+                                                 self.button_back, self.button_login, event,
                                                  is_password=True, censored=True, sound_on = self.sound)
 
             if self.button_login.draw(self.screen, pos, event, self.sound) or state == 'submit':
@@ -315,9 +315,9 @@ class GameScreen:
 
             # Get input
             state = self.username_signin_textbox.get_text(self.screen, 
-                                                  self.button_back, self.button_signin, sound_on = self.sound)
+                                                  self.button_back, self.button_signin, event, sound_on = self.sound)
             state = self.password_signin_textbox.get_text(self.screen, 
-                                                  self.button_back, self.button_signin, 
+                                                  self.button_back, self.button_signin, event,
                                                   is_password=True, censored=True, sound_on = self.sound)
 
             if self.button_signin.draw(self.screen, pos, event, self.sound) or state == 'submit':
