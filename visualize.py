@@ -408,7 +408,7 @@ class GameScreen:
         else:
             if self.new_game_state == 'choose difficulty':
                 self.choose_difficulty.draw(self.screen)
-                if self.new_game_mode_confirm == '':
+                if self.spawning == '':
                     if self.button_easy.image_rect.collidepoint(pos):
                         self.mood_easy.draw(self.screen)
                     # if self.button_medium.image_rect.collidepoint(pos):
@@ -417,10 +417,10 @@ class GameScreen:
                         self.mood_hard.draw(self.screen)
                         
                 if self.button_easy.draw(self.screen, pos, event, self.sound):
-                    self.new_game_mode_confirm = 'choose mode'
+                    self.spawning = 'choose mode'
                     self.difficulty = DIFFICULTY.EASY
                 elif self.button_medium.draw(self.screen, pos, event, self.sound):
-                    self.new_game_mode_confirm = 'choose mode'
+                    self.spawning = 'choose mode'
                     self.difficulty = DIFFICULTY.MEDIUM
                 elif self.button_hard.draw(self.screen, pos, event, self.sound):
                     self.spawning = 'choose mode'
