@@ -1,7 +1,7 @@
 from algorithm.BDFS import BDFS
 from algorithm.GBFS import GBFS
 from algorithm.AStar import AStar
-from algorithm.Dijkstra import Dijkstra
+# from algorithm.Dijkstra import Dijkstra
 from algorithm.SBFS import SBFS
 # from game_structure.character import Character
 
@@ -48,18 +48,18 @@ def solve_maze(player, #: Character,
                    player_winning_position= player_winning_position,
                    is_process= is_process
                    )
-    elif algorithm == 'AStar':
+    elif algorithm == 'AStar_OrderedList':
         return AStar(grids=maze.grids,
                      player_current_position=player_current_position,
                      player_winning_position=player_winning_position,
-                     is_process= is_process)
-    elif algorithm == "Dijkstra":
-        return Dijkstra(grids=maze.grids,
+                     is_process= is_process,
+                     data_structure = 'OrderedList')
+    elif algorithm == 'AStar_MinBinaryHeap':
+        return AStar(grids=maze.grids,
                      player_current_position=player_current_position,
                      player_winning_position=player_winning_position,
-                     is_process= is_process)
-    # elif algorithm == 'HAKill':
-    #     raise NotImplementedError
+                     is_process= is_process,
+                     data_structure = 'MinBinaryHeap')
 
 
                     
