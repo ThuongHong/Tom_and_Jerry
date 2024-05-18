@@ -16,20 +16,20 @@ class Launcher():
     def __init__(self, window_screen):
         self.window_screen = window_screen
 
-        self.button_hint_on_img = create_img('images', 'button_hint_on')
-        self.button_hint_off_img = create_img('images', 'button_hint_off')
-        self.button_algo_astar_img = create_img('images', 'button_algo_astar')
-        self.button_algo_bfs_img = create_img('images', 'button_algo_bfs')
-        self.button_algo_dfs_img = create_img('images', 'button_algo_dfs')
-        self.button_algo_dijkstra_img = create_img('images', 'button_algo_dijkstra')
-        self.button_algo_gbfs_img = create_img('images', 'button_algo_gbfs')
+        self.button_hint_on_img = create_img('images/UI', 'button_hint_on')
+        self.button_hint_off_img = create_img('images/UI', 'button_hint_off')
+        self.button_algo_astarlist_img = create_img('images/UI', 'button_algo_astarlist')
+        self.button_algo_astarheap_img = create_img('images/UI', 'button_algo_astarheap')
+        self.button_algo_bfs_img = create_img('images/UI', 'button_algo_bfs')
+        self.button_algo_dfs_img = create_img('images/UI', 'button_algo_dfs')
+        self.button_algo_gbfs_img = create_img('images/UI', 'button_algo_gbfs')
 
         self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.8, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.8, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_astar = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_astar_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_astarlist_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_algo_astarheap = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_astarheap_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_bfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_bfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_dfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_dfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_dijkstra = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_dijkstra_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_gbfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_gbfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
 
     def draw_ui(self):
@@ -42,7 +42,7 @@ class Launcher():
                 self.Game.de_visualize_solution()
 
         if self.current_algo == 'AStar_OrderedList':
-            if self.button_algo_astar.draw_lite(self.window_screen, pos, False):
+            if self.button_algo_astarlist.draw_lite(self.window_screen, pos, False):
                 self.current_algo = 'BFS'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
         elif self.current_algo == 'BFS':
@@ -55,6 +55,10 @@ class Launcher():
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
         elif self.current_algo == 'GBFS':
             if self.button_algo_gbfs.draw_lite(self.window_screen, pos, False):
+                self.current_algo = 'AStar_MinBinaryHeap'
+                if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
+        elif self.current_algo == 'AStar_MinBinaryHeap':
+            if self.button_algo_astarheap.draw_lite(self.window_screen, pos, False):
                 self.current_algo = 'AStar_OrderedList'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
 
@@ -65,7 +69,7 @@ class Launcher():
                              end_coord_screen= end_coord_screen,
                              scale= 1,
                              window_screen= self.window_screen)
-        self.current_algo = "BFS"
+        self.current_algo = "AStar_MinBinaryHeap"
 
     def launch(self):
         self.Game.generate(algorithm= 'HAK', ondraw= False)

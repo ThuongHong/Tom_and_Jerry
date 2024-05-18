@@ -66,7 +66,8 @@ class Character(pygame.sprite.Sprite):
             
             move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.grid_size)
             move_coord = move_coord / self.grid_size
-            
+            pygame.event.clear()
+            pygame.event.set_blocked(None)
             current_sprite = 0
             # Loop 28 frame
             for _ in range(self._grid_size):
@@ -92,6 +93,8 @@ class Character(pygame.sprite.Sprite):
                 #     break
 
             self.step_moves += 1
+            pygame.event.set_allowed(None)
+
 
 class Tom(Character):
     YELLOW = (255, 255, 0)
@@ -103,7 +106,8 @@ class Tom(Character):
                  scale: int,
                  screen= None,
                  window_screen = None,
-                 img_directory: str = r'./images/Tom'
+                 tom_img_directory: str = r'./images/Tom',
+                 footprint_img_directory: str = r'./images/Footprint'
                  ):
         super().__init__(start_position= start_position,
                          grid_size= grid_size,
@@ -123,10 +127,30 @@ class Tom(Character):
             'StandDown': []
         }
 
+        self.footprint_images = {
+            'One': []
+        }
+
+        for folder in os.listdir(footprint_img_directory, ):
+            for file in os.listdir(os.path.join(footprint_img_directory, folder)):
+                tmp_img = pygame.image.load(os.path.join(footprint_img_directory, folder, file))
+                
+                tmp_img_height = tmp_img.get_height()
+                tmp_img_width = tmp_img.get_width()
+                
+                bigger_size = tmp_img_height if (tmp_img_height > tmp_img_width) else tmp_img_width
+                scale_index = bigger_size / self.grid_size
+                
+                image = pygame.transform.scale(tmp_img, (tmp_img_width / scale_index, tmp_img_height / scale_index))
+                # image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
+
+                self.footprint_images[folder].append(image)
+        self.foot = self.footprint_images['One'][0]
+
         # Load all the image
-        for folder in os.listdir(img_directory, ):
-            for file in os.listdir(os.path.join(img_directory, folder)):
-                tmp_img = pygame.image.load(os.path.join(img_directory, folder, file))
+        for folder in os.listdir(tom_img_directory, ):
+            for file in os.listdir(os.path.join(tom_img_directory, folder)):
+                tmp_img = pygame.image.load(os.path.join(tom_img_directory, folder, file))
                 
                 tmp_img_height = tmp_img.get_height()
                 tmp_img_width = tmp_img.get_width()
@@ -166,7 +190,8 @@ class Tom(Character):
 
     def draw_solution(self, 
                       solution: list,
-                      grids = None):
+                      grids = None,
+                      footprint = None):
         """This method will draw a line from current position of Tom to the end position
 
         Args:
@@ -179,10 +204,12 @@ class Tom(Character):
         while solution:
             # Iterate for all grir and mark it
             current_grid = solution.pop(0)[1]
-            mark_grid(grids= grids,
-                      current_grid= current_grid,
-                      screen= self.screen,
-                      COLOR= (255, 255, 0))
+            if len(solution) > 0:
+                mark_grid(grids= grids,
+                        current_grid= current_grid,
+                        screen= self.screen,
+                        footprint= footprint,
+                        COLOR= (255, 255, 0))
 
         # pygame.display.update()
     
@@ -267,7 +294,8 @@ class Tom(Character):
                                   maze= maze, 
                                   algorithm= algorithm)                
             self.draw_solution(solution= solution,
-                                grids= maze.grids
+                                grids= maze.grids,
+                                footprint=self.foot
                                 )  
            
         # More feature like draw, update img, state of character

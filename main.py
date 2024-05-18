@@ -11,7 +11,7 @@ pygame.display.set_caption('Tam va Gia Huy')
 clock = pygame.time.Clock()
 
 # images
-image_source = 'images'
+image_source = 'images/UI'
 # sounds
 sound_source = 'sounds'
 
