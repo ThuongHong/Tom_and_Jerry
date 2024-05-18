@@ -18,10 +18,13 @@ def draw_two_grids(grids,
 def mark_grid(grids,
               screen,
               current_grid: tuple[int],
+              footprint = None,
               COLOR: tuple[int] = COLOR.GREEN):
     left, top = grids[current_grid].grid_coord
     size = grids[current_grid].grid_size
     rect = pygame.Rect(left + 2, top + 2, size - 4, size - 4)
-    pygame.draw.rect(screen, COLOR, rect)
+    # pygame.draw.rect(screen, COLOR, rect)
+    if footprint:
+        screen.blit(footprint, rect)
 
     # pygame.display.update()
