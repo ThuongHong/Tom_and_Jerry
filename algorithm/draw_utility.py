@@ -20,13 +20,16 @@ def mark_grid(grids,
               current_grid: tuple[int],
               footprint = None,
               COLOR: tuple[int] = COLOR.GREEN):
-    left, top = grids[current_grid].grid_coord
-    size = grids[current_grid].grid_size
-    rect = pygame.Rect(left + 2, top + 2, size - 4, size - 4)
-
-    rect = footprint.get_rect(center=grids[current_grid].grid_coord_center)
-    # pygame.draw.rect(screen, COLOR, rect)
     if footprint:
+        rect = footprint.get_rect(center=grids[current_grid].grid_coord_center)
         screen.blit(footprint, rect)
+    else:
+        left, top = grids[current_grid].grid_coord
+        size = grids[current_grid].grid_size
+        rect = pygame.Rect(left + 2, top + 2, size - 4, size - 4)
+
+
+        pygame.draw.rect(screen, COLOR, rect)
+
 
     # pygame.display.update()

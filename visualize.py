@@ -26,14 +26,14 @@ class GameScreen:
         self.image_source = image_source
         self.sound_source = sound_source
         self.running = True
-        
+        self.font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
         self.game_state = 'main menu'
         self.help_state = False
         self.difficulty = ''
         self.login_signin_state = 'log in'
         self.leaderboard_state = 'easy'
         self.new_game_state = 'choose difficulty'
-        self.new_game_mode_confirm = ''
+        self.spawning = ''
         self.load_game_state = 'easy'
         self.music = True
         self.sound = True
@@ -242,8 +242,7 @@ class GameScreen:
                 if self.button_login_signin.draw(self.screen, pos, event, self.sound):
                     self.game_state = 'login signin'
             else:
-                font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
-                greeting = font.render(f'Hello {self.username}', True, (255, 255, 255))
+                greeting = self.font.render(f'Hello {self.username}', True, (255, 255, 255))
                 self.screen.blit(greeting, (SCREEN_WIDTH * 0.15, SCREEN_HEIGHT * 0.9))
                 if self.button_logout.draw(self.screen, pos, event, self.sound):
                     self.username = ''
@@ -308,6 +307,10 @@ class GameScreen:
                 if self.login == True:
                     self.username = username
                     self.game_state = 'main menu'
+                else:
+                    notification_text = self.font.render("Your username or password was wrong!", True, COLOR.RED)
+                    self.screen.blit(notification_text, (SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.55))
+                    
             
         if self.login_signin_state == 'sign in':
             if self.button_box_login.draw(self.screen, pos, event, self.sound):
@@ -408,11 +411,11 @@ class GameScreen:
                     self.mood_hard.draw(self.screen)
                     
                 if self.button_easy.draw(self.screen, pos, event, self.sound) or self.button_medium.draw(self.screen, pos, event, self.sound) or self.button_hard.draw(self.screen, pos, event, self.sound):
-                    self.new_game_mode_confirm = 'choose mode'
-                if self.new_game_mode_confirm == 'choose mode':
+                    self.spawning = 'choose mode'
+                if self.spawning == 'choose mode':
                     self.box_choose_spawn_point.draw(self.screen)
                     if self.button_random.draw(self.screen, pos, event, self.sound):
-                        self.new_game_mode_confirm = 'random'
+                        self.spawning = 'random'
                         self.game_state = 'ingame'
                         if self.difficulty == DIFFICULTY.EASY:
                             self.music_player.play_music('easy mode')
@@ -421,7 +424,7 @@ class GameScreen:
                         if self.difficulty == DIFFICULTY.HARD:
                             self.music_player.play_music('hard mode')
                     if self.button_manual.draw(self.screen, pos, event, self.sound):
-                        self.new_game_mode_confirm = 'manual'
+                        self.spawning = 'manual'
                         ''' CHOOOSE SPAWN POINT FUNC'''
                         self.game_state = 'ingame'
                         if self.difficulty == DIFFICULTY.EASY:
@@ -433,7 +436,7 @@ class GameScreen:
                 if self.button_back.draw(self.screen, pos, event, self.sound):
                     self.game_state = 'main menu'
                     self.skip_login = False
-                    self.new_game_mode_confirm = ''
+                    self.spawning = ''
             
             
     def draw_load_game(self, event):

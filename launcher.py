@@ -64,19 +64,21 @@ class Launcher():
                 self.current_algo = 'AStar_OrderedList'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
 
-    def reset(self, maze_size, start_coord_screen=(0, 0), end_coord_screen=(500, 500)):
+    def reset(self, maze_size, start_coord_screen=(0, 0), end_coord_screen=(500, 500), spawning='random'):
         self.Game = GamePlay(maze_size= maze_size,
                              grid_size= 28,
                              start_coord_screen= start_coord_screen,
                              end_coord_screen= end_coord_screen,
                              scale= 1,
                              window_screen= self.window_screen)
+        self.spawning = spawning
         self.current_algo = "AStar_MinBinaryHeap"
 
     def launch(self):
         self.Game.generate(algorithm= 'HAK', ondraw= False)
         # Game.select_position_spawn()
-        self.Game.spawn_random()
+        if self.spawning == 'random': self.Game.spawn_random()
+        else: self.Game.select_position_spawn()
         self.Game.game_centering()
 
         while self.Game.game_state == 'in_game':

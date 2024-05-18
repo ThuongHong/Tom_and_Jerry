@@ -17,7 +17,7 @@ if __name__ == '__main__':
                     end_coord_screen= (500, 500),
                     scale= 1,
                     window_screen= screen,
-                    energy= 1)
+                    energy= True)
     Game.generate(algorithm= 'HAK', ondraw= False)
     Game.select_position_spawn()
     # Game.spawn_random()
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     j = 0 
     # Game.visualize_solution('GBFS')
     clock.tick(120)
-
+    # Game.de_visualize_solution()
     while Game.game_state == 'in_game':
         # Game.center_zoom_linear(10)
         Game.run()

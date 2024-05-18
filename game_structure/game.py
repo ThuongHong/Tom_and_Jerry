@@ -29,7 +29,7 @@ class GamePlay():
                  start_coord_screen: tuple[int] = (0, 0),
                  end_coord_screen: tuple[int] = (700, 700),
                  player_skin: str = 'Normal',
-                 energy: int = 0,
+                 energy: bool = False,
                  scale: int = 1,
                  window_screen= None,
                  **kwargs):
