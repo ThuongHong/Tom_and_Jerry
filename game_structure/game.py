@@ -70,6 +70,7 @@ class GamePlay():
         self.energy = energy
         if self.energy:
             self.Energy_Items = pygame.sprite.Group()
+        else: self.Energy_Items = None
 
         self.player_skin = player_skin
         
@@ -493,14 +494,14 @@ class GamePlay():
         self.Maze.update(scale= self.scale)
         self.player.update(scale= self.scale, 
                            maze= self.Maze, 
-                           offset= self.scale_surface_offset)
-        self.npc.update(scale= self.scale,
-                        offset= self.scale_surface_offset,
+                           offset= self.scale_surface_offset,
                            energy_grp= self.Energy_Items)
+        self.npc.update(scale= self.scale,
+                        offset= self.scale_surface_offset)
         
         self.Maze.draw(self.screen)
         # self.Maze.image_draw(self.screen)
-        self.Energy_Items.draw(self.screen)
+        if self.Energy_Items: self.Energy_Items.draw(self.screen)
         self.npc.draw(self.screen)
         self.player.draw(self.screen)
         
@@ -547,6 +548,8 @@ class GamePlay():
                     self.scale_surface_offset.y -= 50 * self.scale
                 elif event.key == pygame.K_d:
                     self.scale_surface_offset.x -= 50 * self.scale
+                elif event.key == pygame.K_SPACE:
+                    self.game_centering()
             # elif event.type == pygame.MOUSEBUTTONDOWN:
             #     self.Maze.update(events= events)
 

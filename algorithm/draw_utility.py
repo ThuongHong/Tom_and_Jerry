@@ -23,6 +23,8 @@ def mark_grid(grids,
     left, top = grids[current_grid].grid_coord
     size = grids[current_grid].grid_size
     rect = pygame.Rect(left + 2, top + 2, size - 4, size - 4)
+
+    rect = footprint.get_rect(center=grids[current_grid].grid_coord_center)
     # pygame.draw.rect(screen, COLOR, rect)
     if footprint:
         screen.blit(footprint, rect)

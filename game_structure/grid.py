@@ -118,6 +118,13 @@ class GridCell(pygame.sprite.Sprite):
             self.set_image()
 
     @property
+    def grid_coord_center(self):
+        return (
+            self.grid_coord[0] + self.grid_size / 2,
+            self.grid_coord[1] + self.grid_size / 2.1,
+        )
+
+    @property
     def get_feature(self) -> str:
         """Thie method return feature of this cell to be easier for visualize. Perform clockwise
 

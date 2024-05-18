@@ -47,7 +47,6 @@ class EnergyItem(pygame.sprite.Sprite):
         return (
             self.grid_coord[0] + self.grid_size / 2,
             self.grid_coord[1] + self.grid_size / 2.1,
-
         )
     def update(self, player,**kwargs):
         if player.position == self.position:
