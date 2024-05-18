@@ -106,15 +106,15 @@ class Maze(pygame.sprite.Group):
             self.grids[self.start_position].walls['top'] = False
             self.grids[self.end_position].walls['bottom'] = False
 
-            self.grids[start, -1] = GridCell(grid_position= (start, -1), 
-                                             grid_size= self.maze_grid_size,
-                                             group= self)
-            self.grids[end, self.maze_size] = GridCell(grid_position= (end, self.maze_size), 
-                                                       grid_size= self.maze_grid_size, 
-                                                       group= self)
+            # self.grids[start, -1] = GridCell(grid_position= (start, -1), 
+            #                                  grid_size= self.maze_grid_size,
+            #                                  group= self)
+            # self.grids[end, self.maze_size] = GridCell(grid_position= (end, self.maze_size), 
+            #                                            grid_size= self.maze_grid_size, 
+            #                                            group= self)
 
-            self.grids[start, -1].walls['bottom'] = False
-            self.grids[end, self.maze_size].walls['top'] = False
+            # self.grids[start, -1].walls['bottom'] = False
+            # self.grids[end, self.maze_size].walls['top'] = False
 
             return True
 

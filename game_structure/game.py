@@ -28,7 +28,7 @@ class GamePlay():
                  grid_size: int = 30,
                  start_coord_screen: tuple[int] = (0, 0),
                  end_coord_screen: tuple[int] = (700, 700),
-                 player_skin: str = 'Normal',
+                 player_skin: str = r'./images/Tom',
                  energy: int = 0,
                  scale: int = 1,
                  window_screen= None,
@@ -55,7 +55,9 @@ class GamePlay():
 
         self._maze_size = maze_size
 
-        self.window_screen = window_screen
+        # self.window_screen = window_screen
+        if not window_screen: self.window_screen = pygame.display.get_surface()
+        else: self.window_screen = window_screen
         
         # Set the game mode -> easy to store in database
         if self.maze_size == 20:
@@ -70,6 +72,8 @@ class GamePlay():
         self.energy = energy
         if self.energy:
             self.Energy_Items = pygame.sprite.Group()
+        else:
+            self.Energy_Items = None
 
         self.player_skin = player_skin
         
@@ -120,11 +124,7 @@ class GamePlay():
     @property
     def step_moves(self):
         return self.player.sprite.step_moves
-    
-    # @property
-    # def info(self):
-    #     return f"Game end in {self.get_time} after {self.step_moves} moves"
-    
+        
     @property
     def get_time(self):
         mili_sec = pygame.time.get_ticks() - self.start_time
@@ -490,7 +490,7 @@ class GamePlay():
 
         self.Maze.draw(self.screen)
         # self.Maze.image_draw(self.screen)
-        self.Energy_Items.draw(self.screen)
+        if self.Energy_Items: self.Energy_Items.draw(self.screen)
         self.player.draw(self.screen)
 
 
@@ -634,20 +634,32 @@ class GamePlay():
                     self.Maze.grids[i, j].walls
                 )
 
-        maze_data.append(
-            self.Maze.grids[self.Maze.start_position[0], -1].walls
-        )
+        # maze_data.append(
+        #     self.Maze.grids[self.Maze.start_position[0], -1].walls
+        # )
         
-        maze_data.append(
-            self.Maze.grids[self.Maze.end_position[0], self.maze_size].walls
-        )
+        # maze_data.append(
+        #     self.Maze.grids[self.Maze.end_position[0], self.maze_size].walls
+        # )
 
         maze_data_str = json.dumps(maze_data, indent= 4) 
 
+        if self.energy:
+            # TODO
+            energy_info = []
+            # Save nhung energy hien tai
+            for energy_item in self.Energy_Items.sprites():
+                energy_info.append(energy_item.__info__())
+            
+            energy_data_str = json.dumps(energy_info, indent= 4) 
+        else:
+            energy_data_str = "NULL"
+
+
         db_cursor.execute(
             '''
-            INSERT INTO "game_saves"("game_id", "maze", "current_position", "start_position", "end_position", "scale", "times", "moves")
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO "game_saves"("game_id", "maze", "current_position", "start_position", "end_position", "scale", "times", "moves", "energy_info", "tom_hp")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''',
             (
                 self.id,
@@ -657,7 +669,9 @@ class GamePlay():
                 self.Maze.end_position.__str__(),
                 self.scale,
                 self.get_time,
-                self.step_moves
+                self.step_moves,
+                energy_data_str,
+                self.Tom.hp
             )
         )
         pygame.image.save(self.window_screen, 'test.jpeg')
@@ -727,11 +741,13 @@ def load_GamePlay(game_id: int) -> GamePlay:
 
     is_energy = int(game_data_2[4])
 
+    energy_info = game_data_1[9]
+
     scale = int(game_data_1[5])
 
-    times = float(game_data_1[-2].rstrip(' s')) * 1000
+    times = float(game_data_1[-4].rstrip(' s')) * 1000
 
-    moves = int(game_data_1[-1])
+    moves = int(game_data_1[-3])        
 
     # Intialize a basic Game
     Game = GamePlay(
@@ -753,7 +769,9 @@ def load_GamePlay(game_id: int) -> GamePlay:
     tmp_maze = Maze(
         maze_size= Game.maze_size,
         maze_grid_size= grid_size,
-        scale= scale
+        scale= scale,
+        screen= Game.screen,
+        window_screen= Game.window_screen
     )
 
     maze_info = json.loads(game_data_1[1])
@@ -762,23 +780,20 @@ def load_GamePlay(game_id: int) -> GamePlay:
         for j in range(maze_size):
             tmp_maze.grids[i, j].walls = maze_info[i * maze_size + j].copy()
         
-    tmp_maze.grids[start_position[0], -1] = GridCell(
-        grid_position= (start_position[0], -1),
-        grid_size= grid_size,
-        scale= scale,
-        group= tmp_maze
-    )
-    tmp_maze.grids[end_position[0], maze_size] = GridCell(
-        grid_position= (end_position[0], maze_size),
-        grid_size= grid_size,
-        scale= scale,        
-        group= tmp_maze
-    )
-    tmp_maze.grids[start_position[0], start_position[1] - 1].walls = maze_info[-2].copy()
-    tmp_maze.grids[end_position[0], maze_size].walls = maze_info[-1].copy()
-
-    print(tmp_maze.grids[end_position].walls)
-    print(end_position)
+    # tmp_maze.grids[start_position[0], -1] = GridCell(
+    #     grid_position= (start_position[0], -1),
+    #     grid_size= grid_size,
+    #     scale= scale,
+    #     group= tmp_maze
+    # )
+    # tmp_maze.grids[end_position[0], maze_size] = GridCell(
+    #     grid_position= (end_position[0], maze_size),
+    #     grid_size= grid_size,
+    #     scale= scale,        
+    #     group= tmp_maze
+    # )
+    # tmp_maze.grids[start_position[0], start_position[1] - 1].walls = maze_info[-2].copy()
+    # tmp_maze.grids[end_position[0], maze_size].walls = maze_info[-1].copy()
 
     for grid in tmp_maze.grids:
         tmp_maze.grids[grid].is_visited = True
@@ -789,14 +804,37 @@ def load_GamePlay(game_id: int) -> GamePlay:
     Game.Maze.start_position = start_position
     Game.Maze.end_position = end_position
 
+    # Load Energy Items
+    if is_energy == 1:
+        energy_data = json.loads(energy_info)
+
+        for single_energy_data in energy_data:
+            EnergyItem(
+                group= Game.Energy_Items,
+                grid_position= str_to_tuple(single_energy_data['grid_position']),
+                grid_size= single_energy_data['grid_size'],
+                hp= single_energy_data['hp'],
+                scale= single_energy_data['scale'],
+                img_directory= single_energy_data['img_directory']
+            )
+
+        Tom_hp = int(game_data_1[10])
+
     # Create player
     Game.player = pygame.sprite.GroupSingle()
-    Game.player.add(
-        Tom(current_position, 
-            Game.grid_size, 
-            Game.scale,
-            screen= Game.screen)
+    Game.Tom = Tom(
+        start_position= current_position, 
+        grid_size= Game.grid_size, 
+        img_scale= Game.scale,
+        screen= Game.screen,
+        window_screen= Game.window_screen,
+        img_directory= game_data_2[6]
     )
+    Game.player.add(Game.Tom)
+
+    if is_energy == 1:
+        Game.Tom.hp = Tom_hp
+        Game.Tom.energy_mode = True
 
     # Get the delta times and plus that to the times that player play
     Game.player.sprite.step_moves = moves
@@ -804,7 +842,6 @@ def load_GamePlay(game_id: int) -> GamePlay:
 
     # After load all the game -> Go to game
     Game.set_new_game_state('in_game')
-
 
     return Game
 

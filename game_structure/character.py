@@ -138,7 +138,7 @@ class Tom(pygame.sprite.Sprite):
         self.is_center = False
 
         self.energy_mode = False
-        self.hp = 0
+        self.hp = 1
         
         self.current_sprite = 0
 
