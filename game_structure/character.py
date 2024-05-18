@@ -2,6 +2,7 @@ from game_structure.maze import Maze
 from game_structure.utility import get_position_after_move, get_diffirent_coord, get_direction
 from solving_maze.solving_maze import solve_maze
 from algorithm.draw_utility import mark_grid
+from algorithm.BDFS import BDFS
 
 
 import pygame
@@ -36,9 +37,16 @@ class Character(pygame.sprite.Sprite):
                 
         self.is_center = False
 
+        self.energy_mode = False
+        self.hp = 0
+
     @property
     def grid_size(self):
         return self._grid_size * self.scale
+    
+    # @property
+    # def hp(self):
+    #     return self._hp - self.step_moves
 
     def set_scale(self, new_scale):
         self.scale = new_scale
@@ -60,8 +68,8 @@ class Character(pygame.sprite.Sprite):
 
         self.step_moves += 1
         
-    def normal_move(self, sprites, direction: str, maze):
-        if self.is_valid_move(direction= direction, grids= maze.grids): 
+    def normal_move(self, sprites, direction: str, maze, energy= None):
+        if self.is_valid_move(direction= direction, grids= maze.grids) and self.hp >= 0: 
             self.position = get_position_after_move(position= self.position, direction= direction)
             
             move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.grid_size)
@@ -74,8 +82,8 @@ class Character(pygame.sprite.Sprite):
                 self.image = sprites[int(current_sprite)]
                 self.rect.topleft = self.rect.topleft + move_coord 
                 
-                # maze.draw(self.screen)
-                maze.image_draw(self.screen)
+                maze.draw(self.screen)
+                # maze.image_draw(self.screen)
                 self.screen.blit(self.image, self.rect)
 
                 scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
@@ -91,25 +99,47 @@ class Character(pygame.sprite.Sprite):
                 # if current_sprite > len(sprites) - 1 :
                 #     break
 
+            self.update()
+
             self.step_moves += 1
 
-class Tom(Character):
-    YELLOW = (255, 255, 0)
+            if self.energy_mode:
+                self.hp -= 1
 
+class Tom(pygame.sprite.Sprite):
+    YELLOW = (255, 255, 0)
     def __init__(self,
-                #  maze: Maze,
+                #  character_maze: Maze,,
                  start_position: tuple[int],
                  grid_size: int,
-                 scale: int,
+                 direction = None,
+                 img_scale: int = 1,
                  screen= None,
-                 window_screen = None,
-                 img_directory: str = r'./images/Tom'
-                 ):
-        super().__init__(start_position= start_position,
-                         grid_size= grid_size,
-                         img_scale= scale,
-                         screen= screen,
-                         window_screen=window_screen)
+                 window_screen= None,
+                 img_directory: str = r'./images/Tom'):
+        super().__init__()
+
+        # self.Maze = character_maze
+        # self.position = self.Maze.start_position
+        self.position = start_position
+        # Default
+        self._grid_size = grid_size
+        self.scale = img_scale
+        self.direction = direction
+        self.screen = screen
+        self.screen_vector = pygame.math.Vector2(self.screen.get_size())
+
+        self.window_screen = window_screen
+
+        self.scale_surface_offset = pygame.math.Vector2()
+
+        self.step_moves = 0
+                
+        self.is_center = False
+
+        self.energy_mode = False
+        self.hp = 0
+        
         self.current_sprite = 0
 
         self.animation_images = {
@@ -148,12 +178,80 @@ class Tom(Character):
         self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
                                                   self.position[1] * self._grid_size + 40 - coord_adjust * 2))        
 
+    @property
+    def grid_size(self):
+        return self._grid_size * self.scale
+    
+    def set_scale(self, new_scale):
+        self.scale = new_scale
+
+    def is_valid_move(self, direction: str, grids) -> bool:
+        if get_position_after_move(position= self.position,
+                                   direction= direction) in grids[self.position].get_neighbors():
+            return True
+        return False
+    
+    def move(self, direction: str, maze):
+        if self.is_valid_move(direction= direction, grids= maze.grids):
+            self.position = get_position_after_move(position= self.position, direction= direction)
+            
+            move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.grid_size)
+            # self.rect.topleft = self.rect.topleft + move_coord
+            
+            maze.update(offset_change= move_coord)
+
+        self.step_moves += 1
+        
+    def normal_move(self, sprites, direction: str, maze, energy= None):
+        if self.is_valid_move(direction= direction, grids= maze.grids) and self.hp > 0: 
+            self.position = get_position_after_move(position= self.position, direction= direction)
+            
+            move_coord = get_diffirent_coord(direction= direction, maze_grid_size= self.grid_size)
+            move_coord = move_coord / self.grid_size
+            
+            current_sprite = 0
+            # Loop 28 frame
+            for _ in range(self._grid_size):
+            # while int(current_sprite) < len(sprites) - 1:
+                self.image = sprites[int(current_sprite)]
+                self.rect.topleft = self.rect.topleft + move_coord 
+                
+                maze.draw(self.screen)
+                if energy: energy.draw(self.screen)
+                # maze.image_draw(self.screen)
+                self.screen.blit(self.image, self.rect)
+
+                scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
+                # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
+                scale_rect = scale_surface.get_rect(center= (500, 325))
+
+                self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
+                                    
+                pygame.display.update()
+                
+                current_sprite += len(sprites) / self._grid_size
+
+                # if current_sprite > len(sprites) - 1 :
+                #     break
+
+            if energy:
+                for energy in pygame.sprite.spritecollide(
+                    sprite= self,
+                    group= energy,
+                    dokill= 1
+                ):
+                    self.hp += energy.hp
+
+            self.step_moves += 1
+
+            if self.energy_mode:
+                self.hp -= 1
+
     def centering(self, maze):
         self.offset = pygame.math.Vector2()
-        # half_w = 1000 // 2
         half_w = self.screen.get_size()[0] // 2
         half_h = self.screen.get_size()[1] // 2
-        # half_h = 650 // 2
+        
         self.offset.x = self.rect.centerx - half_w
         self.offset.y = self.rect.centery - half_h
         
@@ -192,6 +290,7 @@ class Tom(Character):
                direction: str = None, 
                show_solution: bool = False, 
                algorithm: str = 'DFS',
+               energy_grp= None,
                 **kwargs) -> bool:
         """Update state of player
 
@@ -224,16 +323,16 @@ class Tom(Character):
         # If direction is given so move the player
         if direction == 'T':
             self.direction = 'T'
-            self.normal_move(self.animation_images['Up'], direction= direction, maze= maze)
+            self.normal_move(self.animation_images['Up'], direction= direction, maze= maze, energy= energy_grp)
         elif direction == 'B':
             self.direction = 'B'
-            self.normal_move(self.animation_images['Down'], direction= direction, maze= maze)
+            self.normal_move(self.animation_images['Down'], direction= direction, maze= maze, energy= energy_grp)
         elif direction == 'L':
             self.direction = 'L'
-            self.normal_move(self.animation_images['Left'], direction= direction, maze= maze)
+            self.normal_move(self.animation_images['Left'], direction= direction, maze= maze, energy= energy_grp)
         elif direction == 'R':
             self.direction = 'R'
-            self.normal_move(self.animation_images['Right'], direction= direction, maze= maze)
+            self.normal_move(self.animation_images['Right'], direction= direction, maze= maze, energy= energy_grp)
         elif direction == None:
             if self.direction == 'T':
                 self.current_sprite += 0.1
@@ -270,4 +369,16 @@ class Tom(Character):
                                 grids= maze.grids
                                 )  
            
+        # print(self.hp)
         # More feature like draw, update img, state of character
+
+    def set_hp(self, first_energy: tuple[int], grids: dict):
+        self.energy_mode = True
+        self.hp = len(
+            BDFS(
+                grids= grids,
+                player_current_position= self.position,
+                player_winning_position= first_energy,
+                algorithm= 'BFS'
+            )
+        ) + 3

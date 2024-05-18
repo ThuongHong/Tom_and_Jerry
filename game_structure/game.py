@@ -1,11 +1,17 @@
 import pygame
 import sqlite3
 from game_structure.grid import GridCell
+from game_structure.energy_items import EnergyItem
 from game_structure.maze import Maze
 from game_structure.character import Tom
+from game_structure.utility import choose_k_point_in_path, choose_point_in_path
 from algorithm.draw_utility import mark_grid
+from algorithm.SBFS import SBFS
+from algorithm.BDFS import BDFS
+from algorithm.GBFS import GBFS
 from solving_maze.solving_maze import solve_maze
 import json
+import random
 
 def str_to_tuple(encode_str: str) -> tuple[int]:
     x, y = encode_str.lstrip('(').rstrip(')').split(',')
@@ -14,7 +20,8 @@ def str_to_tuple(encode_str: str) -> tuple[int]:
 
 class GamePlay():
     Game_States = ['start', 'in_game', 'save_game', 'win_game']
-    
+    Game_K_Energy = [10, 20, 50]
+
     def __init__(self,
                  user_id: int = 1,
                  maze_size: int = 20,
@@ -61,6 +68,8 @@ class GamePlay():
             self.game_mode = 'NULL'
 
         self.energy = energy
+        if self.energy:
+            self.Energy_Items = pygame.sprite.Group()
 
         self.player_skin = player_skin
         
@@ -148,7 +157,155 @@ class GamePlay():
         self.is_stop_process = False
     def de_visualize_process(self):
         self.is_stop_process = True
-        self.solve_position = self.solving_grid_process[self.solve_index]
+        if self.solving_grid_process:
+            self.solve_position = self.solving_grid_process[self.solve_index]
+
+    def create_start_end_energy(self, 
+                                start: tuple[int, int], 
+                                end: tuple[int, int], 
+                                is_in: bool, 
+                                energy_lst: list[tuple[int, int]]):
+        if is_in:
+            # TODO
+            # path_list= SBFS(
+            #     grids= self.Maze.grids,
+            #     player_current_position= start,
+            #     player_winning_position= end
+            # )
+            # OR 
+            path_list= GBFS(
+                grids= self.Maze.grids,
+                player_current_position= start,
+                player_winning_position= end
+            )
+
+        else:
+            path_list= BDFS(
+                grids= self.Maze.grids,
+                player_current_position= start,
+                player_winning_position= end,
+                algorithm= 'BFS'
+            )
+
+        choosen_place = choose_point_in_path(
+            path_list= path_list,
+            energy_list= energy_lst,
+            grids= self.Maze.grids
+        )
+
+        if choosen_place:
+            if start not in choosen_place and start not in energy_lst:
+                try: 
+                    EnergyItem(
+                        group= self.Energy_Items,
+                        grid_position= start,
+                        grid_size= self.grid_size,
+                        hp= len(BDFS(
+                            grids= self.Maze.grids,
+                            player_current_position= start,
+                            player_winning_position= choosen_place[0],
+                            algorithm= 'BFS'
+                        ))
+                    )
+                except ValueError:
+                    print(start, choosen_place[0])
+
+                energy_lst.append(start)
+            
+            for place_index in range(len(choosen_place)):
+                
+                place = choosen_place[place_index]
+                
+                try: 
+                    EnergyItem(
+                        group= self.Energy_Items,
+                        grid_position= place,
+                        grid_size= self.grid_size,
+                        hp= len(BDFS(
+                            grids= self.Maze.grids,
+                            player_current_position= place,
+                            player_winning_position= end if place_index + 1 == len(choosen_place) else choosen_place[place_index + 1],
+                            algorithm= 'BFS'
+                        ))
+                    )
+                except ValueError:
+                    print(place, place_index, choosen_place)
+
+                energy_lst.append(place)
+        
+        return energy_lst
+            
+    def generate_energy_item(self):
+        # READ THE ENERGY_IDEA.TXT
+        self.scale = 20 / self.Maze.maze_size
+        # Placement Problem
+
+            # Min path
+        min_moves_lst_gbfs = solve_maze(player= self.player.sprite, 
+                                   maze= self.Maze,
+                                   algorithm= 'GBFS')
+        min_moves_lst_bfs = solve_maze(player= self.player.sprite, 
+                                   maze= self.Maze,
+                                   algorithm= 'BFS')
+
+            # Choose the start position of branch
+        
+        branch_place_lst_gbfs = choose_k_point_in_path(self.Maze.grids, min_moves_lst_gbfs, int(self.Maze.maze_size * 10 / 20))
+        branch_place_lst_bfs = choose_k_point_in_path(self.Maze.grids, min_moves_lst_bfs, 0)
+
+        branch_place_lst = branch_place_lst_gbfs
+        
+        if len(branch_place_lst_bfs) > len(branch_place_lst_gbfs):
+            branch_place_lst = branch_place_lst_bfs
+
+        real_index_lst = []
+        real_index_lst.append(0)
+        real_len = 1
+
+        for i in range(1, len(branch_place_lst)):
+            min_len = len(BDFS(
+                self.Maze.grids,
+                player_current_position= branch_place_lst[real_index_lst[real_len - 1]],
+                player_winning_position= branch_place_lst[i],
+                algorithm= 'BFS'
+            ))
+
+            another_len = len(SBFS(
+                self.Maze.grids,
+                player_current_position= branch_place_lst[real_index_lst[real_len - 1]],
+                player_winning_position= branch_place_lst[i],
+            ))
+
+            if ((another_len < 7 and another_len >= min_len)
+                or (min_len < another_len < 6 + min_len)
+                or (10 <= another_len <= 13 and min_len > 4)):
+                real_index_lst.append(i)
+                real_len += 1
+                    
+        if branch_place_lst:
+            real_branch_lst = [branch_place_lst[i] for i in real_index_lst]
+        else: return []
+        
+        energy_lst = []
+        
+        for i in range(1, len(branch_place_lst)):
+            branch_place = branch_place_lst[i]
+
+            if i == len(branch_place_lst) - 1:
+                start = branch_place
+                end = self.Maze.end_position
+            else:
+                start = branch_place
+                end = branch_place_lst[i + 1]
+            
+            energy_lst = self.create_start_end_energy(
+                start= start,
+                end= end,
+                is_in= branch_place in real_branch_lst,
+                energy_lst= energy_lst
+            )
+
+        return energy_lst
 
     def generate(self, 
                  algorithm= 'DFS', 
@@ -274,20 +431,34 @@ class GamePlay():
         """This method will create player like Tom after Maze are generate and start_end is good
         """
         self.player = pygame.sprite.GroupSingle()
-        self.player.add(
-            Tom(self.Maze.start_position, 
-                self.grid_size, 
-                self.scale,
-                screen= self.screen,
-                window_screen = self.window_screen)
+        
+        self.Tom = Tom(self.Maze.start_position, 
+            self.grid_size, 
+            self.scale,
+            screen= self.screen,
+            window_screen = self.window_screen
         )
+
+        self.player.add(self.Tom)
+        
+        if self.energy:
+            self.energy_lst = self.generate_energy_item()
+
+            if self.energy_lst:
+                self.player.sprite.set_hp(first_energy= self.energy_lst[0],
+                                        grids= self.Maze.grids)
+            else:
+                self.player.sprite.set_hp(first_energy= self.Maze.end_position,
+                                        grids= self.Maze.grids)
+
 
         self.set_new_game_state('in_game')
 
-        self.Maze.draw(self.screen)
-        pygame.image.save(self.screen, f'database/maze_images/Game_{self.id}.png')
+        # self.Maze.draw(self.screen)
+        
+        # pygame.image.save(self.screen, f'database/maze_images/Game_{self.id}.png')
 
-        self.Maze.image = pygame.image.load(f'database/maze_images/Game_{self.id}.png').convert_alpha()
+        # self.Maze.image = pygame.image.load(f'database/maze_images/Game_{self.id}.png').convert_alpha()
 
         self.start_time = pygame.time.get_ticks()
 
@@ -314,10 +485,12 @@ class GamePlay():
         self.Maze.update(scale= self.scale)
         self.player.update(scale= self.scale, 
                            maze= self.Maze, 
-                           offset= self.scale_surface_offset)
+                           offset= self.scale_surface_offset,
+                           energy_grp= self.Energy_Items)
 
-        # self.Maze.draw(self.screen)
-        self.Maze.image_draw(self.screen)
+        self.Maze.draw(self.screen)
+        # self.Maze.image_draw(self.screen)
+        self.Energy_Items.draw(self.screen)
         self.player.draw(self.screen)
 
 
@@ -331,25 +504,25 @@ class GamePlay():
             # MOVE -> Dang mac dinh la khi move thi show process se bi dung
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.player.update(direction= 'L', maze= self.Maze)
-                    self.de_visualize_process()
-                    self.de_visualize_solution()
-                    self.is_move = True
+                    self.player.update(direction= 'L', maze= self.Maze, energy_grp= self.Energy_Items)
+                    # self.de_visualize_process()
+                    # self.de_visualize_solution()
+                    # self.is_move = True
                 elif event.key == pygame.K_RIGHT:
-                    self.player.update(direction= 'R', maze= self.Maze)
-                    self.de_visualize_process()
-                    self.de_visualize_solution()
-                    self.is_move = True
+                    self.player.update(direction= 'R', maze= self.Maze, energy_grp= self.Energy_Items)
+                    # self.de_visualize_process()
+                    # self.de_visualize_solution()
+                    # self.is_move = True
                 elif event.key == pygame.K_UP:
-                    self.player.update(direction= 'T', maze= self.Maze)
-                    self.de_visualize_process()                     
-                    self.de_visualize_solution()                   
-                    self.is_move = True
+                    self.player.update(direction= 'T', maze= self.Maze, energy_grp= self.Energy_Items)
+                    # self.de_visualize_process()                     
+                    # self.de_visualize_solution()                   
+                    # self.is_move = True
                 elif event.key == pygame.K_DOWN:
-                    self.player.update(direction= 'B', maze= self.Maze)
-                    self.de_visualize_process()                      
-                    self.de_visualize_solution()                  
-                    self.is_move = True
+                    self.player.update(direction= 'B', maze= self.Maze, energy_grp= self.Energy_Items)
+                    # self.de_visualize_process()                      
+                    # self.de_visualize_solution()                  
+                    # self.is_move = True
                 elif event.key == pygame.K_e:
                     self.scale += 0.1
                 elif event.key == pygame.K_f:
@@ -509,8 +682,7 @@ class GamePlay():
         # Done
 
         pygame.image.save(self.screen, f'database/save_game_images/Game_{self.id}.png')
-
-    
+  
     def game_centering(self):
         virtual_player_x_coord = (self.player.sprite.rect.centerx - self.screen_size[0] / 2) * self.scale
         virtual_player_y_coord = (self.player.sprite.rect.centery - self.screen_size[1] / 2) * self.scale
