@@ -143,21 +143,21 @@ class GameScreen:
         self.box_login_signin = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_login_signin_img, 0.3)
         box_width = self.box_login_signin.modified_width
         box_height = self.box_login_signin.modified_height
-        self.box_login = graphic.Graphic(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.53, box_login_img, 0.3)
-        self.box_signin = graphic.Graphic(HALF_SCREEN_WIDTH + box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.53, box_signin_img, 0.3)
+        self.box_login = graphic.Graphic(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.52, box_login_img, 0.3)
+        self.box_signin = graphic.Graphic(HALF_SCREEN_WIDTH + box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.52, box_signin_img, 0.3)
         
                 # create buttons
-        self.button_login = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + box_height * 0.3, button_login_img, self.click_sound_source, 0.3, 0.31)
-        self.button_signin = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + box_height * 0.3, button_signin_img, self.click_sound_source, 0.3, 0.31)
-        self.button_box_login = button.Button(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.53, button_box_login_img, self.click_sound_source, 0.3, 0.31)
-        self.button_box_signin = button.Button(HALF_SCREEN_WIDTH + box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.53, button_box_signin_img, self.click_sound_source, 0.3, 0.31)
+        self.button_login = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + box_height * 0.33, button_login_img, self.click_sound_source, 0.3, 0.31)
+        self.button_signin = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + box_height * 0.33, button_signin_img, self.click_sound_source, 0.3, 0.31)
+        self.button_box_login = button.Button(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.52, button_box_login_img, self.click_sound_source, 0.3, 0.31)
+        self.button_box_signin = button.Button(HALF_SCREEN_WIDTH + box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.52, button_box_signin_img, self.click_sound_source, 0.3, 0.31)
         self.button_back = button.Button(SCREEN_WIDTH * 0.05, SCREEN_HEIGHT * 0.92, button_back_img, self.click_sound_source, 0.3, 0.31)
 
                 # create login/ signin textbox
-        self.username_login_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.33, 300, 50, self.image_source, self.click_sound_source)
-        self.password_login_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.02, 300, 50, self.image_source, self.click_sound_source)
-        self.username_signin_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.33, 300, 50, self.image_source, self.click_sound_source)
-        self.password_signin_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.02, 300, 50, self.image_source, self.click_sound_source)
+        self.username_login_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.37, 300, 50, self.image_source, self.click_sound_source)
+        self.password_login_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.11, 300, 50, self.image_source, self.click_sound_source)
+        self.username_signin_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.37, 300, 50, self.image_source, self.click_sound_source)
+        self.password_signin_textbox = textbox.TextBox(HALF_SCREEN_WIDTH - box_width * 0.21, HALF_SCREEN_HEIGHT - box_height * 0.11, 300, 50, self.image_source, self.click_sound_source)
         
         """ LEADERBOARD """
                 # create graphic
