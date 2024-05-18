@@ -34,6 +34,7 @@ class GameScreen:
         self.leaderboard_state = 'easy'
         self.new_game_state = 'choose difficulty'
         self.spawning = ''
+        self.energy_mode = False
         self.load_game_state = 'easy'
         self.music = True
         self.sound = True
@@ -96,6 +97,8 @@ class GameScreen:
         button_hard_img = create_img(self.image_source, 'button_hard')
         button_random_img = create_img(self.image_source, 'button_random')
         button_manual_img = create_img(self.image_source, 'button_manual')
+        button_uncheck_img = create_img(self.image_source, 'button_uncheck')
+        button_check_img = create_img(self.image_source, 'button_check')
         background_new_game_img = create_img(self.image_source, 'background_new_game')
         box_login_confirm_img = create_img(self.image_source, 'box_login_confirm')
         choose_difficulty_img = create_img(self.image_source, 'choose_difficulty')
@@ -203,9 +206,11 @@ class GameScreen:
         self.button_easy = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.35, button_easy_img, self.click_sound_source, 0.3, 0.31)
         self.button_medium = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.55, button_medium_img, self.click_sound_source, 0.3, 0.31)
         self.button_hard = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.75, button_hard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_random = button.Button(box_choose_spawn_point_x_coord - box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord + box_choose_spawn_point_height * 0.2, button_random_img, self.click_sound_source, 0.3, 0.31)
-        self.button_manual = button.Button(box_choose_spawn_point_x_coord + box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord + box_choose_spawn_point_height * 0.2, button_manual_img, self.click_sound_source, 0.3, 0.31)
-
+        self.button_random = button.Button(box_choose_spawn_point_x_coord - box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord, button_random_img, self.click_sound_source, 0.3, 0.31)
+        self.button_manual = button.Button(box_choose_spawn_point_x_coord + box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord, button_manual_img, self.click_sound_source, 0.3, 0.31)
+        self.button_uncheck = button.Button(box_choose_spawn_point_x_coord - box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord + box_choose_spawn_point_height * 0.3, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check = button.Button(box_choose_spawn_point_x_coord - box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord + box_choose_spawn_point_height * 0.3, button_check_img, self.click_sound_source, 0.3, 0.3)
+        
         """ LOAD GAME """
                 # create graphic
         self.background_load_game = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, background_load_game_img, 1.5)
@@ -403,19 +408,37 @@ class GameScreen:
         else:
             if self.new_game_state == 'choose difficulty':
                 self.choose_difficulty.draw(self.screen)
-                if self.button_easy.image_rect.collidepoint(pos):
+                if self.new_game_mode_confirm == '':
+                    if self.button_easy.image_rect.collidepoint(pos):
+                        self.mood_easy.draw(self.screen)
+                    # if self.button_medium.image_rect.collidepoint(pos):
+                    #     self.mood_medium.draw(self.screen)
+                    if self.button_hard.image_rect.collidepoint(pos):
+                        self.mood_hard.draw(self.screen)
+                        
+                if self.button_easy.draw(self.screen, pos, event, self.sound):
+                    self.new_game_mode_confirm = 'choose mode'
+                    self.difficulty = DIFFICULTY.EASY
+                elif self.button_medium.draw(self.screen, pos, event, self.sound):
+                    self.new_game_mode_confirm = 'choose mode'
+                    self.difficulty = DIFFICULTY.MEDIUM
+                elif self.button_hard.draw(self.screen, pos, event, self.sound):
+                    self.spawning = 'choose mode'
+                    self.difficulty = DIFFICULTY.HARD
+                    
+                if self.difficulty == DIFFICULTY.EASY:
                     self.mood_easy.draw(self.screen)
-                # if self.button_medium.image_rect.collidepoint(pos):
+                # if self.difficulty == DIFFICULTY.MEDIUM:
                 #     self.mood_medium.draw(self.screen)
-                if self.button_hard.image_rect.collidepoint(pos):
+                if self.difficulty == DIFFICULTY.HARD:
                     self.mood_hard.draw(self.screen)
                     
-                if self.button_easy.draw(self.screen, pos, event, self.sound) or self.button_medium.draw(self.screen, pos, event, self.sound) or self.button_hard.draw(self.screen, pos, event, self.sound):
-                    self.spawning = 'choose mode'
+                    
                 if self.spawning == 'choose mode':
                     self.box_choose_spawn_point.draw(self.screen)
                     if self.button_random.draw(self.screen, pos, event, self.sound):
                         self.spawning = 'random'
+                        ''' CHOOOSE SPAWN POINT FUNC'''
                         self.game_state = 'ingame'
                         if self.difficulty == DIFFICULTY.EASY:
                             self.music_player.play_music('easy mode')
@@ -423,6 +446,7 @@ class GameScreen:
                             self.music_player.play_music('medium mode')
                         if self.difficulty == DIFFICULTY.HARD:
                             self.music_player.play_music('hard mode')
+                            
                     if self.button_manual.draw(self.screen, pos, event, self.sound):
                         self.spawning = 'manual'
                         ''' CHOOOSE SPAWN POINT FUNC'''
@@ -433,6 +457,14 @@ class GameScreen:
                             self.music_player.play_music('medium mode')
                         if self.difficulty == DIFFICULTY.HARD:
                             self.music_player.play_music('hard mode')
+                            
+                    if self.energy_mode == False:
+                        if self.button_uncheck.draw(self.screen, pos, event, self.sound):
+                            self.energy_mode = True
+                    else:
+                        if self.button_check.draw(self.screen, pos, event, self.sound):
+                            self.energy_mode = False
+                            
                 if self.button_back.draw(self.screen, pos, event, self.sound):
                     self.game_state = 'main menu'
                     self.skip_login = False
