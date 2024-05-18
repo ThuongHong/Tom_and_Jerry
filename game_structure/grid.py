@@ -33,6 +33,7 @@ class GridCell(pygame.sprite.Sprite):
         self.old_feature = ""
         self.is_start = False
         self.is_end = False
+        
         self.set_image()
     
     @property

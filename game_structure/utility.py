@@ -1,4 +1,6 @@
+from algorithm.BDFS import BDFS
 import pygame
+import random
 
 def get_position_after_move(position: tuple[int],
                             direction: str):
@@ -26,8 +28,6 @@ def get_diffirent_coord(direction: str, maze_grid_size: int):
 def get_direction(current_grid: tuple[int], 
                        next_grid: tuple[int],
                        maze_grid_size: int):
-    print(current_grid, next_grid)
-
     delta_x = next_grid[0] - current_grid[1]
     if delta_x == 1: return 'R'
     elif delta_x == -1: return 'L'
@@ -35,3 +35,93 @@ def get_direction(current_grid: tuple[int],
     delta_y = next_grid[1] - current_grid[1]
     if delta_y == 1: return 'B'
     elif delta_y == -1: return 'T'
+
+def choose_k_point_in_path(grids, position_lst: list, number: int) -> list:
+    preprocess_lst = []
+
+    for action, grid in position_lst:
+        name = grids[grid].get_feature
+        if name == 'no-wall' or '-' not in name:# or len(name.split('-')) == 2:
+            preprocess_lst.append(grid)
+    
+    if not preprocess_lst: return []
+
+    processing_lst = []
+    processing_lst.append(preprocess_lst[0])
+    for i in range(1, len(preprocess_lst)):
+        if mahathan_distance(
+            fisrt_position= preprocess_lst[i],
+            second_position= processing_lst[len(processing_lst) - 1]
+        ) >= 3:
+            processing_lst.append(preprocess_lst[i])
+            
+    return processing_lst
+    # return preprocess_lst
+
+def choose_point_in_path(grids, path_list: list, energy_list: list):
+    path_len = len(path_list)
+
+    number = int(path_len / 3)
+
+    if number == 0: return []
+    
+    random_index_lst = []
+    # random_index_lst.append(0)
+
+    while True:
+        first_random_index = random.randrange(0, path_len)
+        if first_random_index not in energy_list:
+            random_index_lst.append(first_random_index)
+            break
+    # random_index_lst.append(
+    #     random.randrange(0, path_len)
+    # )
+    
+    while path_len - 1 - random_index_lst[-1] > 5:
+        random_index = random.randrange(random_index_lst[-1] + 1, path_len)
+        if random_index not in energy_list:
+            random_index_lst.append(random_index)
+
+    while random_index_lst[0] > 4:
+        random_index = random.randrange(0, random_index_lst[0])
+        if random_index not in energy_list:
+            random_index_lst.insert(
+                0,
+                random_index
+            )
+    
+    if len(random_index_lst) <= 1:
+        return [path_list[i][1] for i in random_index_lst]
+    else:
+        i = 1
+        while True:
+            if random_index_lst[i] - random_index_lst[i - 1] > 5:
+                random_index = random.randrange(random_index_lst[i - 1] + 1, random_index_lst[i])
+                if random_index not in energy_list:
+                    random_index_lst.insert(
+                        i,
+                        random_index
+                    )
+                # i += 1
+                continue
+
+            if i == len(random_index_lst) - 1:
+                break
+
+            i += 1
+
+        return [path_list[i][1] for i in random_index_lst]
+
+def check_valid_energy_spawn(energy_index, energy_index_lst):
+    for energy in energy_index_lst:
+        if abs(energy_index - energy) <= 5:
+            return True
+        
+    return False
+
+def mahathan_distance(fisrt_position: tuple, second_position: tuple):
+    return abs(fisrt_position[0] - second_position[0]) + abs(fisrt_position[1] - second_position[1])
+
+def random_square_position(grids, current_grid):
+    # rand_index = random
+    return random.choice(grids[current_grid].get_neighbors())
