@@ -4,7 +4,7 @@ from game_structure.grid import GridCell
 from game_structure.energy_items import EnergyItem
 from game_structure.maze import Maze
 from game_structure.character import Tom
-from game_structure.utility import choose_k_point_in_path, choose_point_in_path
+from game_structure.utility import choose_k_point_in_path, choose_point_in_path, get_surround
 from algorithm.draw_utility import mark_grid
 from algorithm.SBFS import SBFS
 from algorithm.BDFS import BDFS
@@ -29,6 +29,7 @@ class GamePlay():
                  start_coord_screen: tuple[int] = (0, 0),
                  end_coord_screen: tuple[int] = (700, 700),
                  player_skin: str = r'./images/Tom',
+                 energy_bottle_path: str = r'./images/Energy',
                  energy: int = 0,
                  scale: int = 1,
                  window_screen= None,
@@ -74,7 +75,8 @@ class GamePlay():
             self.Energy_Items = pygame.sprite.Group()
         else:
             self.Energy_Items = None
-
+        
+        self.energy_path = energy_bottle_path
         self.player_skin = player_skin
         
         self.screen_size = (maze_size * self.grid_size, (maze_size + 2) * self.grid_size + 40)
@@ -195,20 +197,17 @@ class GamePlay():
 
         if choosen_place:
             if start not in choosen_place and start not in energy_lst:
-                try: 
-                    EnergyItem(
-                        group= self.Energy_Items,
-                        grid_position= start,
-                        grid_size= self.grid_size,
-                        hp= len(BDFS(
-                            grids= self.Maze.grids,
-                            player_current_position= start,
-                            player_winning_position= choosen_place[0],
-                            algorithm= 'BFS'
-                        ))
-                    )
-                except ValueError:
-                    print(start, choosen_place[0])
+                EnergyItem(
+                    group= self.Energy_Items,
+                    grid_position= start,
+                    grid_size= self.grid_size,
+                    hp= len(BDFS(
+                        grids= self.Maze.grids,
+                        player_current_position= start,
+                        player_winning_position= choosen_place[0],
+                        algorithm= 'BFS'
+                    ))
+                )
 
                 energy_lst.append(start)
             
@@ -216,20 +215,17 @@ class GamePlay():
                 
                 place = choosen_place[place_index]
                 
-                try: 
-                    EnergyItem(
-                        group= self.Energy_Items,
-                        grid_position= place,
-                        grid_size= self.grid_size,
-                        hp= len(BDFS(
-                            grids= self.Maze.grids,
-                            player_current_position= place,
-                            player_winning_position= end if place_index + 1 == len(choosen_place) else choosen_place[place_index + 1],
-                            algorithm= 'BFS'
-                        ))
-                    )
-                except ValueError:
-                    print(place, place_index, choosen_place)
+                EnergyItem(
+                    group= self.Energy_Items,
+                    grid_position= place,
+                    grid_size= self.grid_size,
+                    hp= len(BDFS(
+                        grids= self.Maze.grids,
+                        player_current_position= place,
+                        player_winning_position= end if place_index + 1 == len(choosen_place) else choosen_place[place_index + 1],
+                        algorithm= 'BFS'
+                    ))
+                )
 
                 energy_lst.append(place)
         
@@ -304,6 +300,50 @@ class GamePlay():
                 is_in= branch_place in real_branch_lst,
                 energy_lst= energy_lst
             )
+
+        for i in range(len(branch_place_lst)):
+            for place in get_surround(branch_place_lst[i], max_size= self.Maze.maze_size, square_size= 3):
+                if place not in energy_lst:
+                    tmp_distance = len(
+                        BDFS(
+                            grids= self.Maze.grids,
+                            player_current_position= branch_place_lst[i],
+                            player_winning_position= place,
+                            algorithm= 'BFS'
+                        )
+                    )
+
+                    if tmp_distance >= 5: tmp_distance = 5
+
+                    EnergyItem(
+                        group= self.Energy_Items,
+                        grid_position= place,
+                        grid_size= self.grid_size,
+                        hp= tmp_distance
+                    )
+
+                    energy_lst.append(place)
+                    break
+
+        # for i in range(int(len(energy_lst) / 4)):
+        #     while True:
+        #         random_pos = (
+        #             random.randrange(0, self.Maze.maze_size),
+        #             random.randrange(0, self.Maze.maze_size)
+        #         )
+
+        #         if random_pos not in energy_lst:
+        #             energy_lst.append(random_pos)
+
+        #             EnergyItem(
+        #                 self.Energy_Items,
+        #                 grid_position= random_pos,
+        #                 grid_size= self.grid_size,
+        #                 hp= random.randrange(1, 6),
+        #                 img_directory= self.energy_path,
+        #             )
+
+        #             break
 
         return energy_lst
 

@@ -77,14 +77,14 @@ def choose_point_in_path(grids, path_list: list, energy_list: list):
     #     random.randrange(0, path_len)
     # )
     
-    while path_len - 1 - random_index_lst[-1] > 5:
+    while (path_len - 1) - random_index_lst[-1] > 5:
         random_index = random.randrange(random_index_lst[-1] + 1, path_len)
-        if random_index not in energy_list:
+        if path_list[random_index][1] not in energy_list:
             random_index_lst.append(random_index)
 
     while random_index_lst[0] > 4:
         random_index = random.randrange(0, random_index_lst[0])
-        if random_index not in energy_list:
+        if path_list[random_index][1] not in energy_list:
             random_index_lst.insert(
                 0,
                 random_index
@@ -97,7 +97,7 @@ def choose_point_in_path(grids, path_list: list, energy_list: list):
         while True:
             if random_index_lst[i] - random_index_lst[i - 1] > 5:
                 random_index = random.randrange(random_index_lst[i - 1] + 1, random_index_lst[i])
-                if random_index not in energy_list:
+                if path_list[random_index][1] not in energy_list:
                     random_index_lst.insert(
                         i,
                         random_index
@@ -125,3 +125,24 @@ def mahathan_distance(fisrt_position: tuple, second_position: tuple):
 def random_square_position(grids, current_grid):
     # rand_index = random
     return random.choice(grids[current_grid].get_neighbors())
+
+def is_valid(position: tuple[int, int], max_size):
+    if position[0] < 0 or position[0] >= max_size:
+        return False
+    if position[1] < 0 or position[1] >= max_size:
+        return False
+    return True
+
+def get_surround(position: tuple[int, int], max_size, square_size):
+    suround_lst = []
+    for i in range(square_size):
+        for j in range(square_size):
+            if i == 1 and j == 1: continue
+            suround_position = (position[0] + i - 1, position[1] + j - 1)
+            if is_valid(
+                suround_position,
+                max_size= max_size
+            ):
+                suround_lst.append(suround_position)
+
+    return suround_lst
