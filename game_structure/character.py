@@ -1,5 +1,5 @@
 from game_structure.maze import Maze
-from game_structure.utility import get_position_after_move, get_diffirent_coord, get_direction
+from game_structure.utility import get_position_after_move, get_diffirent_coord, mahathan_distance
 from solving_maze.solving_maze import solve_maze
 from algorithm.draw_utility import mark_grid
 from algorithm.BDFS import BDFS
@@ -59,21 +59,22 @@ class Tom(pygame.sprite.Sprite):
             'One': []
         }
 
-        for folder in os.listdir(footprint_img_directory, ):
-            for file in os.listdir(os.path.join(footprint_img_directory, folder)):
-                tmp_img = pygame.image.load(os.path.join(footprint_img_directory, folder, file))
-                
-                tmp_img_height = tmp_img.get_height()
-                tmp_img_width = tmp_img.get_width()
-                
-                bigger_size = tmp_img_height if (tmp_img_height > tmp_img_width) else tmp_img_width
-                scale_index = bigger_size / self.grid_size
-                
-                # image = pygame.transform.scale(tmp_img, (self.grid_size * 0.75, self.grid_size * 0.75))
-                image = pygame.transform.rotozoom(tmp_img, 0, 0.75)
+        if footprint_img_directory:
+            for folder in os.listdir(footprint_img_directory, ):
+                for file in os.listdir(os.path.join(footprint_img_directory, folder)):
+                    tmp_img = pygame.image.load(os.path.join(footprint_img_directory, folder, file))
+                    
+                    tmp_img_height = tmp_img.get_height()
+                    tmp_img_width = tmp_img.get_width()
+                    
+                    bigger_size = tmp_img_height if (tmp_img_height > tmp_img_width) else tmp_img_width
+                    scale_index = bigger_size / self.grid_size
+                    
+                    # image = pygame.transform.scale(tmp_img, (self.grid_size * 0.75, self.grid_size * 0.75))
+                    image = pygame.transform.rotozoom(tmp_img, 0, 0.75)
 
-                self.footprint_images[folder].append(image)
-        self.foot = self.footprint_images['One'][0]
+                    self.footprint_images[folder].append(image)
+            self.foot = self.footprint_images['One'][0]
 
         # Load all the image
         for folder in os.listdir(tom_img_directory, ):
@@ -109,7 +110,7 @@ class Tom(pygame.sprite.Sprite):
 
     def is_valid_move(self, direction: str, grids) -> bool:
         if get_position_after_move(position= self.position,
-                                   direction= direction) in grids[self.position].get_neighbors():
+                                direction= direction) in grids[self.position].get_neighbors():
             return True
         return False
     
@@ -215,7 +216,8 @@ class Tom(pygame.sprite.Sprite):
 
         # pygame.display.update()
     
-    def update(self, maze,
+    def update(self, 
+               maze = None,
                scale: int = None,
                offset: int = None,
                direction: str = None, 
@@ -319,7 +321,7 @@ class Tom(pygame.sprite.Sprite):
             )
         ) + 3
 
-class Jerry(pygame.sprite.Sprite):
+class Jerry(Tom):
     def __init__(self,
                 #  maze: Maze,
                  end_position: tuple[int],
@@ -329,24 +331,35 @@ class Jerry(pygame.sprite.Sprite):
                  window_screen = None,
                  jerry_img_directory: str = r'./images/Jerry'
                  ):
-        super().__init__()
+        super().__init__(
+            start_position= end_position,
+            grid_size= grid_size,
+            img_scale= img_scale,
+            screen= screen,
+            window_screen = window_screen,
+            tom_img_directory= jerry_img_directory
+        )
         
-        self.position = end_position
-        self._grid_size = grid_size
-        self.scale = img_scale
-        self.screen = screen
-        self.screen_vector = pygame.math.Vector2(self.screen.get_size())
-        self.window_screen = window_screen
-        self.scale_surface_offset = pygame.math.Vector2()
+        # self.position = end_position
+        # self._grid_size = grid_size
+        # self.scale = img_scale
+        # self.screen = screen
+        # self.screen_vector = pygame.math.Vector2(self.screen.get_size())
+        # self.window_screen = window_screen
+        # self.scale_surface_offset = pygame.math.Vector2()
 
         self.current_sprite = 0
 
         self.animation_images = {
+            'Up': [],
+            'Right': [],
+            'Botom': [],
+            'Left': [],
             'StandDown': []
         }
 
         # Load all the image
-        for folder in os.listdir(jerry_img_directory, ):
+        for folder in os.listdir(jerry_img_directory):
             for file in os.listdir(os.path.join(jerry_img_directory, folder)):
                 tmp_img = pygame.image.load(os.path.join(jerry_img_directory, folder, file))
                 
@@ -367,15 +380,98 @@ class Jerry(pygame.sprite.Sprite):
         real_img_size = (self._grid_size / 28) * bigger_size
         coord_adjust = (self._grid_size - real_img_size) / 2
 
-        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
+        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust * 2,
                                                   self.position[1] * self._grid_size - coord_adjust * 2))        
     @property
     def grid_size(self):
         return self._grid_size * self.scale
 
-    def update(self,
+    def escape_move(self, maze, energy_grp= None, tom_grp= None, ui_grp= None):
+        tom_position = tom_grp.sprite.position
+        
+        if tom_position == self.position:
+            return
+
+        directions = ['T', 'R', 'B', 'L']
+
+        distances = dict()
+
+        for direction in directions:
+            if self.is_valid_move(direction= direction, grids= maze.grids): 
+                next_position = get_position_after_move(position= self.position, direction= direction)
+                
+                # distances[direction] = mahathan_distance(next_position, tom_position)
+                distances[direction] = len(
+                    BDFS(
+                        grids= maze.grids,
+                        player_current_position= next_position,
+                        player_winning_position= tom_position,
+                        algorithm= 'BFS'
+                    )
+                )
+
+        if distances:
+            maximize_direction = sorted(list(distances.keys()), key= lambda x: distances[x], reverse= True)[0]
+
+            if distances[maximize_direction] < mahathan_distance(self.position, tom_position):
+                return
+            # if maximize_direction == 'T':
+            #     sprites = self.animation_images['Up']
+            # elif maximize_direction == 'R':
+            #     sprites = self.animation_images['Right']
+            # elif maximize_direction == 'B':
+            #     sprites = self.animation_images['Down']
+            # elif maximize_direction == 'L':
+            #     sprites = self.animation_images['Left']
+
+            # For test
+            sprites = self.animation_images['StandDown']
+
+            self.position = get_position_after_move(position= self.position, direction= maximize_direction)
+            
+            move_coord = get_diffirent_coord(direction= maximize_direction, maze_grid_size= self.grid_size)
+            move_coord = move_coord / self.grid_size
+            
+            pygame.event.clear()
+            
+            current_sprite = 0
+            
+            # Loop 28 frame
+            for _ in range(self._grid_size):
+                self.image = sprites[int(current_sprite)]
+                self.rect.topleft = self.rect.topleft + move_coord 
+                
+                maze.draw(self.screen)
+                if energy_grp: energy_grp.draw(self.screen)
+                tom_grp.update()
+                tom_grp.draw(self.screen)
+                
+                # maze.image_draw(self.screen)
+                self.screen.blit(self.image, self.rect)
+                
+                scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
+                # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
+                scale_rect = scale_surface.get_rect(center= (self.window_screen.get_width() / 2, self.window_screen.get_height() / 2))
+
+                self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset) ###
+                
+                ui_grp.draw_ui()
+                
+                pygame.display.update()
+                
+                current_sprite += len(sprites) / self._grid_size
+
+                # if current_sprite > len(sprites) - 1 :
+                #     break
+            maze.end_position = self.position
+                
+    def update(self, 
+               maze= None,
                scale: int = None,
                offset: int = None,
+               tom_grp = None,
+               energy_grp = None,
+               ui_grp = None,
                 **kwargs) -> bool:
         if offset:
             self.scale_surface_offset = offset
@@ -383,6 +479,15 @@ class Jerry(pygame.sprite.Sprite):
             if scale != self.scale:
                 # pass
                 self.scale = scale
+        if tom_grp:
+            steps = tom_grp.sprite.step_moves
+            if steps % 2 == 0:
+                self.escape_move(
+                    maze= maze,
+                    energy_grp= energy_grp,
+                    tom_grp= tom_grp,
+                    ui_grp= ui_grp
+                )
 
         self.current_sprite += 0.05
         if int(self.current_sprite) >= len(self.animation_images['StandDown']):

@@ -87,7 +87,8 @@ class Launcher():
               start_coord_screen=(0, 0), end_coord_screen=(500, 500), 
               spawning='random', 
               energy= False,
-              user_id= None):
+              user_id= None,
+              insane_mode: bool = False):
         self.Game = GamePlay(user_id= user_id,
                              maze_size= maze_size,
                              grid_size= 28,
@@ -95,7 +96,8 @@ class Launcher():
                              end_coord_screen= end_coord_screen,
                              scale= 1,
                              window_screen= self.window_screen,
-                             energy=energy)
+                             energy=energy,
+                             insane_mode= insane_mode)
         self.spawning = spawning
         self.current_algo = "AStar_MinBinaryHeap"
         self.current_theme = '2'
