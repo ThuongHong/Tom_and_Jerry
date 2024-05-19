@@ -147,7 +147,7 @@ class GridCell(pygame.sprite.Sprite):
         """Use this method after generate maze
         """
         if self.get_feature != self.old_feature:
-            self.image = pygame.image.load(join('images', 'Grids_2', self.get_feature)).convert_alpha()
+            self.image = pygame.image.load(join('images', 'Grids_5', self.get_feature)).convert_alpha()
             self.old_feature = self.get_feature
             # self._grid_size = self.image.get_height()
             self.image = pygame.transform.rotozoom(self.image, 0, self.grid_size / self.image.get_height())

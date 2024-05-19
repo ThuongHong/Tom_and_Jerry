@@ -124,7 +124,7 @@ class Tom(pygame.sprite.Sprite):
 
         self.step_moves += 1
         
-    def normal_move(self, sprites, direction: str, maze, energy_grp= None, jerrgy_grp= None):
+    def normal_move(self, sprites, direction: str, maze, energy_grp= None, jerrgy_grp= None, ui_grp= None):
         if self.is_valid_move(direction= direction, grids= maze.grids) and self.hp > 0: 
             self.position = get_position_after_move(position= self.position, direction= direction)
             
@@ -142,15 +142,17 @@ class Tom(pygame.sprite.Sprite):
                 if energy_grp: energy_grp.draw(self.screen)
                 jerrgy_grp.update()
                 jerrgy_grp.draw(self.screen)
+                
                 # maze.image_draw(self.screen)
                 self.screen.blit(self.image, self.rect)
-
+                
                 scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
                 # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
-                scale_rect = scale_surface.get_rect(center= (500, 325))
+                scale_rect = scale_surface.get_rect(center=(self.window_screen.get_width() / 2, self.window_screen.get_height() / 2))
 
                 self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset) ###
-                                    
+                
+                ui_grp.draw_ui()
                 pygame.display.update()
                 
                 current_sprite += len(sprites) / self._grid_size
@@ -221,6 +223,7 @@ class Tom(pygame.sprite.Sprite):
                algorithm: str = 'DFS',
                energy_grp= None,
                jerry_grp= None,
+               ui_grp= None,
                 **kwargs) -> bool:
         """Update state of player
 
@@ -253,16 +256,20 @@ class Tom(pygame.sprite.Sprite):
         # If direction is given so move the player
         if direction == 'T':
             self.direction = 'T'
-            self.normal_move(self.animation_images['Up'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
+            self.normal_move(self.animation_images['Up'], direction= direction, maze= maze, 
+                             energy_grp= energy_grp, jerrgy_grp= jerry_grp, ui_grp= ui_grp)
         elif direction == 'B':
             self.direction = 'B'
-            self.normal_move(self.animation_images['Down'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
+            self.normal_move(self.animation_images['Down'], direction= direction, maze= maze, 
+                             energy_grp= energy_grp, jerrgy_grp= jerry_grp, ui_grp= ui_grp)
         elif direction == 'L':
             self.direction = 'L'
-            self.normal_move(self.animation_images['Left'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
+            self.normal_move(self.animation_images['Left'], direction= direction, maze= maze, 
+                             energy_grp= energy_grp, jerrgy_grp= jerry_grp, ui_grp= ui_grp)
         elif direction == 'R':
             self.direction = 'R'
-            self.normal_move(self.animation_images['Right'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
+            self.normal_move(self.animation_images['Right'], direction= direction, maze= maze, 
+                             energy_grp= energy_grp, jerrgy_grp= jerry_grp, ui_grp= ui_grp)
         elif direction == None:
             if self.direction == 'T':
                 self.current_sprite += 0.1

@@ -88,8 +88,9 @@ class Launcher():
         self.Game.game_centering()
 
         while self.Game.game_state == 'in_game':
+            
             self.Game.center_zoom_linear(100)
-            self.Game.run()
+            self.Game.run(self)
             self.draw_ui()
 
             pygame.display.update()

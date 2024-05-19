@@ -490,7 +490,7 @@ class GamePlay():
         self.window_screen.fill((0, 0, 0))
         self.screen.fill((0, 0, 0))
 
-    def run(self):
+    def run(self, ui_grp):
         """This method will use in a while loop
         Get all the event while th game is run and handle it
         """  
@@ -522,13 +522,17 @@ class GamePlay():
             # MOVE -> Dang mac dinh la khi move thi show process se bi dung
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.player.update(direction= 'L', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
+                    self.player.update(direction= 'L', maze= self.Maze, offset= self.scale_surface_offset, 
+                                       energy_grp= self.Energy_Items, jerry_grp= self.npc, ui_grp= ui_grp)
                 elif event.key == pygame.K_RIGHT:
-                    self.player.update(direction= 'R', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
+                    self.player.update(direction= 'R', maze= self.Maze, offset= self.scale_surface_offset,
+                                       energy_grp= self.Energy_Items, jerry_grp= self.npc, ui_grp= ui_grp)
                 elif event.key == pygame.K_UP:
-                    self.player.update(direction= 'T', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
+                    self.player.update(direction= 'T', maze= self.Maze, offset= self.scale_surface_offset,
+                                       energy_grp= self.Energy_Items, jerry_grp= self.npc, ui_grp= ui_grp)
                 elif event.key == pygame.K_DOWN:
-                    self.player.update(direction= 'B', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
+                    self.player.update(direction= 'B', maze= self.Maze, offset= self.scale_surface_offset,
+                                       energy_grp= self.Energy_Items, jerry_grp= self.npc, ui_grp= ui_grp)
                 elif event.key == pygame.K_e:
                     self.scale += 0.1
                 elif event.key == pygame.K_f:
