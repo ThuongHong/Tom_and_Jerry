@@ -82,9 +82,9 @@ class GamePlay():
         self.screen_size = (maze_size * self.grid_size, maze_size * self.grid_size)
         self.screen = pygame.Surface(self.screen_size, pygame.SCALED)
         self.screen_vector = pygame.math.Vector2(self.screen_size)
-        self.screen_rect = self.screen.get_rect(center= (500, 325))
+        self.screen_rect = self.screen.get_rect(center= (self.window_screen.get_width() / 2, self.window_screen.get_height() / 2))
 
-        self.maze_surface = pygame.Surface((650, 650))
+        # self.maze_surface = pygame.Surface((650, 650))
 
         self.scale_surface_offset = pygame.math.Vector2()
         
@@ -494,25 +494,29 @@ class GamePlay():
         """This method will use in a while loop
         Get all the event while th game is run and handle it
         """  
-        # Draw background
+        # UPDATE STATE
         self.update_screen()        
         self.Maze.update(scale= self.scale)
+        
+        if self.Energy_Items:
+            self.Energy_Items.update()
+        
         self.player.update(scale= self.scale, 
                            maze= self.Maze, 
                            offset= self.scale_surface_offset,
                            energy_grp= self.Energy_Items)
+        
         self.npc.update(scale= self.scale,
                         offset= self.scale_surface_offset)
-        
+        # DRAW
         self.Maze.draw(self.screen)
-        # self.Maze.image_draw(self.screen)
-        if self.Energy_Items: self.Energy_Items.draw(self.screen)
+        if self.Energy_Items: 
+            self.Energy_Items.draw(self.screen)
         self.npc.draw(self.screen)
         self.player.draw(self.screen)
         
 
-
-        # Like normal
+        # EVENT HANDLE
         events = pygame.event.get()
         for event in events:
             # QUIT
@@ -729,7 +733,8 @@ class GamePlay():
         # self.scale_surface_offset = pygame.math.Vector2(0, self.screen_size[1] / 2)
 
     def game_normal_view(self):
-        self.scale_surface_offset = pygame.math.Vector2()
+        self.scale_surface_offset.x = 0
+        self.scale_surface_offset.y = 0
 
     def center_zoom_linear(self, max_frame):
         if self.frame == 0:

@@ -147,7 +147,7 @@ class Tom(pygame.sprite.Sprite):
 
                 scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
                 # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
-                scale_rect = scale_surface.get_rect(center= (500, 325))
+                scale_rect = scale_surface.get_rect(center= (self.window_screen.get_width() / 2, self.window_screen.get_height() / 2))
 
                 self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset) ###
                                     
