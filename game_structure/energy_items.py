@@ -17,6 +17,7 @@ class EnergyItem(pygame.sprite.Sprite):
         self.scale = scale
         self._grid_size = grid_size
         self._grid_coord = (grid_position[0] * self.grid_size, grid_position[1] * self.grid_size)
+        self.img_directory = img_directory
 
         self.is_visited = False
 
@@ -48,6 +49,16 @@ class EnergyItem(pygame.sprite.Sprite):
             self.grid_coord[0] + self.grid_size / 2,
             self.grid_coord[1] + self.grid_size / 2.1,
         )
-    def update(self, player,**kwargs):
+    def update(self, player, energy_grp,**kwargs):
         if player.position == self.position:
             player.hp += self.hp
+            energy_grp.remove(self)
+
+    def __info__(self):
+        return {
+            "grid_position": self.position.__str__(),
+            "grid_size": self._grid_size,
+            "hp": self.hp,
+            "scale": self.scale,
+            "img_directory": self.img_directory
+        }
