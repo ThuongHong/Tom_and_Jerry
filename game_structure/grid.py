@@ -169,7 +169,7 @@ class GridCell(pygame.sprite.Sprite):
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     virtual_pos_x = (event.pos[0] - kwargs['topleft_info'][0]) / scale
-                    virtual_pos_y = 40 + (event.pos[1] - kwargs['topleft_info'][1]) / scale
+                    virtual_pos_y = (event.pos[1] - kwargs['topleft_info'][1]) / scale
                     if self.rect.collidepoint((virtual_pos_x, virtual_pos_y)):
                         if maze.is_have_start():
                             self.is_end = True

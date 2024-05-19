@@ -1,4 +1,5 @@
 import pygame
+import random
 from os.path import join
 
 class EnergyItem(pygame.sprite.Sprite):
@@ -36,6 +37,9 @@ class EnergyItem(pygame.sprite.Sprite):
         # self.image = pygame.transform.rotozoom(self.image, 0, self.grid_size / self.image.get_height())    
         self.rect = self.image.get_rect(center= self.grid_coord_center)
 
+        self.transparency_index = random.randrange(0, 256)
+        self.index_sign = -1
+
     @property
     def grid_size(self):
         return self._grid_size * self.scale
@@ -49,10 +53,17 @@ class EnergyItem(pygame.sprite.Sprite):
             self.grid_coord[0] + self.grid_size / 2,
             self.grid_coord[1] + self.grid_size / 2.1,
         )
-    def update(self, player, energy_grp,**kwargs):
-        if player.position == self.position:
-            player.hp += self.hp
-            energy_grp.remove(self)
+    def update(self, player= None, energy_grp= None,**kwargs):
+        if player:
+            if player.position == self.position:
+                player.hp += self.hp
+                energy_grp.remove(self)
+        if self.transparency_index >= 255:
+            self.index_sign = -1
+        if self.transparency_index <= 0:
+            self.index_sign = 1
+        self.transparency_index += self.index_sign * 5
+        self.image.set_alpha(self.transparency_index)
 
     def __info__(self):
         return {
