@@ -438,25 +438,25 @@ class GameScreen:
                     self.box_choose_spawn_point.draw(self.screen)
                     if self.button_random.draw(self.screen, pos, event, self.sound):
                         self.spawning = 'random'
-                        ''' CHOOOSE SPAWN POINT FUNC'''
                         self.game_state = 'ingame'
-                        if self.difficulty == DIFFICULTY.EASY:
-                            self.music_player.play_music('easy mode')
-                        if self.difficulty == DIFFICULTY.MEDIUM:
-                            self.music_player.play_music('medium mode')
-                        if self.difficulty == DIFFICULTY.HARD:
-                            self.music_player.play_music('hard mode')
+                        if self.music == True:
+                            if self.difficulty == DIFFICULTY.EASY:
+                                self.music_player.play_music('easy mode')
+                            if self.difficulty == DIFFICULTY.MEDIUM:
+                                self.music_player.play_music('medium mode')
+                            if self.difficulty == DIFFICULTY.HARD:
+                                self.music_player.play_music('hard mode')
                             
                     if self.button_manual.draw(self.screen, pos, event, self.sound):
                         self.spawning = 'manual'
-                        ''' CHOOOSE SPAWN POINT FUNC'''
                         self.game_state = 'ingame'
-                        if self.difficulty == DIFFICULTY.EASY:
-                            self.music_player.play_music('easy mode')
-                        if self.difficulty == DIFFICULTY.MEDIUM:
-                            self.music_player.play_music('medium mode')
-                        if self.difficulty == DIFFICULTY.HARD:
-                            self.music_player.play_music('hard mode')
+                        if self.music == True:
+                            if self.difficulty == DIFFICULTY.EASY:
+                                self.music_player.play_music('easy mode')
+                            if self.difficulty == DIFFICULTY.MEDIUM:
+                                self.music_player.play_music('medium mode')
+                            if self.difficulty == DIFFICULTY.HARD:
+                                self.music_player.play_music('hard mode')
                             
                     if self.energy_mode == False:
                         if self.button_uncheck.draw(self.screen, pos, event, self.sound):
