@@ -25,9 +25,9 @@ def get_diffirent_coord(direction: str, maze_grid_size: int):
     elif direction == 'B': return pygame.math.Vector2(0, maze_grid_size)
     elif direction == 'L': return pygame.math.Vector2(-maze_grid_size, 0)
 
-def get_direction(current_grid: tuple[int], 
-                       next_grid: tuple[int],
-                       maze_grid_size: int):
+def get_direction(current_grid: tuple[int],
+                  next_grid: tuple[int],
+                  maze_grid_size: int):
     delta_x = next_grid[0] - current_grid[1]
     if delta_x == 1: return 'R'
     elif delta_x == -1: return 'L'

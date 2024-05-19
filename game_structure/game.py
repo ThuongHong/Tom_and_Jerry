@@ -145,14 +145,11 @@ class GamePlay():
         
         self.solve_maze_algorithm = algorithm
         
-        self.solving_grid_process = solve_maze(
-            self.player.sprite,
-            self.Maze,
-            algorithm= self.solve_maze_algorithm,
-            is_process= True,
-            adjust_start_position= self.solve_position
-        )
-
+        self.solving_grid_process = solve_maze(self.player.sprite,
+                                               self.Maze,
+                                               algorithm= self.solve_maze_algorithm,
+                                               is_process= True,
+                                               adjust_start_position= self.solve_position)
         self.solve_index = 0
 
         self.is_stop_process = False
@@ -174,40 +171,31 @@ class GamePlay():
             #     player_winning_position= end
             # )
             # OR 
-            path_list= GBFS(
-                grids= self.Maze.grids,
-                player_current_position= start,
-                player_winning_position= end
-            )
+            path_list= GBFS(grids= self.Maze.grids,
+                            player_current_position= start,
+                            player_winning_position= end)
 
         else:
-            path_list= BDFS(
-                grids= self.Maze.grids,
-                player_current_position= start,
-                player_winning_position= end,
-                algorithm= 'BFS'
-            )
+            path_list= BDFS(grids= self.Maze.grids,
+                            player_current_position= start,
+                            player_winning_position= end,
+                            algorithm= 'BFS')
 
-        choosen_place = choose_point_in_path(
-            path_list= path_list,
-            energy_list= energy_lst,
-            grids= self.Maze.grids
-        )
+        choosen_place = choose_point_in_path(path_list= path_list,
+                                             energy_list= energy_lst,
+                                             grids= self.Maze.grids)
 
         if choosen_place:
             if start not in choosen_place and start not in energy_lst:
                 try: 
-                    EnergyItem(
-                        group= self.Energy_Items,
-                        grid_position= start,
-                        grid_size= self.grid_size,
-                        hp= len(BDFS(
-                            grids= self.Maze.grids,
-                            player_current_position= start,
-                            player_winning_position= choosen_place[0],
-                            algorithm= 'BFS'
-                        ))
-                    )
+                    EnergyItem(group= self.Energy_Items,
+                               grid_position= start,
+                               grid_size= self.grid_size,
+                               hp= len(BDFS(
+                                   grids= self.Maze.grids,
+                                   player_current_position= start,
+                                   player_winning_position= choosen_place[0],
+                                   algorithm= 'BFS')))
                 except ValueError:
                     print(start, choosen_place[0])
 
@@ -218,17 +206,13 @@ class GamePlay():
                 place = choosen_place[place_index]
                 
                 try: 
-                    EnergyItem(
-                        group= self.Energy_Items,
-                        grid_position= place,
-                        grid_size= self.grid_size,
-                        hp= len(BDFS(
-                            grids= self.Maze.grids,
-                            player_current_position= place,
-                            player_winning_position= end if place_index + 1 == len(choosen_place) else choosen_place[place_index + 1],
-                            algorithm= 'BFS'
-                        ))
-                    )
+                    EnergyItem(group= self.Energy_Items,
+                               grid_position= place,
+                               grid_size= self.grid_size,
+                               hp= len(BDFS(grids= self.Maze.grids,
+                                            player_current_position= place,
+                                            player_winning_position= end if place_index + 1 == len(choosen_place) else choosen_place[place_index + 1],
+                                            algorithm= 'BFS')))
                 except ValueError:
                     print(place, place_index, choosen_place)
 
@@ -242,12 +226,12 @@ class GamePlay():
         # Placement Problem
 
             # Min path
-        min_moves_lst_gbfs = solve_maze(player= self.player.sprite, 
-                                   maze= self.Maze,
-                                   algorithm= 'GBFS')
+        min_moves_lst_gbfs = solve_maze(player= self.player.sprite,
+                                        maze= self.Maze,
+                                        algorithm= 'GBFS')
         min_moves_lst_bfs = solve_maze(player= self.player.sprite, 
-                                   maze= self.Maze,
-                                   algorithm= 'BFS')
+                                       maze= self.Maze,
+                                       algorithm= 'BFS')
 
             # Choose the start position of branch
         
@@ -264,18 +248,14 @@ class GamePlay():
         real_len = 1
 
         for i in range(1, len(branch_place_lst)):
-            min_len = len(BDFS(
-                self.Maze.grids,
-                player_current_position= branch_place_lst[real_index_lst[real_len - 1]],
-                player_winning_position= branch_place_lst[i],
-                algorithm= 'BFS'
-            ))
+            min_len = len(BDFS(self.Maze.grids,
+                               player_current_position= branch_place_lst[real_index_lst[real_len - 1]],
+                               player_winning_position= branch_place_lst[i],
+                               algorithm= 'BFS'))
 
-            another_len = len(SBFS(
-                self.Maze.grids,
-                player_current_position= branch_place_lst[real_index_lst[real_len - 1]],
-                player_winning_position= branch_place_lst[i],
-            ))
+            another_len = len(SBFS(self.Maze.grids,
+                                   player_current_position= branch_place_lst[real_index_lst[real_len - 1]],
+                                   player_winning_position= branch_place_lst[i],))
 
             if ((another_len < 7 and another_len >= min_len)
                 or (min_len < another_len < 6 + min_len)
@@ -299,12 +279,10 @@ class GamePlay():
                 start = branch_place
                 end = branch_place_lst[i + 1]
             
-            energy_lst = self.create_start_end_energy(
-                start= start,
-                end= end,
-                is_in= branch_place in real_branch_lst,
-                energy_lst= energy_lst
-            )
+            energy_lst = self.create_start_end_energy(start= start,
+                                                      end= end,
+                                                      is_in= branch_place in real_branch_lst,
+                                                      energy_lst= energy_lst)
 
         return energy_lst
 
@@ -320,13 +298,11 @@ class GamePlay():
             draw_speed (str, optional): Speed Showing Process. Defaults to 'FAST'.
         """
         # Intialize super basic maze
-        self.Maze = Maze(
-            maze_size= self.maze_size,
-            maze_grid_size= self.grid_size,
-            scale= self.scale,
-            screen= self.screen,
-            window_screen= self.window_screen
-        )
+        self.Maze = Maze(maze_size= self.maze_size,
+                         maze_grid_size= self.grid_size,
+                         scale= self.scale,
+                         screen= self.screen,
+                         window_screen= self.window_screen)
 
         # Generate that maze
         self.Maze.generate_new_maze(algorithm= algorithm,
@@ -395,11 +371,9 @@ class GamePlay():
                 counter += 1
             
             if counter == 2:
-                if self.Maze.spawn_start_end_position(
-                    option= 'SELECT',
-                    start_position= self.Maze.start_position,
-                    end_position= self.Maze.end_position
-                ):
+                if self.Maze.spawn_start_end_position(option= 'SELECT',
+                                                      start_position= self.Maze.start_position,
+                                                      end_position= self.Maze.end_position):
                     break
                 else:
                     self.Maze.grids[self.Maze.start_position].is_start = False
@@ -432,33 +406,33 @@ class GamePlay():
         """This method will create player like Tom after Maze are generate and start_end is good
         """
         self.player = pygame.sprite.GroupSingle()
-        
-        self.Tom = Tom(self.Maze.start_position, 
-                self.grid_size, 
-                self.scale,
-                screen= self.screen,
-                window_screen = self.window_screen)
-        
-        self.npc = pygame.sprite.GroupSingle()
-        self.npc.add(
-            Jerry(self.Maze.end_position, 
-              self.grid_size, 
-              self.scale,
-              screen= self.screen,
-              window_screen = self.window_screen
-        ))
-
+        self.Tom = Tom(self.Maze.start_position,
+                       self.grid_size, 
+                       self.scale,
+                       screen= self.screen,
+                       window_screen = self.window_screen)
         self.player.add(self.Tom)
+
+        self.npc = pygame.sprite.GroupSingle()
+        self.Jerry = Jerry(self.Maze.end_position,
+                           self.grid_size,
+                           self.scale,
+                           screen= self.screen,
+                           window_screen = self.window_screen)
+        self.npc.add(self.Jerry)
+
+
+        
         
         if self.energy:
             self.energy_lst = self.generate_energy_item()
 
             if self.energy_lst:
                 self.player.sprite.set_hp(first_energy= self.energy_lst[0],
-                                        grids= self.Maze.grids)
+                                          grids= self.Maze.grids)
             else:
                 self.player.sprite.set_hp(first_energy= self.Maze.end_position,
-                                        grids= self.Maze.grids)
+                                          grids= self.Maze.grids)
 
 
         self.set_new_game_state('in_game')
@@ -588,9 +562,9 @@ class GamePlay():
         """
         if self.is_draw_solution:
             self.player.update(maze= self.Maze,
-                                scale= self.scale,
-                                show_solution= True,
-                                algorithm= self.solve_maze_algorithm)
+                               scale= self.scale,
+                               show_solution= True,
+                               algorithm= self.solve_maze_algorithm)
 
     def draw_process(self):
         """Each one loop through this method. This one will draw one more grid in process list
@@ -619,8 +593,8 @@ class GamePlay():
             if not self.is_move:
                 for i in range(self.solve_index):
                     mark_grid(self.Maze.grids,
-                                self.screen,
-                                self.solving_grid_process[i])
+                              self.screen,
+                              self.solving_grid_process[i])
 
         # Neu nhan vat di chuyn hay khong co process_list va bi dung
         elif self.is_move:
@@ -765,11 +739,9 @@ def load_GamePlay(game_id: int) -> GamePlay:
     Game.id = game_id
 
     # Read the maze
-    tmp_maze = Maze(
-        maze_size= Game.maze_size,
-        maze_grid_size= grid_size,
-        scale= scale
-    )
+    tmp_maze = Maze(maze_size= Game.maze_size,
+                    maze_grid_size= grid_size,
+                    scale= scale)
 
     maze_info = json.loads(game_data_1[1])
 
@@ -777,18 +749,14 @@ def load_GamePlay(game_id: int) -> GamePlay:
         for j in range(maze_size):
             tmp_maze.grids[i, j].walls = maze_info[i * maze_size + j].copy()
         
-    tmp_maze.grids[start_position[0], -1] = GridCell(
-        grid_position= (start_position[0], -1),
-        grid_size= grid_size,
-        scale= scale,
-        group= tmp_maze
-    )
-    tmp_maze.grids[end_position[0], maze_size] = GridCell(
-        grid_position= (end_position[0], maze_size),
-        grid_size= grid_size,
-        scale= scale,        
-        group= tmp_maze
-    )
+    tmp_maze.grids[start_position[0], -1] = GridCell(grid_position= (start_position[0], -1),
+                                                     grid_size= grid_size,
+                                                     scale= scale,
+                                                     group= tmp_maze)
+    tmp_maze.grids[end_position[0], maze_size] = GridCell(grid_position= (end_position[0], maze_size),
+                                                          grid_size= grid_size,
+                                                          scale= scale,
+                                                          group= tmp_maze)
     tmp_maze.grids[start_position[0], start_position[1] - 1].walls = maze_info[-2].copy()
     tmp_maze.grids[end_position[0], maze_size].walls = maze_info[-1].copy()
 
@@ -807,7 +775,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
     # Create player
     Game.player = pygame.sprite.GroupSingle()
     Game.player.add(
-        Tom(current_position, 
+        Tom(current_position,
             Game.grid_size, 
             Game.scale,
             screen= Game.screen)

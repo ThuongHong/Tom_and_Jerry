@@ -309,23 +309,26 @@ class Tom(pygame.sprite.Sprite):
             )
         ) + 3
 
-class Jerry(Tom):
-    YELLOW = (255, 255, 0)
-
+class Jerry(pygame.sprite.Sprite):
     def __init__(self,
                 #  maze: Maze,
                  end_position: tuple[int],
                  grid_size: int,
-                 scale: int,
+                 img_scale: int = 1,
                  screen= None,
                  window_screen = None,
-                 img_directory: str = r'./images/Jerry'
+                 jerry_img_directory: str = r'./images/Jerry'
                  ):
-        super().__init__(start_position= end_position,
-                         grid_size= grid_size,
-                         img_scale= scale,
-                         screen= screen,
-                         window_screen=window_screen)
+        super().__init__()
+        
+        self.position = end_position
+        self._grid_size = grid_size
+        self.scale = img_scale
+        self.screen = screen
+        self.screen_vector = pygame.math.Vector2(self.screen.get_size())
+        self.window_screen = window_screen
+        self.scale_surface_offset = pygame.math.Vector2()
+
         self.current_sprite = 0
 
         self.animation_images = {
@@ -333,9 +336,9 @@ class Jerry(Tom):
         }
 
         # Load all the image
-        for folder in os.listdir(img_directory, ):
-            for file in os.listdir(os.path.join(img_directory, folder)):
-                tmp_img = pygame.image.load(os.path.join(img_directory, folder, file))
+        for folder in os.listdir(jerry_img_directory, ):
+            for file in os.listdir(os.path.join(jerry_img_directory, folder)):
+                tmp_img = pygame.image.load(os.path.join(jerry_img_directory, folder, file))
                 
                 tmp_img_height = tmp_img.get_height()
                 tmp_img_width = tmp_img.get_width()
@@ -356,7 +359,10 @@ class Jerry(Tom):
 
         self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
                                                   self.position[1] * self._grid_size + 40 - coord_adjust * 2))        
-    
+    @property
+    def grid_size(self):
+        return self._grid_size * self.scale
+
     def update(self,
                scale: int = None,
                offset: int = None,
