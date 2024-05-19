@@ -26,7 +26,8 @@ class GameScreen:
         self.image_source = image_source
         self.sound_source = sound_source
         self.running = True
-        self.font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
+        # self.font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
+        self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 40)
         self.game_state = 'main menu'
         self.help_state = False
         self.difficulty = ''
@@ -41,6 +42,7 @@ class GameScreen:
         self.login = False # do something with login system
         self.skip_login = False
         self.username = ''
+        self.user_id = None
 
         # music and sound player
         self.click_sound_source = pygame.mixer.Sound(os.path.join(sound_source, 'click.ogg'))
@@ -251,6 +253,7 @@ class GameScreen:
                 self.screen.blit(greeting, (SCREEN_WIDTH * 0.15, SCREEN_HEIGHT * 0.9))
                 if self.button_logout.draw(self.screen, pos, event, self.sound):
                     self.username = ''
+                    self.user_id = None
                     self.login = False
                     self.login_signin_state = 'log in'
 
@@ -308,14 +311,15 @@ class GameScreen:
             if self.button_login.draw(self.screen, pos, event, self.sound) or state == 'submit':
                 username = self.username_login_textbox.text
                 password = self.password_login_textbox.text
-                self.login = data.login(username, password)
+                self.login, self.user_id = data.login(username, password)
                 if self.login == True:
                     self.username = username
                     self.game_state = 'main menu'
                 else:
-                    notification_text = self.font.render("Your username or password was wrong!", True, COLOR.RED)
-                    self.screen.blit(notification_text, (SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.55))
-                    
+                    notification_text = self.font.render("Incorrect username or password.", True, COLOR.RED)
+                    self.screen.blit(notification_text, (SCREEN_WIDTH * 0.36, SCREEN_HEIGHT * 0.52))
+                    pygame.display.update()
+                    pygame.time.wait(1000)
             
         if self.login_signin_state == 'sign in':
             if self.button_box_login.draw(self.screen, pos, event, self.sound):
@@ -344,11 +348,22 @@ class GameScreen:
                 new_username = self.username_signin_textbox.text
                 new_password = self.password_signin_textbox.text
                 if new_username == "" or new_password == "":
-                    pass
-                else: self.login = data.register(new_username, new_password)
+                    notification_text = self.font.render('Type something!', True, COLOR.RED)
+                    self.screen.blit(notification_text, (SCREEN_WIDTH * 0.435, SCREEN_HEIGHT * 0.52))
+                    pygame.display.update()
+                    pygame.time.wait(1000)
+                else: self.login, self.user_id = data.register(new_username, new_password)
+
                 if self.login == True:
                     self.username = new_username
                     self.game_state = 'main menu'
+                else:
+                    notification_text1 = self.font.render('This username is already in use.', True, COLOR.RED)
+                    notification_text2 = self.font.render('Please pick another.', True, COLOR.RED)
+                    self.screen.blit(notification_text1, (SCREEN_WIDTH * 0.37, SCREEN_HEIGHT * 0.52))
+                    self.screen.blit(notification_text2, (SCREEN_WIDTH * 0.42, SCREEN_HEIGHT * 0.56))
+                    pygame.display.update()
+                    pygame.time.wait(1000)
             
         if self.button_back.draw(self.screen, pos, event, self.sound) or state == 'back':
             self.game_state = 'main menu'

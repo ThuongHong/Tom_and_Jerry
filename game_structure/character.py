@@ -97,8 +97,8 @@ class Tom(pygame.sprite.Sprite):
         real_img_size = (self._grid_size / 28) * bigger_size
         coord_adjust = (self._grid_size - real_img_size) / 2
 
-        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
-                                                  self.position[1] * self._grid_size + 40 - coord_adjust * 2))        
+        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust * 2,
+                                                  self.position[1] * self._grid_size - coord_adjust * 2))        
 
     @property
     def grid_size(self):
@@ -124,7 +124,7 @@ class Tom(pygame.sprite.Sprite):
 
         self.step_moves += 1
         
-    def normal_move(self, sprites, direction: str, maze, energy= None):
+    def normal_move(self, sprites, direction: str, maze, energy_grp= None, jerrgy_grp= None):
         if self.is_valid_move(direction= direction, grids= maze.grids) and self.hp > 0: 
             self.position = get_position_after_move(position= self.position, direction= direction)
             
@@ -139,7 +139,9 @@ class Tom(pygame.sprite.Sprite):
                 self.rect.topleft = self.rect.topleft + move_coord 
                 
                 maze.draw(self.screen)
-                if energy: energy.draw(self.screen)
+                if energy_grp: energy_grp.draw(self.screen)
+                jerrgy_grp.update()
+                jerrgy_grp.draw(self.screen)
                 # maze.image_draw(self.screen)
                 self.screen.blit(self.image, self.rect)
 
@@ -147,7 +149,7 @@ class Tom(pygame.sprite.Sprite):
                 # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
                 scale_rect = scale_surface.get_rect(center= (500, 325))
 
-                self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
+                self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset) ###
                                     
                 pygame.display.update()
                 
@@ -156,13 +158,15 @@ class Tom(pygame.sprite.Sprite):
                 # if current_sprite > len(sprites) - 1 :
                 #     break
 
-            if energy:
-                for energy in pygame.sprite.spritecollide(
-                    sprite= self,
-                    group= energy,
-                    dokill= 1
-                ):
-                    self.hp += energy.hp
+            if energy_grp:
+                for energy_item in energy_grp:
+                    energy_item.update(self, energy_grp)
+                # for energy in pygame.sprite.spritecollide(
+                #     sprite= self,
+                #     group= energy,
+                #     dokill= 1
+                # ):
+                #     self.hp += energy.hp
 
             self.step_moves += 1
 
@@ -216,6 +220,7 @@ class Tom(pygame.sprite.Sprite):
                show_solution: bool = False, 
                algorithm: str = 'DFS',
                energy_grp= None,
+               jerry_grp= None,
                 **kwargs) -> bool:
         """Update state of player
 
@@ -248,16 +253,16 @@ class Tom(pygame.sprite.Sprite):
         # If direction is given so move the player
         if direction == 'T':
             self.direction = 'T'
-            self.normal_move(self.animation_images['Up'], direction= direction, maze= maze, energy= energy_grp)
+            self.normal_move(self.animation_images['Up'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
         elif direction == 'B':
             self.direction = 'B'
-            self.normal_move(self.animation_images['Down'], direction= direction, maze= maze, energy= energy_grp)
+            self.normal_move(self.animation_images['Down'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
         elif direction == 'L':
             self.direction = 'L'
-            self.normal_move(self.animation_images['Left'], direction= direction, maze= maze, energy= energy_grp)
+            self.normal_move(self.animation_images['Left'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
         elif direction == 'R':
             self.direction = 'R'
-            self.normal_move(self.animation_images['Right'], direction= direction, maze= maze, energy= energy_grp)
+            self.normal_move(self.animation_images['Right'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
         elif direction == None:
             if self.direction == 'T':
                 self.current_sprite += 0.1
@@ -294,8 +299,6 @@ class Tom(pygame.sprite.Sprite):
                                 grids= maze.grids,
                                 footprint=self.foot
                                 )  
-           
-        # print(self.hp)
         # More feature like draw, update img, state of character
 
     def set_hp(self, first_energy: tuple[int], grids: dict):
@@ -309,23 +312,26 @@ class Tom(pygame.sprite.Sprite):
             )
         ) + 3
 
-class Jerry(Tom):
-    YELLOW = (255, 255, 0)
-
+class Jerry(pygame.sprite.Sprite):
     def __init__(self,
                 #  maze: Maze,
                  end_position: tuple[int],
                  grid_size: int,
-                 scale: int,
+                 img_scale: int = 1,
                  screen= None,
                  window_screen = None,
-                 img_directory: str = r'./images/Jerry'
+                 jerry_img_directory: str = r'./images/Jerry'
                  ):
-        super().__init__(start_position= end_position,
-                         grid_size= grid_size,
-                         img_scale= scale,
-                         screen= screen,
-                         window_screen=window_screen)
+        super().__init__()
+        
+        self.position = end_position
+        self._grid_size = grid_size
+        self.scale = img_scale
+        self.screen = screen
+        self.screen_vector = pygame.math.Vector2(self.screen.get_size())
+        self.window_screen = window_screen
+        self.scale_surface_offset = pygame.math.Vector2()
+
         self.current_sprite = 0
 
         self.animation_images = {
@@ -333,9 +339,9 @@ class Jerry(Tom):
         }
 
         # Load all the image
-        for folder in os.listdir(img_directory, ):
-            for file in os.listdir(os.path.join(img_directory, folder)):
-                tmp_img = pygame.image.load(os.path.join(img_directory, folder, file))
+        for folder in os.listdir(jerry_img_directory, ):
+            for file in os.listdir(os.path.join(jerry_img_directory, folder)):
+                tmp_img = pygame.image.load(os.path.join(jerry_img_directory, folder, file))
                 
                 tmp_img_height = tmp_img.get_height()
                 tmp_img_width = tmp_img.get_width()
@@ -355,8 +361,11 @@ class Jerry(Tom):
         coord_adjust = (self._grid_size - real_img_size) / 2
 
         self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
-                                                  self.position[1] * self._grid_size + 40 - coord_adjust * 2))        
-    
+                                                  self.position[1] * self._grid_size - coord_adjust * 2))        
+    @property
+    def grid_size(self):
+        return self._grid_size * self.scale
+
     def update(self,
                scale: int = None,
                offset: int = None,

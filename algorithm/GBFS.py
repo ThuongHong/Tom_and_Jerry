@@ -4,6 +4,7 @@ import pygame
 
 def get_manhattan_distance(fisrt_position: tuple, second_position: tuple):
     return abs(fisrt_position[0] - second_position[0]) + abs(fisrt_position[1] - second_position[1])
+
 def GBFS(grids: dict,
          player_current_position: tuple[int],
          player_winning_position: tuple[int],

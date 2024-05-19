@@ -11,7 +11,7 @@ class GridCell(pygame.sprite.Sprite):
                  ):
         super().__init__(group)
 
-        self.offset = pygame.math.Vector2(0, 40)
+        self.offset = pygame.math.Vector2(0, 0)
 
         self.position = grid_position
         self.scale = scale

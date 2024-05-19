@@ -19,7 +19,9 @@ class TextBox:
         self.rect = pygame.Rect(self.x_coord, self.y_coord, self.length, self.width)
         self.text = ""
         fontsize = 38
-        self.font = pygame.font.SysFont('ShakyHandSomeComic-Bold', fontsize)
+        # self.font = pygame.font.SysFont('ShakyHandSomeComic-Bold', fontsize)
+        self.font = pygame.font.Font('fonts/ShakyHandSomeComic-Bold.otf', 38)
+
 
         self.eye1_img = create_img(image_source, 'eye_1')
         self.eye2_img = create_img(image_source, 'eye_2')
