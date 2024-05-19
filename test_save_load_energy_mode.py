@@ -53,7 +53,7 @@ def test_saveGame():
                     scale= 1,
                     window_screen= screen,
                     energy= 1)
-    Game.generate(algorithm= 'HAK', ondraw= True)
+    Game.generate(algorithm= 'HAK', ondraw= False)
     # Game.select_position_spawn()
     Game.spawn_random()
     # Game.game_centering()

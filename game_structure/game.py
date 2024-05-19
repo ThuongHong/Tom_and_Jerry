@@ -79,7 +79,7 @@ class GamePlay():
         self.energy_path = energy_bottle_path
         self.player_skin = player_skin
         
-        self.screen_size = (maze_size * self.grid_size, (maze_size + 2) * self.grid_size + 40)
+        self.screen_size = (maze_size * self.grid_size, maze_size * self.grid_size)
         self.screen = pygame.Surface(self.screen_size, pygame.SCALED)
         self.screen_vector = pygame.math.Vector2(self.screen_size)
         self.screen_rect = self.screen.get_rect(center= (500, 325))
@@ -415,7 +415,7 @@ class GamePlay():
                     self.Maze.end_position = None
 
             scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
-            scale_rect = scale_surface.get_rect(center= (500, 325))
+            scale_rect = scale_surface.get_rect(center= (self.window_screen.get_width() / 2, self.window_screen.get_height() / 2))
 
             self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
 
@@ -426,7 +426,7 @@ class GamePlay():
                     self.Maze.update(maze= self.Maze,
                                      scale= self.scale, events= events, 
                                      screen= self.screen, 
-                                     topleft_info= scale_rect.topleft + pygame.math.Vector2(0, 40) * self.scale)
+                                     topleft_info= scale_rect.topleft + pygame.math.Vector2(0, 0) * self.scale)
             
 
                         
@@ -523,24 +523,12 @@ class GamePlay():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     self.player.update(direction= 'L', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
-                    # self.de_visualize_process()
-                    # self.de_visualize_solution()
-                    # self.is_move = True
                 elif event.key == pygame.K_RIGHT:
                     self.player.update(direction= 'R', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
-                    # self.de_visualize_process()
-                    # self.de_visualize_solution()
-                    # self.is_move = True
                 elif event.key == pygame.K_UP:
                     self.player.update(direction= 'T', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
-                    # self.de_visualize_process()                     
-                    # self.de_visualize_solution()                   
-                    # self.is_move = True
                 elif event.key == pygame.K_DOWN:
                     self.player.update(direction= 'B', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
-                    # self.de_visualize_process()                      
-                    # self.de_visualize_solution()                  
-                    # self.is_move = True
                 elif event.key == pygame.K_e:
                     self.scale += 0.1
                 elif event.key == pygame.K_f:
@@ -570,11 +558,13 @@ class GamePlay():
 
         # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
         scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
-        scale_rect = scale_surface.get_rect(center= (325, 325))
+        scale_rect = scale_surface.get_rect(center= (self.window_screen.get_width() / 2, self.window_screen.get_height() / 2))
 
         # Tuning data
-        if self.scale_surface_offset.x + scale_rect.width >= 600 * self.scale:
-            self.scale_surface_offset.x = 600 * self.scale - scale_rect.width
+        # if 
+        # if self.scale_surface_offset.x + scale_rect.width >= 600 * self.scale:
+        #     self.scale_surface_offset.x = 600 * self.scale - scale_rect.width
+        self.limit_maze(rect= scale_rect)
 
         self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
 
@@ -710,7 +700,28 @@ class GamePlay():
         # Push to Real Database
         db_connect.commit()
         # Done
-  
+
+    def limit_maze(self, rect: pygame.Rect):
+        # Limit y_coord
+        if rect.left + self.scale_surface_offset.x > self.window_screen.get_width() / 2:
+            self.scale_surface_offset.x = rect.width / 2
+        if rect.right + self.scale_surface_offset.x < self.window_screen.get_width() / 2:
+            self.scale_surface_offset.x = - rect.width / 2
+        if rect.top + self.scale_surface_offset.y > self.window_screen.get_height() / 2:
+            self.scale_surface_offset.y = rect.height / 2
+        if rect.bottom + self.scale_surface_offset.y < self.window_screen.get_height() / 2:
+            self.scale_surface_offset.y = - rect.height / 2
+        # if self.scale_surface_offset.y + rect.height < (self.window_screen.get_height() / 2) * self.scale:
+        #     self.scale_surface_offset.y = (self.window_screen.get_height() / 2) * self.scale - rect.height
+        # if self.scale_surface_offset.y > (self.window_screen.get_height() / 2) * self.scale:
+        #     self.scale_surface_offset.y = (self.window_screen.get_height() / 2) * self.scale
+
+        # # Limit x_coord
+        # if self.scale_surface_offset.x + rect.width < (self.window_screen.get_width() / 2) * self.scale:
+        #     self.scale_surface_offset.x = (self.window_screen.get_width() / 2) * self.scale - rect.width
+        # if self.scale_surface_offset.x > (self.window_screen.get_width() / 2):
+        #     self.scale_surface_offset.x = (self.window_screen.get_width() / 2) * self.scale
+        
     def game_centering(self):
         virtual_player_x_coord = (self.player.sprite.rect.centerx - self.screen_size[0] / 2) * self.scale
         virtual_player_y_coord = (self.player.sprite.rect.centery - self.screen_size[1] / 2) * self.scale

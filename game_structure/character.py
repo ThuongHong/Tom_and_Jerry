@@ -98,7 +98,7 @@ class Tom(pygame.sprite.Sprite):
         coord_adjust = (self._grid_size - real_img_size) / 2
 
         self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust * 2,
-                                                  self.position[1] * self._grid_size + 40 - coord_adjust * 2))        
+                                                  self.position[1] * self._grid_size - coord_adjust * 2))        
 
     @property
     def grid_size(self):
@@ -149,7 +149,7 @@ class Tom(pygame.sprite.Sprite):
                 # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
                 scale_rect = scale_surface.get_rect(center= (500, 325))
 
-                self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
+                self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset) ###
                                     
                 pygame.display.update()
                 
@@ -361,7 +361,7 @@ class Jerry(pygame.sprite.Sprite):
         coord_adjust = (self._grid_size - real_img_size) / 2
 
         self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
-                                                  self.position[1] * self._grid_size + 40 - coord_adjust * 2))        
+                                                  self.position[1] * self._grid_size - coord_adjust * 2))        
     @property
     def grid_size(self):
         return self._grid_size * self.scale
