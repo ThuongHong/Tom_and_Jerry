@@ -131,7 +131,7 @@ class GamePlay():
     def get_time(self):
         mili_sec = pygame.time.get_ticks() - self.start_time
 
-        return f"{mili_sec / 1000} s"
+        return f"{str(format(round(mili_sec / 1000, 2)))} s"
     
     def visualize_solution(self, algorithm: str = 'GBFS'):
         self.is_draw_solution = True
@@ -434,6 +434,10 @@ class GamePlay():
         self.scale = 1
 
         self.create_player()
+       
+    def change_theme(self, skinset):
+        for grid in self.Maze.sprites():
+            grid.set_image(change=True, skinset=skinset) 
         
     def create_player(self):
         """This method will create player like Tom after Maze are generate and start_end is good

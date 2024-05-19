@@ -17,7 +17,9 @@ images_source = 'images/UI'
 class Launcher():
     def __init__(self, window_screen):
         self.window_screen = window_screen
-
+        self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 30)
+        
+        self.button_theme_img = create_img(images_source, 'button_hint_on')
         self.button_hint_on_img = create_img(images_source, 'button_hint_on')
         self.button_hint_off_img = create_img(images_source, 'button_hint_off')
         self.button_algo_astarlist_img = create_img(images_source, 'button_algo_astarlist')
@@ -26,6 +28,7 @@ class Launcher():
         self.button_algo_dfs_img = create_img(images_source, 'button_algo_dfs')
         self.button_algo_gbfs_img = create_img(images_source, 'button_algo_gbfs')
 
+        self.button_theme = Button(DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_theme_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.8, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.8, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_astarlist_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
@@ -36,6 +39,21 @@ class Launcher():
 
     def draw_ui(self):
         pos = pygame.mouse.get_pos()
+        
+        time_used = self.font.render(f'Time: {self.Game.get_time}', True, (255, 255, 255))
+        step_used = self.font.render(f'Steps: {self.Game.Tom.step_moves}', True, (255, 255, 255))
+        self.window_screen.blit(time_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.05))
+        self.window_screen.blit(step_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.10))
+        if self.energy:
+            energy_left = self.font.render(f'Energy: {self.Game.Tom.hp}', True, (255, 255, 255))
+            self.window_screen.blit(energy_left, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.15))
+        
+        if self.button_theme.draw_lite(self.window_screen, pos, False):
+            self.current_theme = str(int(self.current_theme) + 1)
+            if (self.current_theme == '6'):
+                self.current_theme = '2'
+            self.Game.change_theme(self.current_theme)
+        
         if not self.Game.is_draw_solution:
             if self.button_hint_off.draw_lite(self.window_screen, pos, False):
                 self.Game.visualize_solution(algorithm=self.current_algo)
@@ -63,6 +81,7 @@ class Launcher():
             if self.button_algo_astarheap.draw_lite(self.window_screen, pos, False):
                 self.current_algo = 'AStar_OrderedList'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
+                
 
     def reset(self, maze_size, 
               start_coord_screen=(0, 0), end_coord_screen=(500, 500), 
@@ -79,6 +98,8 @@ class Launcher():
                              energy=energy)
         self.spawning = spawning
         self.current_algo = "AStar_MinBinaryHeap"
+        self.current_theme = '2'
+        self.energy = energy
 
     def launch(self):
         self.Game.generate(algorithm= 'HAK', ondraw= False)
