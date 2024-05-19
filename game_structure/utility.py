@@ -60,6 +60,14 @@ def choose_k_point_in_path(grids, position_lst: list, number: int) -> list:
 
 def choose_point_in_path(grids, path_list: list, energy_list: list):
     path_len = len(path_list)
+    def is_valid_path_list(path_list: list, energy_list: list):
+        for place in path_list:
+            if place[1] not in energy_list:
+                return True
+        return False
+
+    if not is_valid_path_list(path_list= path_list, energy_list= energy_list):
+        return []
 
     number = int(path_len / 3)
 
@@ -73,12 +81,9 @@ def choose_point_in_path(grids, path_list: list, energy_list: list):
         if first_random_index not in energy_list:
             random_index_lst.append(first_random_index)
             break
-    # random_index_lst.append(
-    #     random.randrange(0, path_len)
-    # )
     
     while (path_len - 1) - random_index_lst[-1] > 5:
-        random_index = random.randrange(random_index_lst[-1] + 1, path_len)
+        random_index = random.randrange(random_index_lst[-1] + 1, path_len - 1)
         if path_list[random_index][1] not in energy_list:
             random_index_lst.append(random_index)
 
@@ -91,10 +96,14 @@ def choose_point_in_path(grids, path_list: list, energy_list: list):
             )
     
     if len(random_index_lst) <= 1:
+        if len(random_index_lst) == 0: print(path_list)
         return [path_list[i][1] for i in random_index_lst]
     else:
         i = 1
         while True:
+            if i == len(random_index_lst):
+                break
+
             if random_index_lst[i] - random_index_lst[i - 1] > 5:
                 random_index = random.randrange(random_index_lst[i - 1] + 1, random_index_lst[i])
                 if path_list[random_index][1] not in energy_list:
@@ -105,19 +114,9 @@ def choose_point_in_path(grids, path_list: list, energy_list: list):
                 # i += 1
                 continue
 
-            if i == len(random_index_lst) - 1:
-                break
-
             i += 1
 
         return [path_list[i][1] for i in random_index_lst]
-
-def check_valid_energy_spawn(energy_index, energy_index_lst):
-    for energy in energy_index_lst:
-        if abs(energy_index - energy) <= 5:
-            return True
-        
-    return False
 
 def mahathan_distance(fisrt_position: tuple, second_position: tuple):
     return abs(fisrt_position[0] - second_position[0]) + abs(fisrt_position[1] - second_position[1])
@@ -138,7 +137,7 @@ def get_surround(position: tuple[int, int], max_size, square_size):
     for i in range(square_size):
         for j in range(square_size):
             if i == 1 and j == 1: continue
-            suround_position = (position[0] + i - 1, position[1] + j - 1)
+            suround_position = (position[0] + i - square_size // 2, position[1] + j - square_size // 2)
             if is_valid(
                 suround_position,
                 max_size= max_size

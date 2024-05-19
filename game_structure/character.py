@@ -97,7 +97,7 @@ class Tom(pygame.sprite.Sprite):
         real_img_size = (self._grid_size / 28) * bigger_size
         coord_adjust = (self._grid_size - real_img_size) / 2
 
-        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust,
+        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust * 2,
                                                   self.position[1] * self._grid_size + 40 - coord_adjust * 2))        
 
     @property
@@ -124,7 +124,7 @@ class Tom(pygame.sprite.Sprite):
 
         self.step_moves += 1
         
-    def normal_move(self, sprites, direction: str, maze, energy_grp= None):
+    def normal_move(self, sprites, direction: str, maze, energy_grp= None, jerrgy_grp= None):
         if self.is_valid_move(direction= direction, grids= maze.grids) and self.hp > 0: 
             self.position = get_position_after_move(position= self.position, direction= direction)
             
@@ -140,6 +140,8 @@ class Tom(pygame.sprite.Sprite):
                 
                 maze.draw(self.screen)
                 if energy_grp: energy_grp.draw(self.screen)
+                jerrgy_grp.update()
+                jerrgy_grp.draw(self.screen)
                 # maze.image_draw(self.screen)
                 self.screen.blit(self.image, self.rect)
 
@@ -218,6 +220,7 @@ class Tom(pygame.sprite.Sprite):
                show_solution: bool = False, 
                algorithm: str = 'DFS',
                energy_grp= None,
+               jerry_grp= None,
                 **kwargs) -> bool:
         """Update state of player
 
@@ -250,16 +253,16 @@ class Tom(pygame.sprite.Sprite):
         # If direction is given so move the player
         if direction == 'T':
             self.direction = 'T'
-            self.normal_move(self.animation_images['Up'], direction= direction, maze= maze, energy_grp= energy_grp)
+            self.normal_move(self.animation_images['Up'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
         elif direction == 'B':
             self.direction = 'B'
-            self.normal_move(self.animation_images['Down'], direction= direction, maze= maze, energy_grp= energy_grp)
+            self.normal_move(self.animation_images['Down'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
         elif direction == 'L':
             self.direction = 'L'
-            self.normal_move(self.animation_images['Left'], direction= direction, maze= maze, energy_grp= energy_grp)
+            self.normal_move(self.animation_images['Left'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
         elif direction == 'R':
             self.direction = 'R'
-            self.normal_move(self.animation_images['Right'], direction= direction, maze= maze, energy_grp= energy_grp)
+            self.normal_move(self.animation_images['Right'], direction= direction, maze= maze, energy_grp= energy_grp, jerrgy_grp= jerry_grp)
         elif direction == None:
             if self.direction == 'T':
                 self.current_sprite += 0.1
@@ -296,8 +299,6 @@ class Tom(pygame.sprite.Sprite):
                                 grids= maze.grids,
                                 footprint=self.foot
                                 )  
-           
-        # print(self.hp)
         # More feature like draw, update img, state of character
 
     def set_hp(self, first_energy: tuple[int], grids: dict):

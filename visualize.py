@@ -26,7 +26,8 @@ class GameScreen:
         self.image_source = image_source
         self.sound_source = sound_source
         self.running = True
-        self.font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
+        # self.font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
+        self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 40)
         self.game_state = 'main menu'
         self.help_state = False
         self.difficulty = ''
@@ -41,6 +42,7 @@ class GameScreen:
         self.login = False # do something with login system
         self.skip_login = False
         self.username = ''
+        self.user_id = None
 
         # music and sound player
         self.click_sound_source = pygame.mixer.Sound(os.path.join(sound_source, 'click.ogg'))
@@ -251,6 +253,7 @@ class GameScreen:
                 self.screen.blit(greeting, (SCREEN_WIDTH * 0.15, SCREEN_HEIGHT * 0.9))
                 if self.button_logout.draw(self.screen, pos, event, self.sound):
                     self.username = ''
+                    self.user_id = None
                     self.login = False
                     self.login_signin_state = 'log in'
 
@@ -308,7 +311,7 @@ class GameScreen:
             if self.button_login.draw(self.screen, pos, event, self.sound) or state == 'submit':
                 username = self.username_login_textbox.text
                 password = self.password_login_textbox.text
-                self.login = data.login(username, password)
+                self.login, self.user_id = data.login(username, password)
                 if self.login == True:
                     self.username = username
                     self.game_state = 'main menu'
@@ -349,7 +352,7 @@ class GameScreen:
                     self.screen.blit(notification_text, (SCREEN_WIDTH * 0.435, SCREEN_HEIGHT * 0.52))
                     pygame.display.update()
                     pygame.time.wait(1000)
-                else: self.login = data.register(new_username, new_password)
+                else: self.login, self.user_id = data.register(new_username, new_password)
 
                 if self.login == True:
                     self.username = new_username

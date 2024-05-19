@@ -23,11 +23,11 @@ class GamePlay():
     Game_K_Energy = [10, 20, 50]
 
     def __init__(self,
-                 user_id: int = 1,
+                 user_id: int = None,
                  maze_size: int = 20,
                  grid_size: int = 30,
-                 start_coord_screen: tuple[int] = (0, 0),
-                 end_coord_screen: tuple[int] = (700, 700),
+                #  start_coord_screen: tuple[int] = (0, 0),
+                #  end_coord_screen: tuple[int] = (700, 700),
                  player_skin: str = r'./images/Tom',
                  energy_bottle_path: str = r'./images/Energy',
                  energy: bool = False,
@@ -187,7 +187,7 @@ class GamePlay():
                                              grids= self.Maze.grids)
 
         if choosen_place:
-            if start not in choosen_place and start not in energy_lst:
+            if start not in energy_lst:
                 EnergyItem(
                     group= self.Energy_Items,
                     grid_position= start,
@@ -201,6 +201,9 @@ class GamePlay():
                 )
 
                 energy_lst.append(start)
+
+            if choosen_place[-1] == end:
+                choosen_place.pop()
             
             for place_index in range(len(choosen_place)):
                 
@@ -219,6 +222,9 @@ class GamePlay():
                 )
 
                 energy_lst.append(place)
+        else:
+            print(choosen_place)
+            print('May be does not enough step?')
         
         return energy_lst
             
@@ -288,8 +294,8 @@ class GamePlay():
                 energy_lst= energy_lst
             )
 
-        for i in range(len(branch_place_lst)):
-            for place in get_surround(branch_place_lst[i], max_size= self.Maze.maze_size, square_size= 3):
+        for i in range(len(branch_place_lst) // 3):
+            for place in get_surround(random.choice(energy_lst), max_size= self.Maze.maze_size, square_size= 5):
                 if place not in energy_lst:
                     tmp_distance = len(
                         BDFS(
@@ -300,17 +306,16 @@ class GamePlay():
                         )
                     )
 
-                    if tmp_distance >= 5: tmp_distance = 5
+                    if tmp_distance >= 5: 
+                        EnergyItem(
+                            group= self.Energy_Items,
+                            grid_position= place,
+                            grid_size= self.grid_size,
+                            hp= 5 if tmp_distance >= 5 else tmp_distance - 1
+                        )
 
-                    EnergyItem(
-                        group= self.Energy_Items,
-                        grid_position= place,
-                        grid_size= self.grid_size,
-                        hp= tmp_distance
-                    )
-
-                    energy_lst.append(place)
-                    break
+                        energy_lst.append(place)
+                        break
 
         return energy_lst
 
@@ -339,36 +344,36 @@ class GamePlay():
         
         # After generate maze -> Ingame -> Save game data to Database
         # Insert to database
-        
-        # Set the connecttion with Game database
-        db_connect = sqlite3.connect(r'database/TomJerry.db')
-        db_cursor = db_connect.cursor()
+        if self.user_id:
+            # Set the connecttion with Game database
+            db_connect = sqlite3.connect(r'database/TomJerry.db')
+            db_cursor = db_connect.cursor()
 
-        # Insert to table games (this table store game_information)
-        db_cursor.execute('''INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "grid_size", "player_skin", "generate_algorithm")
-        VALUES (?, ?, ?, ?, ?, ?)
-        ''', (
-            self.Maze.maze_size,
-            self.game_mode,
-            self.energy,
-            self.grid_size,
-            self.player_skin,
-            algorithm
-        )            
-        )
-        
-        # Set the id for this game
-        # After insert to database. Database automatically give us an id for that game
-        self.id = list(db_cursor.execute('SELECT "id" FROM "games" ORDER BY "id" DESC LIMIT 1'))[0][0]
+            # Insert to table games (this table store game_information)
+            db_cursor.execute('''INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "grid_size", "player_skin", "generate_algorithm")
+            VALUES (?, ?, ?, ?, ?, ?)
+            ''', (
+                self.Maze.maze_size,
+                self.game_mode,
+                self.energy,
+                self.grid_size,
+                self.player_skin,
+                algorithm
+            )            
+            )
+            
+            # Set the id for this game
+            # After insert to database. Database automatically give us an id for that game
+            self.id = list(db_cursor.execute('SELECT "id" FROM "games" ORDER BY "id" DESC LIMIT 1'))[0][0]
 
-        # Change the game_state to In game
-        self.set_new_game_state('in_game')
+            # Change the game_state to In game
+            self.set_new_game_state('in_game')
 
-        # Insert relative between user and game
-        db_cursor.execute('INSERT INTO "played" VALUES(?, ?)', (self.user_id, self.id))
+            # Insert relative between user and game
+            db_cursor.execute('INSERT INTO "played" VALUES(?, ?)', (self.user_id, self.id))
 
-        # Push all the change information to the real database
-        db_connect.commit()
+            # Push all the change information to the real database
+            db_connect.commit()
 
     def spawn_random(self):
         self.Maze.spawn_start_end_position('TOP_BOTTOM')
@@ -442,6 +447,7 @@ class GamePlay():
         self.player.add(self.Tom)
 
         self.npc = pygame.sprite.GroupSingle()
+        
         self.Jerry = Jerry(self.Maze.end_position,
                            self.grid_size,
                            self.scale,
@@ -449,9 +455,6 @@ class GamePlay():
                            window_screen = self.window_screen)
         self.npc.add(self.Jerry)
 
-
-        
-        
         if self.energy:
             self.energy_lst = self.generate_energy_item()
 
@@ -519,22 +522,22 @@ class GamePlay():
             # MOVE -> Dang mac dinh la khi move thi show process se bi dung
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.player.update(direction= 'L', maze= self.Maze, energy_grp= self.Energy_Items)
+                    self.player.update(direction= 'L', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
                     # self.de_visualize_process()
                     # self.de_visualize_solution()
                     # self.is_move = True
                 elif event.key == pygame.K_RIGHT:
-                    self.player.update(direction= 'R', maze= self.Maze, energy_grp= self.Energy_Items)
+                    self.player.update(direction= 'R', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
                     # self.de_visualize_process()
                     # self.de_visualize_solution()
                     # self.is_move = True
                 elif event.key == pygame.K_UP:
-                    self.player.update(direction= 'T', maze= self.Maze, energy_grp= self.Energy_Items)
+                    self.player.update(direction= 'T', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
                     # self.de_visualize_process()                     
                     # self.de_visualize_solution()                   
                     # self.is_move = True
                 elif event.key == pygame.K_DOWN:
-                    self.player.update(direction= 'B', maze= self.Maze, energy_grp= self.Energy_Items)
+                    self.player.update(direction= 'B', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
                     # self.de_visualize_process()                      
                     # self.de_visualize_solution()                  
                     # self.is_move = True
@@ -552,20 +555,8 @@ class GamePlay():
                     self.scale_surface_offset.x -= 50 * self.scale
                 elif event.key == pygame.K_SPACE:
                     self.game_centering()
-            # elif event.type == pygame.MOUSEBUTTONDOWN:
-            #     self.Maze.update(events= events)
-
-        # Update if change scale and draw all the maze
-        # self.Maze.update(scale= self.scale)
-
-        # self.Maze.draw(self.screen)
-        # self.Maze.image_draw(self.screen)
-        # Same but for player
-        # self.player.update(scale= self.scale, 
-        #                    maze= self.Maze, 
-        #                    offset= self.scale_surface_offset)
-
-        # self.player.draw(self.screen)
+                elif event.key == pygame.K_x:
+                    self.game_normal_view()
 
         # If draw_process is True so this one will run
         self.draw_process()
@@ -579,7 +570,11 @@ class GamePlay():
 
         # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
         scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
-        scale_rect = scale_surface.get_rect(center= (500, 325))
+        scale_rect = scale_surface.get_rect(center= (325, 325))
+
+        # Tuning data
+        if self.scale_surface_offset.x + scale_rect.width >= 600 * self.scale:
+            self.scale_surface_offset.x = 600 * self.scale - scale_rect.width
 
         self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset)
 
@@ -640,6 +635,8 @@ class GamePlay():
     def save_game(self):
         """Save for the game for later load
         """
+        if not self.user_id: return
+        
         db_connect = sqlite3.connect(r'database/TomJerry.db')
 
         db_cursor = db_connect.cursor()
@@ -691,13 +688,15 @@ class GamePlay():
                 self.Tom.hp
             )
         )
-        pygame.image.save(self.window_screen, 'test.jpeg')
-
+        
+        pygame.image.save(self.screen, f'./database/save_game_images/Game_{self.id}.png')
+        
         db_connect.commit()
 
     def save_leaderboard(self):
         """Save leaderboard after win the game
         """
+        if not self.user_id: return
         # Connect to database
         db_connect = sqlite3.connect(r'database/TomJerry.db')
         
@@ -711,8 +710,6 @@ class GamePlay():
         # Push to Real Database
         db_connect.commit()
         # Done
-
-        pygame.image.save(self.screen, f'database/save_game_images/Game_{self.id}.png')
   
     def game_centering(self):
         virtual_player_x_coord = (self.player.sprite.rect.centerx - self.screen_size[0] / 2) * self.scale
@@ -797,24 +794,6 @@ def load_GamePlay(game_id: int) -> GamePlay:
         for j in range(maze_size):
             tmp_maze.grids[i, j].walls = maze_info[i * maze_size + j].copy()
         
-    tmp_maze.grids[start_position[0], -1] = GridCell(
-        grid_position= (start_position[0], -1),
-        grid_size= grid_size,
-        scale= scale,
-        group= tmp_maze
-    )
-    tmp_maze.grids[end_position[0], maze_size] = GridCell(
-        grid_position= (end_position[0], maze_size),
-        grid_size= grid_size,
-        scale= scale,        
-        group= tmp_maze
-    )
-    tmp_maze.grids[start_position[0], start_position[1] - 1].walls = maze_info[-2].copy()
-    tmp_maze.grids[end_position[0], maze_size].walls = maze_info[-1].copy()
-
-    print(tmp_maze.grids[end_position].walls)
-    print(end_position)
-
     for grid in tmp_maze.grids:
         tmp_maze.grids[grid].is_visited = True
         tmp_maze.grids[grid].set_image()
@@ -849,13 +828,26 @@ def load_GamePlay(game_id: int) -> GamePlay:
         img_scale= Game.scale,
         screen= Game.screen,
         window_screen= Game.window_screen,
-        img_directory= game_data_2[6]
+        tom_img_directory= game_data_2[6]
     )
     Game.player.add(Game.Tom)
 
     if is_energy == 1:
         Game.Tom.hp = Tom_hp
         Game.Tom.energy_mode = True
+
+    # Create Jerry
+    Game.npc = pygame.sprite.GroupSingle()
+    
+    Game.Jerry = Jerry(
+        end_position= Game.Maze.end_position,
+        grid_size= grid_size,
+        img_scale= scale,
+        screen= Game.screen,
+        window_screen= Game.window_screen
+    )
+
+    Game.npc.add(Game.Jerry)
 
     # Get the delta times and plus that to the times that player play
     Game.player.sprite.step_moves = moves

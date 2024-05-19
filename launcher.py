@@ -67,8 +67,10 @@ class Launcher():
     def reset(self, maze_size, 
               start_coord_screen=(0, 0), end_coord_screen=(500, 500), 
               spawning='random', 
-              energy=False):
-        self.Game = GamePlay(maze_size= maze_size,
+              energy= False,
+              user_id= None):
+        self.Game = GamePlay(user_id= user_id,
+                             maze_size= maze_size,
                              grid_size= 28,
                              start_coord_screen= start_coord_screen,
                              end_coord_screen= end_coord_screen,

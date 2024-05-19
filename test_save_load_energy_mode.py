@@ -5,18 +5,18 @@ import pygame
 import time
 
 def main():
-    # test_saveGame()
-    test_loadGame()
+    test_saveGame()
+    # test_loadGame(59)
 
 # ------- LOAD -------- #
-def test_loadGame():
+def test_loadGame(id):
     pygame.init()
 
     screen = pygame.display.set_mode((1000, 650))
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = load_GamePlay(18)
+    Game = load_GamePlay(id)
     # Game.spawn_random()
     # Game.game_centering()
     # pygame.time.wait(1000)
@@ -45,13 +45,14 @@ def test_saveGame():
     screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
 
-    Game = GamePlay(maze_size= 20,
+    Game = GamePlay(user_id= 1,
+                    maze_size= 20,
                     grid_size= 28,
                     start_coord_screen= (0, 0),
                     end_coord_screen= (500, 500),
                     scale= 1,
                     window_screen= screen,
-                    energy= 0)
+                    energy= 1)
     Game.generate(algorithm= 'HAK', ondraw= True)
     # Game.select_position_spawn()
     Game.spawn_random()
@@ -67,7 +68,8 @@ def test_saveGame():
         Game.run()
         i += 1
         if i == 50:    
-            Game.save_game()
+            # Game.save_game()
+            print('Save done')
         #     Game.de_visualize_process()
         #     Game.visualize_process('DFS')
         #     Game.game_normal_view()

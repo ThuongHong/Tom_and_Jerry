@@ -103,8 +103,8 @@ class Maze(pygame.sprite.Group):
                     break
             
             # Remove wall for visualize
-            self.grids[self.start_position].walls['top'] = False
-            self.grids[self.end_position].walls['bottom'] = False
+            # self.grids[self.start_position].walls['top'] = False
+            # self.grids[self.end_position].walls['bottom'] = False
 
             # self.grids[start, -1] = GridCell(grid_position= (start, -1), 
             #                                  grid_size= self.maze_grid_size,
