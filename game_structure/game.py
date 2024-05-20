@@ -882,6 +882,8 @@ def load_GamePlay(game_id: int) -> GamePlay:
             )
 
         Tom_hp = int(game_data_1[10])
+    if is_insane:
+        Game.insane_mode = True
 
     # Create player
     Game.player = pygame.sprite.GroupSingle()
