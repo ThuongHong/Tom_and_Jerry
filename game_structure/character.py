@@ -353,7 +353,7 @@ class Jerry(Tom):
         self.animation_images = {
             'Up': [],
             'Right': [],
-            'Botom': [],
+            'Down': [],
             'Left': [],
             'StandDown': []
         }
@@ -415,17 +415,17 @@ class Jerry(Tom):
 
             if distances[maximize_direction] < mahathan_distance(self.position, tom_position):
                 return
-            # if maximize_direction == 'T':
-            #     sprites = self.animation_images['Up']
-            # elif maximize_direction == 'R':
-            #     sprites = self.animation_images['Right']
-            # elif maximize_direction == 'B':
-            #     sprites = self.animation_images['Down']
-            # elif maximize_direction == 'L':
-            #     sprites = self.animation_images['Left']
+            if maximize_direction == 'T':
+                sprites = self.animation_images['Up']
+            elif maximize_direction == 'R':
+                sprites = self.animation_images['Right']
+            elif maximize_direction == 'B':
+                sprites = self.animation_images['Down']
+            elif maximize_direction == 'L':
+                sprites = self.animation_images['Left']
 
             # For test
-            sprites = self.animation_images['StandDown']
+            #sprites = self.animation_images['StandDown']
 
             self.position = get_position_after_move(position= self.position, direction= maximize_direction)
             
