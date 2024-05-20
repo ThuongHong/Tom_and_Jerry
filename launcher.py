@@ -5,6 +5,7 @@ import pygame
 import time
 import os
 from menu_objects.button import Button
+from menu_objects.graphic import Graphic
 
 from CONSTANTS import DISPLAY
 
@@ -17,6 +18,11 @@ images_source = 'images/UI'
 class Launcher():
     def __init__(self, window_screen):
         self.window_screen = window_screen
+        self.paused = False
+        self.saved = False
+        self.save_confirm = False
+
+        self.box_save_confirm_img = create_img(images_source, 'box_save_confirm')
 
         self.button_hint_on_img = create_img(images_source, 'button_hint_on')
         self.button_hint_off_img = create_img(images_source, 'button_hint_off')
@@ -25,15 +31,38 @@ class Launcher():
         self.button_algo_bfs_img = create_img(images_source, 'button_algo_bfs')
         self.button_algo_dfs_img = create_img(images_source, 'button_algo_dfs')
         self.button_algo_gbfs_img = create_img(images_source, 'button_algo_gbfs')
+        self.button_pause_game_img = create_img(images_source, 'button_pause_game')
+        self.button_resume_img = create_img(images_source, 'button_play')
+        self.button_restart_img = create_img(images_source, 'button_restart')
+        self.button_save_img = create_img(images_source, 'button_save')
+        self.button_home_img = create_img(images_source, 'button_home')
+        self.button_yes_img = create_img(images_source, 'button_yes')
+        self.button_no_img = create_img(images_source, 'button_no')
+        self.button_switch_themes_img = create_img(images_source, 'button_switch_themes')
 
-        self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.8, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.8, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.box_save_confirm = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, self.box_save_confirm_img, 0.3)
+        box_save_confirm_width = self.box_save_confirm.modified_width
+        box_save_confirm_height = self.box_save_confirm.modified_height
+        box_save_confirm_x_coord = self.box_save_confirm.x_coord
+        box_save_confirm_y_coord = self.box_save_confirm.y_coord
+        
+
+        self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_astarlist_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_astarheap = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_astarheap_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_bfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_bfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_dfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_dfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_algo_gbfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_gbfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-
+        self.button_pause_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, self.button_pause_game_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_resume = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, self.button_resume_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_restart = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.72, self.button_restart_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_save_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, self.button_save_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.52, self.button_home_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_yes = Button(box_save_confirm_x_coord - box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, self.button_yes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, self.button_no_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.75, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_switch_themes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        
     def draw_ui(self):
         pos = pygame.mouse.get_pos()
         if not self.Game.is_draw_solution:
@@ -63,6 +92,58 @@ class Launcher():
             if self.button_algo_astarheap.draw_lite(self.window_screen, pos, False):
                 self.current_algo = 'AStar_OrderedList'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
+                
+        if self.paused == False:
+            if self.button_pause_game.draw_lite(self.window_screen, pos, False):
+                self.paused = True
+        elif self.paused == True:
+            if self.button_resume.draw_lite(self.window_screen, pos, False):
+                self.paused = False
+            if self.button_restart.draw_lite(self.window_screen, pos, False):
+                """ Restart new maze """
+                self.paused = False
+                # self.reset()
+                #            ^
+                # Check this |
+            if self.button_save_game.draw_lite(self.window_screen, pos, False):
+                """ Save game """
+                self.saved = True
+                # Remember to set this to False if player moves after saved
+                self.paused = False
+                # self.Game.save_game()
+                #            ^
+                # Check this |
+            if self.button_home.draw_lite(self.window_screen, pos, False):
+                """ Exit to main menu """
+                if self.saved == False:
+                    self.save_confirm = True
+                else:
+                    pass
+                    #            ^
+                    # Check this |
+        
+        if self.save_confirm == True:
+            self.box_save_confirm.draw(self.window_screen)
+            if self.button_yes.draw_lite(self.window_screen, pos, False):
+                """ Save game """
+                self.save_confirm = False
+                self.paused = False
+                # self.Game.save_game()
+                #            ^
+                # Check this |
+            if self.button_no.draw_lite(self.window_screen, pos, False):
+                """ Exit to main menu"""
+                self.save_confirm = False
+                self.paused = False
+                #            ^
+                # Check this |
+                
+        if self.button_switch_themes.draw_lite(self.window_screen, pos, False):
+            """ Switch themes"""
+            #            ^
+            # Check this |
+                
+            
 
     def reset(self, maze_size, 
               start_coord_screen=(0, 0), end_coord_screen=(500, 500), 
@@ -89,7 +170,7 @@ class Launcher():
 
         while self.Game.game_state == 'in_game':
             self.Game.center_zoom_linear(100)
-            self.Game.run()
+            self.Game.run(self.paused)
             self.draw_ui()
 
             pygame.display.update()

@@ -490,7 +490,7 @@ class GamePlay():
         self.window_screen.fill((0, 0, 0))
         self.screen.fill((0, 0, 0))
 
-    def run(self):
+    def run(self, paused_state=False):
         """This method will use in a while loop
         Get all the event while th game is run and handle it
         """  
@@ -520,7 +520,7 @@ class GamePlay():
                 pygame.quit()
                 exit()
             # MOVE -> Dang mac dinh la khi move thi show process se bi dung
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN and paused_state == False:
                 if event.key == pygame.K_LEFT:
                     self.player.update(direction= 'L', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
                 elif event.key == pygame.K_RIGHT:
