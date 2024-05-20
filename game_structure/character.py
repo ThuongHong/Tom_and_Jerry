@@ -413,8 +413,6 @@ class Jerry(Tom):
         if distances:
             maximize_direction = sorted(list(distances.keys()), key= lambda x: distances[x], reverse= True)[0]
 
-            if distances[maximize_direction] < mahathan_distance(self.position, tom_position):
-                return
             if maximize_direction == 'T':
                 sprites = self.animation_images['Up']
             elif maximize_direction == 'R':
