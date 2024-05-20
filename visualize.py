@@ -352,18 +352,19 @@ class GameScreen:
                     self.screen.blit(notification_text, (SCREEN_WIDTH * 0.435, SCREEN_HEIGHT * 0.52))
                     pygame.display.update()
                     pygame.time.wait(1000)
-                else: self.login, self.user_id = data.register(new_username, new_password)
+                else: 
+                    self.login, self.user_id = data.register(new_username, new_password)
 
-                if self.login == True:
-                    self.username = new_username
-                    self.game_state = 'main menu'
-                else:
-                    notification_text1 = self.font.render('This username is already in use.', True, COLOR.RED)
-                    notification_text2 = self.font.render('Please pick another.', True, COLOR.RED)
-                    self.screen.blit(notification_text1, (SCREEN_WIDTH * 0.37, SCREEN_HEIGHT * 0.52))
-                    self.screen.blit(notification_text2, (SCREEN_WIDTH * 0.42, SCREEN_HEIGHT * 0.56))
-                    pygame.display.update()
-                    pygame.time.wait(1000)
+                    if self.login == True:
+                        self.username = new_username
+                        self.game_state = 'main menu'
+                    else:
+                        notification_text1 = self.font.render('This username is already in use.', True, COLOR.RED)
+                        notification_text2 = self.font.render('Please pick another.', True, COLOR.RED)
+                        self.screen.blit(notification_text1, (SCREEN_WIDTH * 0.37, SCREEN_HEIGHT * 0.52))
+                        self.screen.blit(notification_text2, (SCREEN_WIDTH * 0.42, SCREEN_HEIGHT * 0.56))
+                        pygame.display.update()
+                        pygame.time.wait(1000)
             
         if self.button_back.draw(self.screen, pos, event, self.sound) or state == 'back':
             self.game_state = 'main menu'

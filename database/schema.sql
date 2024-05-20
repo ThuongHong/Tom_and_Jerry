@@ -13,6 +13,7 @@ CREATE TABLE "games" (
     "maze_size" INTEGER NOT NULL CHECK("maze_size" > 0),
     "game_mode" TEXT CHECK("game_mode" IN ('Easy', 'Medium', 'Hard')),
     "energy_mode" INT DEFAULT 0,
+    "insane_mode" INT DEFAULT 0,
     "grid_size" INTEGER NOT NULL CHECK("grid_size" > 0),
     "player_skin" TEXT DEFAULT NULL,
     "generate_algorithm" TEXT DEFAULT NULL,

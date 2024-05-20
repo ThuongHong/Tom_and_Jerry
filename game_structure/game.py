@@ -31,6 +31,7 @@ class GamePlay():
                  player_skin: str = r'./images/Tom',
                  energy_bottle_path: str = r'./images/Energy',
                  energy: bool = False,
+                 insane_mode: bool = False,
                  scale: int = 1,
                  window_screen= None,
                  **kwargs):
@@ -75,6 +76,8 @@ class GamePlay():
             self.Energy_Items = pygame.sprite.Group()
         else:
             self.Energy_Items = None
+
+        self.insane_mode = insane_mode
         
         self.energy_path = energy_bottle_path
         self.player_skin = player_skin
@@ -82,9 +85,9 @@ class GamePlay():
         self.screen_size = (maze_size * self.grid_size, maze_size * self.grid_size)
         self.screen = pygame.Surface(self.screen_size, pygame.SCALED)
         self.screen_vector = pygame.math.Vector2(self.screen_size)
-        self.screen_rect = self.screen.get_rect(center= (500, 325))
+        self.screen_rect = self.screen.get_rect(center= (self.window_screen.get_width() / 2, self.window_screen.get_height() / 2))
 
-        self.maze_surface = pygame.Surface((650, 650))
+        # self.maze_surface = pygame.Surface((650, 650))
 
         self.scale_surface_offset = pygame.math.Vector2()
         
@@ -131,7 +134,7 @@ class GamePlay():
     def get_time(self):
         mili_sec = pygame.time.get_ticks() - self.start_time
 
-        return f"{mili_sec / 1000} s"
+        return f"{str(format(round(mili_sec / 1000, 2)))} s"
     
     def visualize_solution(self, algorithm: str = 'GBFS'):
         self.is_draw_solution = True
@@ -350,12 +353,13 @@ class GamePlay():
             db_cursor = db_connect.cursor()
 
             # Insert to table games (this table store game_information)
-            db_cursor.execute('''INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "grid_size", "player_skin", "generate_algorithm")
+            db_cursor.execute('''INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "insane_mode", "grid_size", "player_skin", "generate_algorithm")
             VALUES (?, ?, ?, ?, ?, ?)
             ''', (
                 self.Maze.maze_size,
                 self.game_mode,
                 self.energy,
+                self.insane_mode,
                 self.grid_size,
                 self.player_skin,
                 algorithm
@@ -434,6 +438,10 @@ class GamePlay():
         self.scale = 1
 
         self.create_player()
+       
+    def change_theme(self, skinset):
+        for grid in self.Maze.sprites():
+            grid.set_image(change=True, skinset=skinset) 
         
     def create_player(self):
         """This method will create player like Tom after Maze are generate and start_end is good
@@ -490,29 +498,33 @@ class GamePlay():
         self.window_screen.fill((0, 0, 0))
         self.screen.fill((0, 0, 0))
 
-    def run(self, paused_state=False):
+    def run(self, ui_grp, paused_state=False):
         """This method will use in a while loop
         Get all the event while th game is run and handle it
         """  
-        # Draw background
+        # UPDATE STATE
         self.update_screen()        
         self.Maze.update(scale= self.scale)
+        
+        if self.Energy_Items:
+            self.Energy_Items.update()
+        
         self.player.update(scale= self.scale, 
                            maze= self.Maze, 
                            offset= self.scale_surface_offset,
                            energy_grp= self.Energy_Items)
+        
         self.npc.update(scale= self.scale,
                         offset= self.scale_surface_offset)
-        
+        # DRAW
         self.Maze.draw(self.screen)
-        # self.Maze.image_draw(self.screen)
-        if self.Energy_Items: self.Energy_Items.draw(self.screen)
+        if self.Energy_Items: 
+            self.Energy_Items.draw(self.screen)
         self.npc.draw(self.screen)
         self.player.draw(self.screen)
         
 
-
-        # Like normal
+        # EVENT HANDLE
         events = pygame.event.get()
         for event in events:
             # QUIT
@@ -522,13 +534,61 @@ class GamePlay():
             # MOVE -> Dang mac dinh la khi move thi show process se bi dung
             if event.type == pygame.KEYDOWN and paused_state == False:
                 if event.key == pygame.K_LEFT:
-                    self.player.update(direction= 'L', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
+                    self.player.update(direction= 'L', 
+                                       maze= self.Maze, 
+                                       offset= self.scale_surface_offset, 
+                                       energy_grp= self.Energy_Items, 
+                                       jerry_grp= self.npc, 
+                                       ui_grp= ui_grp)
+                    if self.insane_mode:
+                        self.npc.update(maze= self.Maze, 
+                                        scale= self.scale, 
+                                        offset= self.scale_surface_offset, 
+                                        tom_grp= self.player,
+                                        energy_grp= self.Energy_Items,
+                                        ui_grp= ui_grp)
                 elif event.key == pygame.K_RIGHT:
-                    self.player.update(direction= 'R', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
+                    self.player.update(direction= 'R', 
+                                       maze= self.Maze, 
+                                       offset= self.scale_surface_offset,
+                                       energy_grp= self.Energy_Items, 
+                                       jerry_grp= self.npc, 
+                                       ui_grp= ui_grp)
+                    if self.insane_mode:
+                        self.npc.update(maze= self.Maze, 
+                                        scale= self.scale, 
+                                        offset= self.scale_surface_offset, 
+                                        tom_grp= self.player,
+                                        energy_grp= self.Energy_Items,
+                                        ui_grp= ui_grp)
                 elif event.key == pygame.K_UP:
-                    self.player.update(direction= 'T', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
+                    self.player.update(direction= 'T', 
+                                       maze= self.Maze, 
+                                       offset= self.scale_surface_offset,
+                                       energy_grp= self.Energy_Items, 
+                                       jerry_grp= self.npc, 
+                                       ui_grp= ui_grp)
+                    if self.insane_mode:
+                        self.npc.update(maze= self.Maze, 
+                                        scale= self.scale, 
+                                        offset= self.scale_surface_offset, 
+                                        tom_grp= self.player,
+                                        energy_grp= self.Energy_Items,
+                                        ui_grp= ui_grp)
                 elif event.key == pygame.K_DOWN:
-                    self.player.update(direction= 'B', maze= self.Maze, energy_grp= self.Energy_Items, jerry_grp= self.npc)
+                    self.player.update(direction= 'B', 
+                                       maze= self.Maze, 
+                                       offset= self.scale_surface_offset,
+                                       energy_grp= self.Energy_Items, 
+                                       jerry_grp= self.npc, 
+                                       ui_grp= ui_grp)
+                    if self.insane_mode:
+                        self.npc.update(maze= self.Maze, 
+                                        scale= self.scale, 
+                                        offset= self.scale_surface_offset, 
+                                        tom_grp= self.player,
+                                        energy_grp= self.Energy_Items,
+                                        ui_grp= ui_grp)
                 elif event.key == pygame.K_e:
                     self.scale += 0.1
                 elif event.key == pygame.K_f:
@@ -711,16 +771,6 @@ class GamePlay():
             self.scale_surface_offset.y = rect.height / 2
         if rect.bottom + self.scale_surface_offset.y < self.window_screen.get_height() / 2:
             self.scale_surface_offset.y = - rect.height / 2
-        # if self.scale_surface_offset.y + rect.height < (self.window_screen.get_height() / 2) * self.scale:
-        #     self.scale_surface_offset.y = (self.window_screen.get_height() / 2) * self.scale - rect.height
-        # if self.scale_surface_offset.y > (self.window_screen.get_height() / 2) * self.scale:
-        #     self.scale_surface_offset.y = (self.window_screen.get_height() / 2) * self.scale
-
-        # # Limit x_coord
-        # if self.scale_surface_offset.x + rect.width < (self.window_screen.get_width() / 2) * self.scale:
-        #     self.scale_surface_offset.x = (self.window_screen.get_width() / 2) * self.scale - rect.width
-        # if self.scale_surface_offset.x > (self.window_screen.get_width() / 2):
-        #     self.scale_surface_offset.x = (self.window_screen.get_width() / 2) * self.scale
         
     def game_centering(self):
         virtual_player_x_coord = (self.player.sprite.rect.centerx - self.screen_size[0] / 2) * self.scale
@@ -729,7 +779,8 @@ class GamePlay():
         # self.scale_surface_offset = pygame.math.Vector2(0, self.screen_size[1] / 2)
 
     def game_normal_view(self):
-        self.scale_surface_offset = pygame.math.Vector2()
+        self.scale_surface_offset.x = 0
+        self.scale_surface_offset.y = 0
 
     def center_zoom_linear(self, max_frame):
         if self.frame == 0:
@@ -737,6 +788,14 @@ class GamePlay():
         if self.frame < max_frame:
             self.scale += 1 / max_frame
             self.game_centering()
+            self.frame += 1
+    
+    def normal_zoom_linear(self, max_frame):
+        if self.frame == 0:
+            self.scale = 0
+        if self.frame < max_frame:
+            self.scale += 1 / max_frame
+            self.game_normal_view()
             self.frame += 1
 
 # Sadly cannot implement this in GamePlay class like a classmethod so this one is spilt outside 
@@ -760,11 +819,13 @@ def load_GamePlay(game_id: int) -> GamePlay:
     # Get the data that useful
     maze_size = int(game_data_2[2])
 
-    grid_size = int(game_data_2[5])
+    grid_size = int(game_data_2[6])
 
-    player_skin = game_data_2[6]
+    player_skin = game_data_2[7]
 
     is_energy = int(game_data_2[4])
+
+    is_insane = int(game_data_2[5])
 
     energy_info = game_data_1[9]
 
@@ -829,6 +890,8 @@ def load_GamePlay(game_id: int) -> GamePlay:
             )
 
         Tom_hp = int(game_data_1[10])
+    if is_insane:
+        Game.insane_mode = True
 
     # Create player
     Game.player = pygame.sprite.GroupSingle()

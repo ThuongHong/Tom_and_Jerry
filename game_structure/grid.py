@@ -143,11 +143,11 @@ class GridCell(pygame.sprite.Sprite):
 
         return '-'.join(features) + '.png'
 
-    def set_image(self):
+    def set_image(self, change=False, skinset='2'):
         """Use this method after generate maze
         """
-        if self.get_feature != self.old_feature:
-            self.image = pygame.image.load(join('images', 'Grids_2', self.get_feature)).convert_alpha()
+        if self.get_feature != self.old_feature or change == True:
+            self.image = pygame.image.load(join('images', 'Grids_' + skinset, self.get_feature)).convert_alpha()
             self.old_feature = self.get_feature
             # self._grid_size = self.image.get_height()
             self.image = pygame.transform.rotozoom(self.image, 0, self.grid_size / self.image.get_height())
@@ -169,7 +169,7 @@ class GridCell(pygame.sprite.Sprite):
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     virtual_pos_x = (event.pos[0] - kwargs['topleft_info'][0]) / scale
-                    virtual_pos_y = 40 + (event.pos[1] - kwargs['topleft_info'][1]) / scale
+                    virtual_pos_y = (event.pos[1] - kwargs['topleft_info'][1]) / scale
                     if self.rect.collidepoint((virtual_pos_x, virtual_pos_y)):
                         if maze.is_have_start():
                             self.is_end = True

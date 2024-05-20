@@ -8,7 +8,7 @@ def get_position_after_move(position: tuple[int],
 
     Args:
         position (tuple[int]): Tuple of int, e.g (x, y)
-        direction (str): One of ['T', 'R', 'B', 'R'], if input is diffirent, function raise ValueError
+        direction (str): One of ['T', 'R', 'B', 'L'], if input is diffirent, function raise ValueError
     """
     # Standardize inputs
     direction = direction.upper()
