@@ -789,6 +789,14 @@ class GamePlay():
             self.scale += 1 / max_frame
             self.game_centering()
             self.frame += 1
+    
+    def normal_zoom_linear(self, max_frame):
+        if self.frame == 0:
+            self.scale = 0
+        if self.frame < max_frame:
+            self.scale += 1 / max_frame
+            self.game_normal_view()
+            self.frame += 1
 
 # Sadly cannot implement this in GamePlay class like a classmethod so this one is spilt outside 
 def load_GamePlay(game_id: int) -> GamePlay:

@@ -422,9 +422,6 @@ class Jerry(Tom):
             elif maximize_direction == 'L':
                 sprites = self.animation_images['Left']
 
-            # For test
-            #sprites = self.animation_images['StandDown']
-
             self.position = get_position_after_move(position= self.position, direction= maximize_direction)
             
             move_coord = get_diffirent_coord(direction= maximize_direction, maze_grid_size= self.grid_size)
@@ -444,7 +441,6 @@ class Jerry(Tom):
                 tom_grp.update()
                 tom_grp.draw(self.screen)
                 
-                # maze.image_draw(self.screen)
                 self.screen.blit(self.image, self.rect)
                 
                 scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
