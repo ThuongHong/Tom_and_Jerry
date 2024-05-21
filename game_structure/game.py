@@ -406,14 +406,14 @@ class GamePlay():
         self.Maze.spawn_start_end_position('TOP_BOTTOM')
         self.create_player()
 
-    def select_position_spawn(self):
+    def select_position_spawn(self, ui_grp):
         self.game_normal_view()
         self.scale = 20 / self.Maze.maze_size
 
         while True:
             counter = 0
 
-            self.update_screen()            
+            self.update_screen(ui_grp=ui_grp)            
             self.Maze.update(scale= self.scale)
             self.Maze.draw(self.screen)
             
@@ -559,7 +559,7 @@ class GamePlay():
                 pygame.quit()
                 exit()
             # MOVE -> Dang mac dinh la khi move thi show process se bi dung
-            if event.type == pygame.KEYDOWN and not ui_grp.paused:
+            if event.type == pygame.KEYDOWN and not ui_grp.paused and self.game_state == 'in_game':
                 if event.key == pygame.K_LEFT:
                     self.player.update(direction= 'L', 
                                        maze= self.Maze, 
@@ -640,8 +640,11 @@ class GamePlay():
         self.draw_solution()
 
         # If the game is win -> Save to leaderboard
-        if self.check_win():
-            self.save_leaderboard()
+        if self.game_state == 'in_game':
+            if self.check_win():
+                self.save_leaderboard()
+                
+            self.check_lose()
 
         # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
         scale_surface = pygame.transform.scale(self.screen, self.screen_vector * self.scale)
@@ -703,7 +706,14 @@ class GamePlay():
             self.solve_index = 0
             # self.solving_grid_process = []
 
+    def check_lose(self):
+        if self.energy and self.Tom.hp == 0:
+            self.end_time = self.get_time
+            self.set_new_game_state('lose_game')
+
+    
     def check_win(self):
+        self.end_time = self.get_time
         if self.player.sprite.position == self.Maze.end_position:
             self.set_new_game_state('win_game')
             return True
