@@ -9,9 +9,9 @@ from menu_objects.graphic import Graphic
 
 from CONSTANTS import DISPLAY
 
-def create_img(image_source, image_name):
+def create_img(images_source, image_name):
     image_name = image_name + '.png'
-    return pygame.image.load(os.path.join(image_source, image_name)).convert_alpha()
+    return pygame.image.load(os.path.join(images_source, image_name)).convert_alpha()
 
 images_source = 'images/UI'
 
@@ -41,7 +41,8 @@ class Launcher():
         self.button_yes_img = create_img(images_source, 'button_yes')
         self.button_no_img = create_img(images_source, 'button_no')
         self.button_switch_themes_img = create_img(images_source, 'button_switch_themes')
-
+        
+        
         self.box_save_confirm = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, self.box_save_confirm_img, 0.3)
         box_save_confirm_width = self.box_save_confirm.modified_width
         box_save_confirm_height = self.box_save_confirm.modified_height
@@ -59,19 +60,33 @@ class Launcher():
         self.button_pause_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, self.button_pause_game_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_resume = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, self.button_resume_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_restart = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.72, self.button_restart_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_save_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, self.button_save_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.52, self.button_home_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_save_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.52, self.button_save_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, self.button_home_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_yes = Button(box_save_confirm_x_coord - box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, self.button_yes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, self.button_no_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.75, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_switch_themes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+    
+    def load_background(self):
+        self.background_images = []
+        num_of_images = 4
+        for i in range(num_of_images):
+            img = create_img('images/Ingame_background', str(i))
+            self.background_images.append(img)
+            
+        self.background = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, self.background_images[0], 1)
+        self.current_background = 0
         
     def draw_ui(self):
         pos = pygame.mouse.get_pos()
         
-        time_used = self.font.render(f'Time: {self.Game.get_time}', True, (255, 255, 255))
+        if self.paused:
+            time_used = self.font.render(f'Time: {self.time_at_pause}', True, (255, 255, 255))
+        else:
+            time_used = self.font.render(f'Time: {self.Game.get_time}', True, (255, 255, 255))
         step_used = self.font.render(f'Steps: {self.Game.Tom.step_moves}', True, (255, 255, 255))
         self.window_screen.blit(time_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.05))
         self.window_screen.blit(step_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.10))
+        
         if self.energy:
             energy_left = self.font.render(f'Energy: {self.Game.Tom.hp}', True, (255, 255, 255))
             self.window_screen.blit(energy_left, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.15))
@@ -107,28 +122,32 @@ class Launcher():
         if self.paused == False:
             if self.button_pause_game.draw_lite(self.window_screen, pos, False):
                 self.paused = True
+                self.time_at_pause = self.Game.pause_time()
+                
         elif self.paused == True:
             if self.button_resume.draw_lite(self.window_screen, pos, False):
                 self.paused = False
+                self.Game.resume_time()
             if self.button_restart.draw_lite(self.window_screen, pos, False):
                 """ Restart new maze """
                 self.paused = False
+                self.Game.resume_time()
                 self.Game.set_new_game_state("start")
-            if self.button_save_game.draw_lite(self.window_screen, pos, False):
+            if self.former_user_id is not None and self.button_save_game.draw_lite(self.window_screen, pos, False):
                 """ Save game """
                 self.saved = True
                 # Remember to set this to False if player moves after saved
                 self.paused = False
                 # self.Game.set_new_game_state("save_game")
-                # self.Game.save_game()
+                self.Game.save_game()
                 #            ^
                 # Check this |
             if self.button_home.draw_lite(self.window_screen, pos, False):
                 """ Exit to main menu """
-                if self.saved == False:
+                if self.saved == False and self.former_user_id is not None:
                     self.save_confirm = True
                 else:
-                    pass
+                    self.Game.set_new_game_state("back_menu")
                     #            ^
                     # Check this |
         
@@ -138,6 +157,8 @@ class Launcher():
                 """ Save game """
                 self.save_confirm = False
                 self.paused = False
+                self.Game.save_game()
+                self.Game.set_new_game_state("back_menu")
                 # self.Game.save_game()
                 #            ^
                 # Check this |
@@ -145,20 +166,26 @@ class Launcher():
                 """ Exit to main menu"""
                 self.save_confirm = False
                 self.paused = False
+                self.Game.set_new_game_state("back_menu")
                 #            ^
                 # Check this |
                 
         if self.button_switch_themes.draw_lite(self.window_screen, pos, False):
             """ Switch themes"""
+            print(self.current_theme)
             self.current_theme = str(int(self.current_theme) + 1)
-            if (self.current_theme == '6'):
-                self.current_theme = '2'
+            if (self.current_theme == '8'):
+                self.current_theme = '1'
             self.Game.change_theme(self.current_theme)
-                
+            print(self.current_theme)
             
+            self.current_background = self.current_background + 1
+            if (self.current_background == 4):
+                self.current_background = 0
+            self.background.change_image(self.background_images[self.current_background])
                 
 
-    def reset(self, maze_size, 
+    def init_setting(self, maze_size, 
               start_coord_screen=(0, 0), end_coord_screen=(500, 500), 
               spawning='random', 
               energy= False,
@@ -173,10 +200,31 @@ class Launcher():
                              window_screen= self.window_screen,
                              energy=energy,
                              insane_mode= insane_mode)
-        self.spawning = spawning
         self.current_algo = "AStar_MinBinaryHeap"
         self.current_theme = '2'
+        self.spawning = spawning
         self.energy = energy
+        self.insane_mode = insane_mode
+        self.time_at_pause = ''
+        
+        self.load_background()
+        
+        # For restart game
+        self.former_user_id = user_id
+        self.former_maze_size = maze_size
+        self.former_start_coord_screen = start_coord_screen
+        self.former_end_coord_screen = end_coord_screen
+        
+    def restart(self):
+        self.Game = GamePlay(user_id= self.former_user_id,
+                             maze_size= self.former_maze_size,
+                             grid_size= 28,
+                             start_coord_screen= self.former_start_coord_screen,
+                             end_coord_screen= self.former_end_coord_screen,
+                             scale= 1,
+                             window_screen= self.window_screen,
+                             energy=self.energy,
+                             insane_mode= self.insane_mode)
 
     def launch(self):
         self.Game.generate(algorithm= 'HAK', ondraw= False)
@@ -188,7 +236,11 @@ class Launcher():
         while self.Game.game_state == 'in_game':
             
             self.Game.center_zoom_linear(100)
-            self.Game.run(self, self.paused)
+            self.Game.run(self)
             self.draw_ui()
-
             pygame.display.update()
+            
+        if self.Game.game_state == 'start':
+            self.launch()
+            
+        return

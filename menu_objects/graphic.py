@@ -15,3 +15,6 @@ class Graphic:
     def draw(self, surface):
         # draw graphic on screen
         surface.blit(self.image, self.rect)
+        
+    def change_image(self, image):
+        self.image = pygame.transform.scale(image, (self.modified_width, self.modified_height))

@@ -16,10 +16,8 @@ import random
 def str_to_tuple(encode_str: str) -> tuple[int]:
     x, y = encode_str.lstrip('(').rstrip(')').split(',')
     return (int(x), int(y))
-
-
 class GamePlay():
-    Game_States = ['start', 'in_game', 'save_game', 'win_game']
+    Game_States = ['start', 'in_game', 'back_menu','win_game', 'lose_game']
     Game_K_Energy = [10, 20, 50]
 
     def __init__(self,
@@ -108,7 +106,7 @@ class GamePlay():
         self.is_stop_process = True
 
         self.frame = 0
-    
+
     @property
     def maze_size(self):
         return self._maze_size
@@ -132,9 +130,18 @@ class GamePlay():
         
     @property
     def get_time(self):
-        mili_sec = pygame.time.get_ticks() - self.start_time
+        mili_sec = pygame.time.get_ticks() - self.start_time + self.time_at_pause
 
-        return f"{str(format(round(mili_sec / 1000, 2)))} s"
+        # return f"{str(format(round(mili_sec / 1000, 2)))} s"
+        return f"{str(int(mili_sec / 1000))} s"
+    
+    def pause_time(self):
+        self.time_at_pause = pygame.time.get_ticks() - self.start_time + self.time_at_pause
+        # return f"{str(format(round(self.time_at_pause / 1000, 2)))} s"
+        return f"{str(int(self.time_at_pause / 1000))} s"
+    
+    def resume_time(self):
+        self.start_time = pygame.time.get_ticks()
     
     def visualize_solution(self, algorithm: str = 'GBFS'):
         self.is_draw_solution = True
@@ -354,7 +361,7 @@ class GamePlay():
 
             # Insert to table games (this table store game_information)
             db_cursor.execute('''INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "insane_mode", "grid_size", "player_skin", "generate_algorithm")
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (
                 self.Maze.maze_size,
                 self.game_mode,
@@ -384,6 +391,7 @@ class GamePlay():
         self.create_player()
 
     def select_position_spawn(self):
+        self.game_normal_view()
         self.scale = 20 / self.Maze.maze_size
 
         while True:
@@ -483,6 +491,7 @@ class GamePlay():
         # self.Maze.image = pygame.image.load(f'database/maze_images/Game_{self.id}.png').convert_alpha()
 
         self.start_time = pygame.time.get_ticks()
+        self.time_at_pause = 0
 
     def set_new_game_state(self, new_state: str):
         """Change the value of game_state
@@ -493,29 +502,31 @@ class GamePlay():
         if new_state in self.Game_States:
             self.game_state = new_state
 
-    def update_screen(self):
+    def update_screen(self, ui_grp):
         # This one just for test -- DON'T HAVE ANY BEAUTIFUL !!!
-        self.window_screen.fill((0, 0, 0))
+        # self.window_screen.fill((0, 0, 0))
+        ui_grp.background.draw(self.window_screen)
         self.screen.fill((0, 0, 0))
 
-    def run(self, ui_grp, paused_state=False):
+    def run(self, ui_grp):
         """This method will use in a while loop
         Get all the event while th game is run and handle it
         """  
         # UPDATE STATE
-        self.update_screen()        
-        self.Maze.update(scale= self.scale)
-        
-        if self.Energy_Items:
-            self.Energy_Items.update()
-        
-        self.player.update(scale= self.scale, 
-                           maze= self.Maze, 
-                           offset= self.scale_surface_offset,
-                           energy_grp= self.Energy_Items)
-        
-        self.npc.update(scale= self.scale,
-                        offset= self.scale_surface_offset)
+        self.update_screen(ui_grp) 
+        if not ui_grp.paused:
+            self.Maze.update(scale= self.scale)
+            
+            if self.Energy_Items:
+                self.Energy_Items.update()
+            
+            self.player.update(scale= self.scale, 
+                            maze= self.Maze, 
+                            offset= self.scale_surface_offset,
+                            energy_grp= self.Energy_Items)
+            
+            self.npc.update(scale= self.scale,
+                            offset= self.scale_surface_offset)
         # DRAW
         self.Maze.draw(self.screen)
         if self.Energy_Items: 
@@ -532,7 +543,7 @@ class GamePlay():
                 pygame.quit()
                 exit()
             # MOVE -> Dang mac dinh la khi move thi show process se bi dung
-            if event.type == pygame.KEYDOWN and paused_state == False:
+            if event.type == pygame.KEYDOWN and not ui_grp.paused:
                 if event.key == pygame.K_LEFT:
                     self.player.update(direction= 'L', 
                                        maze= self.Maze, 
@@ -678,7 +689,7 @@ class GamePlay():
 
     def check_win(self):
         if self.player.sprite.position == self.Maze.end_position:
-            self.game_state = 'win'
+            self.set_new_game_state('win_game')
             return True
         return False
 
@@ -751,6 +762,11 @@ class GamePlay():
         db_connect = sqlite3.connect(r'database/TomJerry.db')
         
         db_cursor = db_connect.cursor()
+        check_data = list(
+            db_cursor.execute('SELECT "game_id" FROM "game_saves" WHERE "game_id" = ?', ([self.id]))
+        )
+
+        if check_data: return
         
         # Insert to leaderboard
         insert_query = 'INSERT INTO "leaderboard"("game_id", "times", "moves") VALUES(?, ?, ?)'
