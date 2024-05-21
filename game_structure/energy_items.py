@@ -25,7 +25,7 @@ class EnergyItem(pygame.sprite.Sprite):
         if hp <= 0:
             self.hp = 1
         elif hp > 5:
-            raise ValueError(hp)
+            self.hp = 5
         else:
             self.hp = hp
 

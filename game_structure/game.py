@@ -74,6 +74,7 @@ class GamePlay():
         self.energy = energy
         if self.energy:
             self.Energy_Items = pygame.sprite.Group()
+            self.energy_lst = []
         else:
             self.Energy_Items = None
 
@@ -166,7 +167,7 @@ class GamePlay():
                                 start: tuple[int, int], 
                                 end: tuple[int, int], 
                                 is_in: bool, 
-                                energy_lst: list[tuple[int, int]]):
+                                fake_adjust= 0):
         if is_in:
             # TODO
             # path_list= SBFS(
@@ -186,11 +187,12 @@ class GamePlay():
                             algorithm= 'BFS')
 
         choosen_place = choose_point_in_path(path_list= path_list,
-                                             energy_list= energy_lst,
-                                             grids= self.Maze.grids)
+                                             energy_list= self.energy_lst,
+                                             grids= self.Maze.grids,
+                                             maximize_distance= 5 + fake_adjust * 2)
 
         if choosen_place:
-            if start not in energy_lst:
+            if start not in self.energy_lst:
                 EnergyItem(
                     group= self.Energy_Items,
                     grid_position= start,
@@ -200,10 +202,10 @@ class GamePlay():
                         player_current_position= start,
                         player_winning_position= choosen_place[0],
                         algorithm= 'BFS'
-                    ))
+                    )) + fake_adjust
                 )
 
-                energy_lst.append(start)
+                self.energy_lst.append(start)
 
             if choosen_place[-1] == end:
                 choosen_place.pop()
@@ -221,16 +223,15 @@ class GamePlay():
                         player_current_position= place,
                         player_winning_position= end if place_index + 1 == len(choosen_place) else choosen_place[place_index + 1],
                         algorithm= 'BFS'
-                    ))
+                    )) + fake_adjust
                 )
 
-                energy_lst.append(place)
+                self.energy_lst.append(place)
         else:
-            print(choosen_place)
-            print('May be does not enough step?')
-        
-        return energy_lst
-            
+            pass
+            # print(choosen_place)
+            # print('May be does not enough step?')
+                    
     def generate_energy_item(self):
         # READ THE ENERGY_IDEA.TXT
         self.scale = 20 / self.Maze.maze_size
@@ -240,19 +241,18 @@ class GamePlay():
         min_moves_lst_gbfs = solve_maze(player= self.player.sprite,
                                         maze= self.Maze,
                                         algorithm= 'GBFS')
-        min_moves_lst_bfs = solve_maze(player= self.player.sprite, 
+        min_moves_lst_dfs = solve_maze(player= self.player.sprite, 
                                        maze= self.Maze,
-                                       algorithm= 'BFS')
+                                       algorithm= 'DFS')
 
             # Choose the start position of branch
-        
         branch_place_lst_gbfs = choose_k_point_in_path(self.Maze.grids, min_moves_lst_gbfs, int(self.Maze.maze_size * 10 / 20))
-        branch_place_lst_bfs = choose_k_point_in_path(self.Maze.grids, min_moves_lst_bfs, 0)
+        branch_place_lst_dfs = choose_k_point_in_path(self.Maze.grids, min_moves_lst_dfs, 0)
 
         branch_place_lst = branch_place_lst_gbfs
         
-        if len(branch_place_lst_bfs) > len(branch_place_lst_gbfs):
-            branch_place_lst = branch_place_lst_bfs
+        if len(branch_place_lst_dfs) > len(branch_place_lst_gbfs):
+            branch_place_lst = branch_place_lst_dfs
 
         real_index_lst = []
         real_index_lst.append(0)
@@ -278,7 +278,7 @@ class GamePlay():
             real_branch_lst = [branch_place_lst[i] for i in real_index_lst]
         else: return []
         
-        energy_lst = []
+        # energy_lst = []
         
         for i in range(1, len(branch_place_lst)):
             branch_place = branch_place_lst[i]
@@ -290,38 +290,54 @@ class GamePlay():
                 start = branch_place
                 end = branch_place_lst[i + 1]
             
-            energy_lst = self.create_start_end_energy(
+            self.create_start_end_energy(
                 start= start,
                 end= end,
                 is_in= branch_place in real_branch_lst,
-                energy_lst= energy_lst
             )
 
-        for i in range(len(branch_place_lst) // 3):
-            for place in get_surround(random.choice(energy_lst), max_size= self.Maze.maze_size, square_size= 5):
-                if place not in energy_lst:
-                    tmp_distance = len(
-                        BDFS(
-                            grids= self.Maze.grids,
-                            player_current_position= branch_place_lst[i],
-                            player_winning_position= place,
-                            algorithm= 'BFS'
-                        )
-                    )
+        self.generate_fake_energy_item()
+            
+        return self.energy_lst
 
-                    if tmp_distance >= 5: 
-                        EnergyItem(
-                            group= self.Energy_Items,
-                            grid_position= place,
-                            grid_size= self.grid_size,
-                            hp= 5 if tmp_distance >= 5 else tmp_distance - 1
-                        )
+    def generate_fake_energy_item(self):
+        # READ THE ENERGY_IDEA.TXT
+        self.scale = 20 / self.Maze.maze_size
+        # Placement Problem
 
-                        energy_lst.append(place)
-                        break
+            # Min path
+        min_moves_lst_bfs = solve_maze(player= self.player.sprite, 
+                                       maze= self.Maze,
+                                       algorithm= 'BFS')
 
-        return energy_lst
+        branch_place_lst_bfs = choose_k_point_in_path(self.Maze.grids, min_moves_lst_bfs, 0)
 
+        branch_place_lst = branch_place_lst_bfs
+        
+        real_index_lst = []
+        real_index_lst.append(0)
+                    
+        if branch_place_lst:
+            real_branch_lst = [branch_place_lst[i] for i in real_index_lst]
+        else: return
+                
+        for i in range(1, len(branch_place_lst)):
+            branch_place = branch_place_lst[i]
+
+            if i == len(branch_place_lst) - 1:
+                start = branch_place
+                end = self.Maze.end_position
+            else:
+                start = branch_place
+                end = branch_place_lst[i + 1]
+            
+            self.create_start_end_energy(
+                start= start,
+                end= end,
+                is_in= branch_place in real_branch_lst,
+                fake_adjust= - 1
+            )
+            
     def generate(self, 
                  algorithm= 'DFS', 
                  ondraw: bool = True,
