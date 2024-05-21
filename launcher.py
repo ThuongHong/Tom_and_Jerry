@@ -22,50 +22,62 @@ class Launcher():
         self.saved = False
         self.save_confirm = False
 
-        self.box_save_confirm_img = create_img(images_source, 'box_save_confirm')
+        box_save_confirm_img = create_img(images_source, 'box_save_confirm')
+        box_game_win_img = create_img(images_source, 'box_game_win')
+        box_game_lose_img = create_img(images_source, 'box_game_lose')
         self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 30)
+        self.end_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 50)
         
-        self.button_theme_img = create_img(images_source, 'button_hint_on')
-        self.button_hint_on_img = create_img(images_source, 'button_hint_on')
-        self.button_hint_off_img = create_img(images_source, 'button_hint_off')
-        self.button_algo_astarlist_img = create_img(images_source, 'button_algo_astarlist')
-        self.button_algo_astarheap_img = create_img(images_source, 'button_algo_astarheap')
-        self.button_algo_bfs_img = create_img(images_source, 'button_algo_bfs')
-        self.button_algo_dfs_img = create_img(images_source, 'button_algo_dfs')
-        self.button_algo_gbfs_img = create_img(images_source, 'button_algo_gbfs')
-        self.button_pause_game_img = create_img(images_source, 'button_pause_game')
-        self.button_resume_img = create_img(images_source, 'button_play')
-        self.button_restart_img = create_img(images_source, 'button_restart')
-        self.button_save_img = create_img(images_source, 'button_save')
-        self.button_home_img = create_img(images_source, 'button_home')
-        self.button_yes_img = create_img(images_source, 'button_yes')
-        self.button_no_img = create_img(images_source, 'button_no')
-        self.button_switch_themes_img = create_img(images_source, 'button_switch_themes')
+        button_hint_on_img = create_img(images_source, 'button_hint_on')
+        button_hint_off_img = create_img(images_source, 'button_hint_off')
+        button_algo_astarlist_img = create_img(images_source, 'button_algo_astarlist')
+        button_algo_astarheap_img = create_img(images_source, 'button_algo_astarheap')
+        button_algo_bfs_img = create_img(images_source, 'button_algo_bfs')
+        button_algo_dfs_img = create_img(images_source, 'button_algo_dfs')
+        button_algo_gbfs_img = create_img(images_source, 'button_algo_gbfs')
+        button_pause_game_img = create_img(images_source, 'button_pause_game')
+        button_resume_img = create_img(images_source, 'button_play')
+        button_restart_img = create_img(images_source, 'button_restart')
+        button_save_img = create_img(images_source, 'button_save')
+        button_home_img = create_img(images_source, 'button_home')
+        button_yes_img = create_img(images_source, 'button_yes')
+        button_no_img = create_img(images_source, 'button_no')
+        button_switch_themes_img = create_img(images_source, 'button_switch_themes')
+        button_box_game_home_img = create_img(images_source, 'button_box_game_home')
+        button_box_game_restart_img = create_img(images_source, 'button_box_game_restart')
         
         
-        self.box_save_confirm = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, self.box_save_confirm_img, 0.3)
+        self.box_save_confirm = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, box_save_confirm_img, 0.3)
         box_save_confirm_width = self.box_save_confirm.modified_width
         box_save_confirm_height = self.box_save_confirm.modified_height
         box_save_confirm_x_coord = self.box_save_confirm.x_coord
         box_save_confirm_y_coord = self.box_save_confirm.y_coord
+        self.box_game_win = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, box_game_win_img, 0.3)
+        box_game_win_width = self.box_game_win.modified_width
+        box_game_win_height = self.box_game_win.modified_height
+        box_game_win_x_coord = self.box_game_win.x_coord
+        box_game_win_y_coord = self.box_game_win.y_coord
+        self.box_game_lose = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, box_game_lose_img, 0.3)
         
 
-        self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_hint_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_astarlist_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_astarheap = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_astarheap_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_bfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_bfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_dfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_dfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_gbfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_algo_gbfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_pause_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, self.button_pause_game_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_resume = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, self.button_resume_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_restart = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.72, self.button_restart_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_save_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.52, self.button_save_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, self.button_home_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_yes = Button(box_save_confirm_x_coord - box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, self.button_yes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, self.button_no_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.75, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_switch_themes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-    
+        self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarlist_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_algo_astarheap = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarheap_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_algo_bfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_bfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_algo_dfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_dfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_algo_gbfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_gbfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_pause_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_pause_game_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_resume = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_resume_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_restart = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.72, button_restart_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_save_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.52, button_save_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, button_home_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_yes = Button(box_save_confirm_x_coord - box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_yes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_no_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.75, DISPLAY.SCREEN_HEIGHT * 0.92, button_switch_themes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_box_game_restart = Button(box_game_win_x_coord - box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_restart_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_box_game_home = Button(box_game_win_x_coord + box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_home_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        
         self.load_background()
 
     def load_background(self):
@@ -82,9 +94,9 @@ class Launcher():
         pos = pygame.mouse.get_pos()
         
         if self.paused:
-            time_used = self.font.render(f'Time: {self.time_at_pause}', True, (255, 255, 255))
+            time_used = self.font.render(f'Time  : {self.time_at_pause}', True, (255, 255, 255))
         else:
-            time_used = self.font.render(f'Time: {self.Game.get_time}', True, (255, 255, 255))
+            time_used = self.font.render(f'Time  : {self.Game.get_time}', True, (255, 255, 255))
         step_used = self.font.render(f'Steps: {self.Game.Tom.step_moves}', True, (255, 255, 255))
         self.window_screen.blit(time_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.05))
         self.window_screen.blit(step_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.10))
@@ -185,7 +197,29 @@ class Launcher():
                 self.current_background = 0
             self.background.change_image(self.background_images[self.current_background])
                 
+                
+        # box_game_win_width = self.box_game_win.modified_width
+        # box_game_win_height = self.box_game_win.modified_height
+        # box_game_win_x_coord = self.box_game_win.x_coord
+        # box_game_win_y_coord = self.box_game_win.y_coord        
 
+        if self.paused == True: # Temp
+            time_end = self.end_font.render(f'Time  :        {self.time_at_pause}', True, (0, 0, 0))
+            step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, (0, 0, 0))
+            self.box_game_win.draw(self.window_screen)
+            self.window_screen.blit(time_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord - self.box_game_win.modified_height * 0.01))
+            self.window_screen.blit(step_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.2))
+            if self.button_box_game_home.draw_lite(self.window_screen, pos, self.sound_on):
+                
+                self.save_confirm = False
+                self.paused = False
+                self.Game.set_new_game_state("back_menu")
+            if self.button_box_game_restart.draw_lite(self.window_screen, pos, self.sound_on):
+                self.paused = False
+                self.Game.resume_time()
+                self.Game.set_new_game_state("start")
+        
+        
     def init_setting(self, maze_size, 
                      sound_on,
                      start_coord_screen=(0, 0), end_coord_screen=(500, 500), 

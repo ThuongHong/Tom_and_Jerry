@@ -106,8 +106,7 @@ class GameScreen:
         choose_difficulty_img = create_img(self.image_source, 'choose_difficulty')
         box_choose_spawn_point_img = create_img(self.image_source, 'box_choose_spawn_point')
         mood_easy_img = create_img(self.image_source, 'mood_easy')
-        # mood_medium_img = create_img(self.image_source, 'mood_medium')
-        # no suitable img
+        mood_medium_img = create_img(self.image_source, 'mood_medium')
         mood_hard_img = create_img(self.image_source, 'mood_hard')
         # gameplay video
         
@@ -197,10 +196,8 @@ class GameScreen:
         box_choose_spawn_point_x_coord = self.box_choose_spawn_point.x_coord
         box_choose_spawn_point_y_coord = self.box_choose_spawn_point.y_coord
         self.mood_easy = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_easy_img, 0.3)
-        # self.mood_medium = graphic.Graphic(800, 10, mood_medium_img, 0.3)
-        # no suitable img
+        self.mood_medium = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_medium_img, 0.3)
         self.mood_hard = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_hard_img, 0.3)
-        # gameplay video
         
                 # create buttons
         self.button_yes = button.Button(HALF_SCREEN_WIDTH - box_login_confirm_width * 0.2, HALF_SCREEN_HEIGHT + box_login_confirm_height * 0.25, button_yes_img, self.click_sound_source, 0.3, 0.31)
@@ -427,8 +424,8 @@ class GameScreen:
                 if self.spawning == '':
                     if self.button_easy.image_rect.collidepoint(pos):
                         self.mood_easy.draw(self.screen)
-                    # if self.button_medium.image_rect.collidepoint(pos):
-                    #     self.mood_medium.draw(self.screen)
+                    if self.button_medium.image_rect.collidepoint(pos):
+                        self.mood_medium.draw(self.screen)
                     if self.button_hard.image_rect.collidepoint(pos):
                         self.mood_hard.draw(self.screen)
                         
@@ -444,8 +441,8 @@ class GameScreen:
                     
                 if self.difficulty == DIFFICULTY.EASY:
                     self.mood_easy.draw(self.screen)
-                # if self.difficulty == DIFFICULTY.MEDIUM:
-                #     self.mood_medium.draw(self.screen)
+                if self.difficulty == DIFFICULTY.MEDIUM:
+                    self.mood_medium.draw(self.screen)
                 if self.difficulty == DIFFICULTY.HARD:
                     self.mood_hard.draw(self.screen)
                     
