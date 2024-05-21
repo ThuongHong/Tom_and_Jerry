@@ -707,6 +707,13 @@ class GamePlay():
 
         db_cursor = db_connect.cursor()
 
+        # Check if game is save or not
+        check_data = list(
+            db_cursor.execute('SELECT "game_id" FROM "game_saves" WHERE "game_id" = ?', ([self.id]))
+        )
+
+        if check_data: return 
+
         maze_data = []
         for i in range(self.Maze.maze_size):
             for j in range(self.Maze.maze_size):
@@ -826,6 +833,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
     is_save = list(db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id} AND "save_state" = 1'))
     if not is_save: raise FileNotFoundError('This game is no longer save!!!')
     
+    user_id = list(db_cursor.execute('SELECT "user_id" FROM "played" WHERE "game_id" = ?', ([game_id])))[0][0]
     # If the game_id is fine -> Go Go to load
     game_data_1 = list(db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id}'))[0] # Get that row
 
@@ -853,11 +861,13 @@ def load_GamePlay(game_id: int) -> GamePlay:
 
     # Intialize a basic Game
     Game = GamePlay(
+        user_id= user_id,
         maze_size= maze_size,
         grid_size= grid_size,
         player_skin= player_skin,
         energy= is_energy,
-        scale= scale
+        scale= scale,
+        insane_mode= is_insane 
     )
 
     current_position = str_to_tuple(game_data_1[2])
