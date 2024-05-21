@@ -58,7 +58,7 @@ def choose_k_point_in_path(grids, position_lst: list, number: int) -> list:
     return processing_lst
     # return preprocess_lst
 
-def choose_point_in_path(grids, path_list: list, energy_list: list):
+def choose_point_in_path(grids, path_list: list, energy_list: list, maximize_distance= 5):
     path_len = len(path_list)
     def is_valid_path_list(path_list: list, energy_list: list):
         for place in path_list:
@@ -82,12 +82,12 @@ def choose_point_in_path(grids, path_list: list, energy_list: list):
             random_index_lst.append(first_random_index)
             break
     
-    while (path_len - 1) - random_index_lst[-1] > 5:
+    while (path_len - 1) - random_index_lst[-1] > maximize_distance:
         random_index = random.randrange(random_index_lst[-1] + 1, path_len - 1)
         if path_list[random_index][1] not in energy_list:
             random_index_lst.append(random_index)
 
-    while random_index_lst[0] > 4:
+    while random_index_lst[0] > maximize_distance - 1:
         random_index = random.randrange(0, random_index_lst[0])
         if path_list[random_index][1] not in energy_list:
             random_index_lst.insert(
@@ -104,14 +104,14 @@ def choose_point_in_path(grids, path_list: list, energy_list: list):
             if i == len(random_index_lst):
                 break
 
-            if random_index_lst[i] - random_index_lst[i - 1] > 5:
+            if random_index_lst[i] - random_index_lst[i - 1] > maximize_distance:
                 random_index = random.randrange(random_index_lst[i - 1] + 1, random_index_lst[i])
                 if path_list[random_index][1] not in energy_list:
                     random_index_lst.insert(
                         i,
                         random_index
                     )
-                # i += 1
+
                 continue
 
             i += 1
