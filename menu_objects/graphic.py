@@ -18,3 +18,7 @@ class Graphic:
         
     def change_image(self, image):
         self.image = pygame.transform.scale(image, (self.modified_width, self.modified_height))
+        
+    def set_alpha(self, alpha):
+        self.image.set_alpha(alpha)
+        

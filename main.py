@@ -37,10 +37,13 @@ while game_menu.running:
     elif game_menu.game_state == 'login signin':
         game_menu.draw_login_signin(event)
     elif game_menu.game_state == 'ingame':
-        game_launcher.init_setting(maze_size=game_menu.difficulty, spawning=game_menu.spawning, 
-                            energy=game_menu.energy_mode, user_id= game_menu.user_id)
+        game_launcher.init_setting(maze_size=game_menu.difficulty, sound_on=game_menu.sound,
+                                   spawning=game_menu.spawning, 
+                                   energy=game_menu.energy_mode, user_id= game_menu.user_id)
         game_launcher.launch()
+        
         game_menu.game_state = 'main menu'
+        game_menu.fade_transition(game_menu.background_main_menu, game_launcher.background)
             
     pygame.display.update()
     

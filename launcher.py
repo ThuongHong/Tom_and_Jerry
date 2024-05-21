@@ -66,6 +66,8 @@ class Launcher():
         self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, self.button_no_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
         self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.75, DISPLAY.SCREEN_HEIGHT * 0.92, self.button_switch_themes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
     
+        self.load_background()
+
     def load_background(self):
         self.background_images = []
         num_of_images = 4
@@ -92,48 +94,49 @@ class Launcher():
             self.window_screen.blit(energy_left, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.15))
         
         if not self.Game.is_draw_solution:
-            if self.button_hint_off.draw_lite(self.window_screen, pos, False):
+            if self.button_hint_off.draw_lite(self.window_screen, pos, self.sound_on):
                 self.Game.visualize_solution(algorithm=self.current_algo)
         else:
-            if self.button_hint_on.draw_lite(self.window_screen, pos, False):
+            if self.button_hint_on.draw_lite(self.window_screen, pos, self.sound_on):
                 self.Game.de_visualize_solution()
 
         if self.current_algo == 'AStar_OrderedList':
-            if self.button_algo_astarlist.draw_lite(self.window_screen, pos, False):
+            if self.button_algo_astarlist.draw_lite(self.window_screen, pos, self.sound_on):
                 self.current_algo = 'BFS'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
         elif self.current_algo == 'BFS':
-            if self.button_algo_bfs.draw_lite(self.window_screen, pos, False):
+            if self.button_algo_bfs.draw_lite(self.window_screen, pos, self.sound_on):
                 self.current_algo = 'DFS'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
         elif self.current_algo == 'DFS':
-            if self.button_algo_dfs.draw_lite(self.window_screen, pos, False):
+            if self.button_algo_dfs.draw_lite(self.window_screen, pos, self.sound_on):
                 self.current_algo = 'GBFS'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
         elif self.current_algo == 'GBFS':
-            if self.button_algo_gbfs.draw_lite(self.window_screen, pos, False):
+            if self.button_algo_gbfs.draw_lite(self.window_screen, pos, self.sound_on):
                 self.current_algo = 'AStar_MinBinaryHeap'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
         elif self.current_algo == 'AStar_MinBinaryHeap':
-            if self.button_algo_astarheap.draw_lite(self.window_screen, pos, False):
+            if self.button_algo_astarheap.draw_lite(self.window_screen, pos, self.sound_on):
+                print(2)
                 self.current_algo = 'AStar_OrderedList'
                 if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                 
         if self.paused == False:
-            if self.button_pause_game.draw_lite(self.window_screen, pos, False):
+            if self.button_pause_game.draw_lite(self.window_screen, pos, self.sound_on):
                 self.paused = True
                 self.time_at_pause = self.Game.pause_time()
                 
         elif self.paused == True:
-            if self.button_resume.draw_lite(self.window_screen, pos, False):
+            if self.button_resume.draw_lite(self.window_screen, pos, self.sound_on):
                 self.paused = False
                 self.Game.resume_time()
-            if self.button_restart.draw_lite(self.window_screen, pos, False):
+            if self.button_restart.draw_lite(self.window_screen, pos, self.sound_on):
                 """ Restart new maze """
                 self.paused = False
                 self.Game.resume_time()
                 self.Game.set_new_game_state("start")
-            if self.former_user_id is not None and self.button_save_game.draw_lite(self.window_screen, pos, False):
+            if self.former_user_id is not None and self.button_save_game.draw_lite(self.window_screen, pos, self.sound_on):
                 """ Save game """
                 self.saved = True
                 # Remember to set this to False if player moves after saved
@@ -142,7 +145,7 @@ class Launcher():
                 self.Game.save_game()
                 #            ^
                 # Check this |
-            if self.button_home.draw_lite(self.window_screen, pos, False):
+            if self.button_home.draw_lite(self.window_screen, pos, self.sound_on):
                 """ Exit to main menu """
                 if self.saved == False and self.former_user_id is not None:
                     self.save_confirm = True
@@ -153,7 +156,7 @@ class Launcher():
         
         if self.save_confirm == True:
             self.box_save_confirm.draw(self.window_screen)
-            if self.button_yes.draw_lite(self.window_screen, pos, False):
+            if self.button_yes.draw_lite(self.window_screen, pos, self.sound_on):
                 """ Save game """
                 self.save_confirm = False
                 self.paused = False
@@ -162,7 +165,7 @@ class Launcher():
                 # self.Game.save_game()
                 #            ^
                 # Check this |
-            if self.button_no.draw_lite(self.window_screen, pos, False):
+            if self.button_no.draw_lite(self.window_screen, pos, self.sound_on):
                 """ Exit to main menu"""
                 self.save_confirm = False
                 self.paused = False
@@ -170,14 +173,12 @@ class Launcher():
                 #            ^
                 # Check this |
                 
-        if self.button_switch_themes.draw_lite(self.window_screen, pos, False):
+        if self.button_switch_themes.draw_lite(self.window_screen, pos, self.sound_on):
             """ Switch themes"""
-            print(self.current_theme)
             self.current_theme = str(int(self.current_theme) + 1)
             if (self.current_theme == '8'):
                 self.current_theme = '1'
             self.Game.change_theme(self.current_theme)
-            print(self.current_theme)
             
             self.current_background = self.current_background + 1
             if (self.current_background == 4):
@@ -186,11 +187,13 @@ class Launcher():
                 
 
     def init_setting(self, maze_size, 
-              start_coord_screen=(0, 0), end_coord_screen=(500, 500), 
-              spawning='random', 
-              energy= False,
-              user_id= None,
-              insane_mode: bool = False):
+                     sound_on,
+                     start_coord_screen=(0, 0), end_coord_screen=(500, 500), 
+                     spawning='random', 
+                     energy= False,
+                     user_id= None,
+                     insane_mode: bool = False):
+        
         self.Game = GamePlay(user_id= user_id,
                              maze_size= maze_size,
                              grid_size= 28,
@@ -200,14 +203,17 @@ class Launcher():
                              window_screen= self.window_screen,
                              energy=energy,
                              insane_mode= insane_mode)
+        
         self.current_algo = "AStar_MinBinaryHeap"
         self.current_theme = '2'
         self.spawning = spawning
         self.energy = energy
         self.insane_mode = insane_mode
         self.time_at_pause = ''
-        
-        self.load_background()
+        self.paused = False
+        self.saved = False
+        self.save_confirm = False
+        self.sound_on = sound_on
         
         # For restart game
         self.former_user_id = user_id

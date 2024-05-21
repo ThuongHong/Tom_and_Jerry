@@ -511,3 +511,18 @@ class GameScreen:
             self.game_state = 'main menu'
             self.music_player.play_music(self.game_state)
             self.skip_login = False
+            
+    def fade_transition(self, image_1, image_2):
+        for i in range(0, 255, 3):
+            image_1.set_alpha(i)
+            image_2.set_alpha(255 - i) 
+            
+            image_1.draw(self.screen)
+            image_2.draw(self.screen)
+            
+            pygame.display.update()
+            
+        image_2.set_alpha(255) 
+        image_2.set_alpha(255) 
+            
+        
