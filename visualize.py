@@ -37,6 +37,8 @@ class GameScreen:
         self.new_game_state = 'choose difficulty'
         self.spawning = ''
         self.energy_mode = False
+        self.insane_mode = False
+        self.maze_visualizer = False
         self.load_game_state = 'easy'
         self.music = True
         self.sound = True
@@ -106,6 +108,7 @@ class GameScreen:
         box_login_confirm_img = create_img(self.image_source, 'box_login_confirm')
         choose_difficulty_img = create_img(self.image_source, 'choose_difficulty')
         box_choose_spawn_point_img = create_img(self.image_source, 'box_choose_spawn_point')
+        box_choose_settings_img = create_img(self.image_source, 'box_choose_settings')
         mood_easy_img = create_img(self.image_source, 'mood_easy')
         mood_medium_img = create_img(self.image_source, 'mood_medium')
         mood_hard_img = create_img(self.image_source, 'mood_hard')
@@ -191,11 +194,11 @@ class GameScreen:
         box_login_confirm_width = self.box_login_confirm.modified_width
         box_login_confirm_height = self.box_login_confirm.modified_height
         self.choose_difficulty = graphic.Graphic(SCREEN_WIDTH * 0.27, SCREEN_HEIGHT * 0.15, choose_difficulty_img, 0.3)
-        self.box_choose_spawn_point = graphic.Graphic(SCREEN_WIDTH * 0.7, HALF_SCREEN_HEIGHT, box_choose_spawn_point_img, 0.3)
-        box_choose_spawn_point_width = self.box_choose_spawn_point.modified_width
-        box_choose_spawn_point_height = self.box_choose_spawn_point.modified_height
-        box_choose_spawn_point_x_coord = self.box_choose_spawn_point.x_coord
-        box_choose_spawn_point_y_coord = self.box_choose_spawn_point.y_coord
+        self.box_choose_settings = graphic.Graphic(SCREEN_WIDTH * 0.7, SCREEN_HEIGHT * 0.55, box_choose_settings_img, 0.3)
+        box_choose_settings_width = self.box_choose_settings.modified_width
+        box_choose_settings_height = self.box_choose_settings.modified_height
+        box_choose_settings_x_coord = self.box_choose_settings.x_coord
+        box_choose_settings_y_coord = self.box_choose_settings.y_coord
         self.mood_easy = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_easy_img, 0.3)
         self.mood_medium = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_medium_img, 0.3)
         self.mood_hard = graphic.Graphic(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.15, mood_hard_img, 0.3)
@@ -206,10 +209,14 @@ class GameScreen:
         self.button_easy = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.35, button_easy_img, self.click_sound_source, 0.3, 0.31)
         self.button_medium = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.55, button_medium_img, self.click_sound_source, 0.3, 0.31)
         self.button_hard = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.75, button_hard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_random = button.Button(box_choose_spawn_point_x_coord - box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord, button_random_img, self.click_sound_source, 0.3, 0.31)
-        self.button_manual = button.Button(box_choose_spawn_point_x_coord + box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord, button_manual_img, self.click_sound_source, 0.3, 0.31)
-        self.button_uncheck = button.Button(box_choose_spawn_point_x_coord - box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord + box_choose_spawn_point_height * 0.3, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
-        self.button_check = button.Button(box_choose_spawn_point_x_coord - box_choose_spawn_point_width * 0.2, box_choose_spawn_point_y_coord + box_choose_spawn_point_height * 0.3, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_random = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.2, box_choose_settings_y_coord + box_choose_settings_height * 0.3, button_random_img, self.click_sound_source, 0.3, 0.31)
+        self.button_manual = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.2, box_choose_settings_y_coord + box_choose_settings_height * 0.3, button_manual_img, self.click_sound_source, 0.3, 0.31)
+        self.button_uncheck_energy_mode = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.2, box_choose_settings_y_coord - box_choose_settings_height * 0.22, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_uncheck_insane_mode = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.2, box_choose_settings_y_coord - box_choose_settings_height * 0.22, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_uncheck_visualizer = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.32, box_choose_settings_y_coord - box_choose_settings_height * 0.085, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_energy_mode = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.2, box_choose_settings_y_coord - box_choose_settings_height * 0.22, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_insane_mode = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.2, box_choose_settings_y_coord - box_choose_settings_height * 0.22, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_visualizer = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.32, box_choose_settings_y_coord - box_choose_settings_height * 0.085, button_check_img, self.click_sound_source, 0.3, 0.3)
         
         """ LOAD GAME """
                 # create graphic
@@ -500,7 +507,7 @@ class GameScreen:
                     
                     
                 if self.spawning == 'choose mode':
-                    self.box_choose_spawn_point.draw(self.screen)
+                    self.box_choose_settings.draw(self.screen)
                     if self.button_random.draw(self.screen, pos, event, self.sound):
                         self.spawning = 'random'
                         self.game_state = 'ingame'
@@ -524,15 +531,32 @@ class GameScreen:
                                 self.music_player.play_music('hard mode')
                             
                     if self.energy_mode == False:
-                        if self.button_uncheck.draw(self.screen, pos, event, self.sound):
+                        if self.button_uncheck_energy_mode.draw(self.screen, pos, event, self.sound):
                             self.energy_mode = True
                     else:
-                        if self.button_check.draw(self.screen, pos, event, self.sound):
+                        if self.button_check_energy_mode.draw(self.screen, pos, event, self.sound):
                             self.energy_mode = False
+                            
+                    if self.insane_mode == False:
+                        if self.button_uncheck_insane_mode.draw(self.screen, pos, event, self.sound):
+                            self.insane_mode = True
+                    else:
+                        if self.button_check_insane_mode.draw(self.screen, pos, event, self.sound):
+                            self.insane_mode = False
+                            
+                    if self.maze_visualizer == False:
+                        if self.button_uncheck_visualizer.draw(self.screen, pos, event, self.sound):
+                            self.maze_visualizer = True
+                    else:
+                        if self.button_check_visualizer.draw(self.screen, pos, event, self.sound):
+                            self.maze_visualizer = False
                             
                 if self.button_back.draw(self.screen, pos, event, self.sound):
                     self.game_state = 'main menu'
                     self.skip_login = False
+                    self.energy_mode = False
+                    self.insane_mode = False
+                    self.maze_visualizer = False
                     self.spawning = ''
             
             

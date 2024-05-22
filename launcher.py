@@ -257,7 +257,7 @@ class Launcher():
         self.save_confirm = False
         self.win = False
         self.lose = False
-        self.is_restared = False
+        self.is_restarted = False
         self.sound_on = sound_on
         
         # For restart game
@@ -283,9 +283,9 @@ class Launcher():
         self.lose = False
 
     def launch(self):
-        if self.is_restared: 
+        if self.is_restarted: 
             self.restart()
-            self.is_restared = False
+            self.is_restarted = False
         self.Game.generate(algorithm= 'HAK', ondraw= False)
         # Game.select_position_spawn()
         if self.spawning == 'random': self.Game.spawn_random()
@@ -314,7 +314,7 @@ class Launcher():
                 break
             
             if self.Game.game_state == 'start':
-                self.is_restared = True
+                self.is_restarted = True
                 self.launch()
                 break
               

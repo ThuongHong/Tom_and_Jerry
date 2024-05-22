@@ -43,6 +43,9 @@ while game_menu.running:
         game_launcher.launch()
         
         game_menu.game_state = 'main menu'
+        game_menu.energy_mode = False
+        game_menu.insane_mode = False
+        game_menu.maze_visualizer = False
         game_menu.fade_transition(game_menu.background_main_menu, game_launcher.background)
             
     pygame.display.update()
