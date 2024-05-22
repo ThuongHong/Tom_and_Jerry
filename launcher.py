@@ -234,7 +234,8 @@ class Launcher():
                      spawning='random', 
                      energy= False,
                      user_id= None,
-                     insane_mode: bool = False):
+                     insane_mode: bool = False,
+                     maze_visualizer=False):
         
         self.Game = GamePlay(user_id= user_id,
                              maze_size= maze_size,
@@ -259,6 +260,7 @@ class Launcher():
         self.lose = False
         self.is_restarted = False
         self.sound_on = sound_on
+        self.maze_visualizer = maze_visualizer
         
         # For restart game
         self.former_user_id = user_id
@@ -281,12 +283,17 @@ class Launcher():
         self.save_confirm = False
         self.win = False
         self.lose = False
+        self.is_restarted = False
 
     def launch(self):
         if self.is_restarted: 
             self.restart()
-            self.is_restarted = False
-        self.Game.generate(algorithm= 'HAK', ondraw= False)
+            self.maze_visualizer = False
+        if self.maze_visualizer:
+            self.background.draw(self.window_screen)
+            self.Game.generate(algorithm= 'HAK', ondraw=self.maze_visualizer)
+        else:
+            self.Game.generate(algorithm= 'HAK', ondraw= False)
         # Game.select_position_spawn()
         if self.spawning == 'random': self.Game.spawn_random()
         else: self.Game.select_position_spawn(self)
