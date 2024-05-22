@@ -1,11 +1,12 @@
 from menu_objects import button
 from menu_objects import graphic
 from menu_objects import textbox
-from menu_objects import saveslot
 from menu_objects import music
 from data import data
 import os
 import pygame
+
+
 
 from CONSTANTS import COLOR
 from CONSTANTS import DISPLAY
@@ -29,6 +30,8 @@ class GameScreen:
         # self.font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
         self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 40)
         self.leaderboard_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 30)
+        self.load_game_difficulty_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 150)
+        self.load_game_content_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 70)
         self.game_state = 'main menu'
         self.help_state = False
         self.difficulty = ''
@@ -39,7 +42,10 @@ class GameScreen:
         self.energy_mode = False
         self.insane_mode = False
         self.maze_visualizer = False
-        self.load_game_state = 'easy'
+        self.algorithm = 'HAK'
+        self.load_game_state = 'list'
+        self.load_game_save_id = None
+        self.load_game_snapshots = None # check this
         self.music = True
         self.sound = True
         self.login = False # do something with login system
@@ -119,9 +125,11 @@ class GameScreen:
         button_load_img = create_img(self.image_source, 'button_load')
         button_delete_img = create_img(self.image_source, 'button_delete')
         background_load_game_img = create_img(self.image_source, 'background_load_game')
-        frame_img = create_img(self.image_source, 'frame')
         overlay_img = create_img(self.image_source, 'overlay')
         easy_snapshot_1_img = create_img(self.image_source, 'temp_maze_snapshot')
+        test_snapshot_img = create_img('database/save_game_images', 'Game_58')
+        box_save_frame_img = create_img(self.image_source, 'box_save_frame')
+        box_save_profile_img = create_img(self.image_source, 'box_save_profile')
         
         """ create button and graphic for the game """
         """ MAIN MENU """
@@ -194,7 +202,7 @@ class GameScreen:
         box_login_confirm_width = self.box_login_confirm.modified_width
         box_login_confirm_height = self.box_login_confirm.modified_height
         self.choose_difficulty = graphic.Graphic(SCREEN_WIDTH * 0.27, SCREEN_HEIGHT * 0.15, choose_difficulty_img, 0.3)
-        self.box_choose_settings = graphic.Graphic(SCREEN_WIDTH * 0.7, SCREEN_HEIGHT * 0.55, box_choose_settings_img, 0.3)
+        self.box_choose_settings = graphic.Graphic(SCREEN_WIDTH * 0.7, SCREEN_HEIGHT * 0.6, box_choose_settings_img, 0.3)
         box_choose_settings_width = self.box_choose_settings.modified_width
         box_choose_settings_height = self.box_choose_settings.modified_height
         box_choose_settings_x_coord = self.box_choose_settings.x_coord
@@ -209,31 +217,48 @@ class GameScreen:
         self.button_easy = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.35, button_easy_img, self.click_sound_source, 0.3, 0.31)
         self.button_medium = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.55, button_medium_img, self.click_sound_source, 0.3, 0.31)
         self.button_hard = button.Button(SCREEN_WIDTH * 0.24, SCREEN_HEIGHT * 0.75, button_hard_img, self.click_sound_source, 0.3, 0.31)
-        self.button_random = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.2, box_choose_settings_y_coord + box_choose_settings_height * 0.3, button_random_img, self.click_sound_source, 0.3, 0.31)
-        self.button_manual = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.2, box_choose_settings_y_coord + box_choose_settings_height * 0.3, button_manual_img, self.click_sound_source, 0.3, 0.31)
-        self.button_uncheck_energy_mode = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.2, box_choose_settings_y_coord - box_choose_settings_height * 0.22, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
-        self.button_uncheck_insane_mode = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.2, box_choose_settings_y_coord - box_choose_settings_height * 0.22, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
-        self.button_uncheck_visualizer = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.32, box_choose_settings_y_coord - box_choose_settings_height * 0.085, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
-        self.button_check_energy_mode = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.2, box_choose_settings_y_coord - box_choose_settings_height * 0.22, button_check_img, self.click_sound_source, 0.3, 0.3)
-        self.button_check_insane_mode = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.2, box_choose_settings_y_coord - box_choose_settings_height * 0.22, button_check_img, self.click_sound_source, 0.3, 0.3)
-        self.button_check_visualizer = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.32, box_choose_settings_y_coord - box_choose_settings_height * 0.085, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_random = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.2, box_choose_settings_y_coord + box_choose_settings_height * 0.35, button_random_img, self.click_sound_source, 0.3, 0.31)
+        self.button_manual = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.2, box_choose_settings_y_coord + box_choose_settings_height * 0.35, button_manual_img, self.click_sound_source, 0.3, 0.31)
+        self.button_uncheck_energy_mode = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.21, box_choose_settings_y_coord - box_choose_settings_height * 0.285, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_uncheck_insane_mode = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.21, box_choose_settings_y_coord - box_choose_settings_height * 0.285, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_uncheck_hak = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.255, box_choose_settings_y_coord - box_choose_settings_height * 0.054, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_uncheck_dfs = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.115, box_choose_settings_y_coord - box_choose_settings_height * 0.054, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_uncheck_visualizer = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.16, box_choose_settings_y_coord + box_choose_settings_height * 0.057, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_energy_mode = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.21, box_choose_settings_y_coord - box_choose_settings_height * 0.285, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_insane_mode = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.21, box_choose_settings_y_coord - box_choose_settings_height * 0.285, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_hak = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.255, box_choose_settings_y_coord - box_choose_settings_height * 0.054, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_dfs = button.Button(box_choose_settings_x_coord + box_choose_settings_width * 0.115, box_choose_settings_y_coord - box_choose_settings_height * 0.054, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_visualizer = button.Button(box_choose_settings_x_coord - box_choose_settings_width * 0.16, box_choose_settings_y_coord + box_choose_settings_height * 0.057, button_check_img, self.click_sound_source, 0.3, 0.3)
         
         """ LOAD GAME """
                 # create graphic
         self.background_load_game = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, background_load_game_img, 1.5)
-        self.saveslot_easy_1 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
-        self.saveslot_easy_2 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 1.3, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
-        self.saveslot_medium_1 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
-        self.saveslot_medium_2 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 1.3, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
-        self.saveslot_hard_1 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
-        self.saveslot_hard_2 = saveslot.SaveSlot(HALF_SCREEN_WIDTH * 1.3, HALF_SCREEN_HEIGHT, frame_img, overlay_img, button_load_img, button_delete_img, self.click_sound_source, 0.4, 0.4)
-        self.easy_snapshot_1 = graphic.Graphic(HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, easy_snapshot_1_img, 1.5)
-
+        self.easy_snapshot_1 = graphic.Graphic(450, 440, easy_snapshot_1_img, 2.5)
+        self.test_snapshot = graphic.Graphic(450, 440, test_snapshot_img, 0.7)
+        self.box_save_profile = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_save_profile_img, 0.3)
+        box_save_profile_img_width = self.box_save_profile.modified_width
+        box_save_profile_img_height = self.box_save_profile.modified_height
+        box_save_profile_img_x_coord = self.box_save_profile.x_coord
+        box_save_profile_img_y_coord = self.box_save_profile.y_coord
+        
+        
+        box_choose_settings_width = self.box_choose_settings.modified_width
+        box_choose_settings_height = self.box_choose_settings.modified_height
+        box_choose_settings_x_coord = self.box_choose_settings.x_coord
+        box_choose_settings_y_coord = self.box_choose_settings.y_coord
+        
                 # create buttons
         self.button_easy_load_game = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.15, button_easy_img, self.click_sound_source, 0.3, 0.31)
         self.button_medium_load_game = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.15, button_medium_img, self.click_sound_source, 0.3, 0.31)
         self.button_hard_load_game = button.Button(HALF_SCREEN_WIDTH, SCREEN_HEIGHT * 0.15, button_hard_img, self.click_sound_source, 0.3, 0.31)
-        
+        self.box_save_frame_1 = button.Button(HALF_SCREEN_WIDTH  - 400, HALF_SCREEN_HEIGHT - 200, box_save_frame_img, self.click_sound_source, 0.3, 0.31)
+        self.box_save_frame_2 = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT - 200, box_save_frame_img, self.click_sound_source, 0.3, 0.31)
+        self.box_save_frame_3 = button.Button(HALF_SCREEN_WIDTH + 400, HALF_SCREEN_HEIGHT - 200, box_save_frame_img, self.click_sound_source, 0.3, 0.31)
+        self.box_save_frame_4 = button.Button(HALF_SCREEN_WIDTH  - 400, HALF_SCREEN_HEIGHT + 200, box_save_frame_img, self.click_sound_source, 0.3, 0.31)
+        self.box_save_frame_5 = button.Button(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT + 200, box_save_frame_img, self.click_sound_source, 0.3, 0.31)
+        self.box_save_frame_6 = button.Button(HALF_SCREEN_WIDTH  + 400, HALF_SCREEN_HEIGHT + 200, box_save_frame_img, self.click_sound_source, 0.3, 0.31)
+        self.button_load = button.Button(box_save_profile_img_x_coord + box_save_profile_img_width * 0.1, box_save_profile_img_y_coord + box_save_profile_img_height * 0.3, button_load_img, self.click_sound_source, 0.3, 0.31)
+        self.button_delete = button.Button(box_save_profile_img_x_coord + box_save_profile_img_width * 0.3, box_save_profile_img_y_coord + box_save_profile_img_height * 0.3, button_delete_img, self.click_sound_source, 0.3, 0.31)
         
     def draw_main_menu(self, event):
         pos = pygame.mouse.get_pos()
@@ -320,6 +345,7 @@ class GameScreen:
                 if self.login == True:
                     self.username = username
                     self.game_state = 'main menu'
+                    # Update snapshots here
                 else:
                     notification_text = self.font.render("Incorrect username or password.", True, COLOR.RED)
                     self.screen.blit(notification_text, (SCREEN_WIDTH * 0.36, SCREEN_HEIGHT * 0.52))
@@ -550,12 +576,22 @@ class GameScreen:
                     else:
                         if self.button_check_visualizer.draw(self.screen, pos, event, self.sound):
                             self.maze_visualizer = False
+                    
+                    if self.algorithm == 'HAK':
+                        self.button_check_hak.draw(self.screen, pos, event, self.sound)
+                        if self.button_uncheck_dfs.draw(self.screen, pos, event, self.sound):
+                            self.algorithm = 'DFS'
+                    elif self.algorithm == 'DFS':
+                        self.button_check_dfs.draw(self.screen, pos, event, self.sound)
+                        if self.button_uncheck_hak.draw(self.screen, pos, event, self.sound):
+                            self.algorithm = 'HAK'
                             
                 if self.button_back.draw(self.screen, pos, event, self.sound):
                     self.game_state = 'main menu'
                     self.skip_login = False
                     self.energy_mode = False
                     self.insane_mode = False
+                    self.algorithm = 'HAK'
                     self.maze_visualizer = False
                     self.spawning = ''
             
@@ -564,27 +600,85 @@ class GameScreen:
         pos = pygame.mouse.get_pos()
         
         self.background_load_game.draw(self.screen)
-        if self.load_game_state == 'easy':
-            self.easy_snapshot_1.draw(self.screen)
-            self.saveslot_easy_1.manage_save(self.screen, pos, event)
-            self.saveslot_easy_2.manage_save(self.screen, pos, event)
-            if self.button_easy_load_game.draw(self.screen, pos, event, self.sound):
-                self.load_game_state = 'medium'
-        if self.load_game_state == 'medium':
-            self.saveslot_medium_1.manage_save(self.screen, pos, event)
-            self.saveslot_medium_2.manage_save(self.screen, pos, event)
-            if self.button_medium_load_game.draw(self.screen, pos, event, self.sound):
-                self.load_game_state = 'hard'
-        if self.load_game_state == 'hard':
-            self.saveslot_hard_1.manage_save(self.screen, pos, event)
-            self.saveslot_hard_2.manage_save(self.screen, pos, event)
-            if self.button_hard_load_game.draw(self.screen, pos, event, self.sound):
-                self.load_game_state = 'easy'
-        if self.button_back.draw(self.screen, pos, event, self.sound):
-            self.game_state = 'main menu'
-            self.music_player.play_music(self.game_state)
-            self.skip_login = False
+        # if self.load_game_state == 'easy':
+        #     self.easy_snapshot_1.draw(self.screen)
+        #     self.saveslot_easy_1.manage_save(self.screen, pos, event)
+        #     self.saveslot_easy_2.manage_save(self.screen, pos, event)
+        #     if self.button_easy_load_game.draw(self.screen, pos, event, self.sound):
+        #         self.load_game_state = 'medium'
+        # if self.load_game_state == 'medium':
+        #     self.saveslot_medium_1.manage_save(self.screen, pos, event)
+        #     self.saveslot_medium_2.manage_save(self.screen, pos, event)
+        #     if self.button_medium_load_game.draw(self.screen, pos, event, self.sound):
+        #         self.load_game_state = 'hard'
+        # if self.load_game_state == 'hard':
+        #     self.saveslot_hard_1.manage_save(self.screen, pos, event)
+        #     self.saveslot_hard_2.manage_save(self.screen, pos, event)
+        #     if self.button_hard_load_game.draw(self.screen, pos, event, self.sound):
+        #         self.load_game_state = 'easy'
+        # if self.button_back.draw(self.screen, pos, event, self.sound):
+        #     self.game_state = 'main menu'
+        #     self.music_player.play_music(self.game_state)
+        #     self.skip_login = False
+        
+        
+        # snapshots = [snapshot]
+        
+        if self.load_game_state == 'list':
+            # for snapshot in snapshots:
+            # calculate coordinates of snapshots to blit
+                
+            if self.box_save_frame_1.draw(self.screen, pos, event):
+                self.load_game_state = 'detail'
+                self.load_game_save_id = 1
+            elif self.box_save_frame_2.draw(self.screen, pos, event):
+                self.load_game_state = 'detail'
+                self.load_game_save_id = 2
+            elif self.box_save_frame_3.draw(self.screen, pos, event):
+                self.load_game_state = 'detail'
+                self.load_game_save_id = 3
+            elif self.box_save_frame_4.draw(self.screen, pos, event):
+                self.load_game_state = 'detail'
+                self.load_game_save_id = 4
+            elif self.box_save_frame_5.draw(self.screen, pos, event):
+                self.load_game_state = 'detail'
+                self.load_game_save_id = 5
+            elif self.box_save_frame_6.draw(self.screen, pos, event):
+                self.load_game_state = 'detail'
+                self.load_game_save_id = 6
+                
+        if self.load_game_state == 'detail':
+            self.box_save_profile.draw(self.screen)
+            """ PSEUDO CODE """
+            difficulty1 = self.load_game_difficulty_font.render('easy', True, COLOR.BLACK)
+            time = self.load_game_content_font.render('Time :       123 s', True, COLOR.BLACK)
+            steps = self.load_game_content_font.render('Steps:      100', True, COLOR.BLACK)
+            game_mode = self.load_game_content_font.render('Mode: Energy', True, COLOR.BLACK)
+            # difficulty = self.font.render(self.load_game_save_id.difficulty, True, COLOR.BLACK)
+            # time = self.font.render(self.load_game_save_id.time, True, COLOR.BLACK)
+            # steps = self.font.render(self.load_game_save_id.steps, True, COLOR.BLACK)
+            # game_mode = self.font.render(self.load_game_save_id.game_mode, True, COLOR.BLACK)
             
+            self.screen.blit(difficulty1, (self.box_save_profile.x_coord - self.box_save_profile.modified_width * 0.25 - difficulty1.get_rect().width * 0.5, self.box_save_profile.y_coord - self.box_save_profile.modified_height * 0.5))
+            self.screen.blit(time, (self.box_save_profile.x_coord + self.box_save_profile.modified_width * 0.07, self.box_save_profile.y_coord - self.box_save_profile.modified_height * 0.25))
+            self.screen.blit(steps, (self.box_save_profile.x_coord + self.box_save_profile.modified_width * 0.07, self.box_save_profile.y_coord - self.box_save_profile.modified_height * 0.1))
+            self.screen.blit(game_mode, (self.box_save_profile.x_coord + self.box_save_profile.modified_width * 0.07, self.box_save_profile.y_coord + self.box_save_profile.modified_height * 0.05))
+            self.test_snapshot.draw(self.screen)
+            if self.button_load.draw(self.screen, pos, event, self.sound):
+                """ LOAD SAVE """
+                pass
+            if self.button_delete.draw(self.screen, pos, event, self.sound):
+                """ DELETE SAVE """
+                pass
+            
+        if self.button_back.draw(self.screen, pos, event, self.sound):
+            if self.load_game_state == 'list':
+                self.game_state = 'main menu'
+                self.music_player.play_music(self.game_state)
+                self.skip_login = False
+            if self.load_game_state == 'detail':
+                self.load_game_state = 'list'
+        
     def fade_transition(self, image_1, image_2):
         for i in range(0, 255, 3):
             image_1.set_alpha(i)
@@ -596,6 +690,5 @@ class GameScreen:
             pygame.display.update()
             
         image_2.set_alpha(255) 
-        image_2.set_alpha(255) 
-            
+        image_1.set_alpha(255) 
         
