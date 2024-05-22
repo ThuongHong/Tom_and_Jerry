@@ -6,7 +6,6 @@ from algorithm.BDFS import BDFS
 
 import pygame
 import os
-
 class Tom(pygame.sprite.Sprite):
     YELLOW = (255, 255, 0)
     def __init__(self,
@@ -41,6 +40,8 @@ class Tom(pygame.sprite.Sprite):
 
         self.energy_mode = False
         self.hp = 1
+        
+        self.moving_sound = pygame.mixer.Sound(os.path.join('sounds', 'moving_sound.ogg'))
         
         self.current_sprite = 0
 
@@ -154,6 +155,7 @@ class Tom(pygame.sprite.Sprite):
 
                 self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset) ###
                 
+
                 ui_grp.draw_ui()
                 pygame.display.update()
                 
@@ -161,10 +163,12 @@ class Tom(pygame.sprite.Sprite):
 
                 # if current_sprite > len(sprites) - 1 :
                 #     break
+                
+            if ui_grp.sound_on: pygame.mixer.Sound.play(self.moving_sound)
 
             if energy_grp:
                 for energy_item in energy_grp:
-                    energy_item.update(self, energy_grp)
+                    energy_item.update(self, energy_grp, ui_grp.sound_on)
                 # for energy in pygame.sprite.spritecollide(
                 #     sprite= self,
                 #     group= energy,
@@ -227,6 +231,7 @@ class Tom(pygame.sprite.Sprite):
                energy_grp= None,
                jerry_grp= None,
                ui_grp= None,
+               no_event=True,
                 **kwargs) -> bool:
         """Update state of player
 
@@ -275,27 +280,42 @@ class Tom(pygame.sprite.Sprite):
                              energy_grp= energy_grp, jerrgy_grp= jerry_grp, ui_grp= ui_grp)
         elif direction == None:
             if self.direction == 'T':
-                self.current_sprite += 0.1
+                if no_event:
+                    self.current_sprite += 0.3
+                else:
+                    self.current_sprite += 0.05
                 if int(self.current_sprite) >= len(self.animation_images['StandUp']):
                     self.current_sprite = 0
                 self.image = self.animation_images['StandUp'][int(self.current_sprite)]
             elif self.direction == 'B':
-                self.current_sprite += 0.1
+                if no_event:
+                    self.current_sprite += 0.3
+                else:
+                    self.current_sprite += 0.05
                 if int(self.current_sprite) >= len(self.animation_images['StandDown']):
                     self.current_sprite = 0
                 self.image = self.animation_images['StandDown'][int(self.current_sprite)]
             elif self.direction == 'L':
-                self.current_sprite += 0.1
+                if no_event:
+                    self.current_sprite += 0.3
+                else:
+                    self.current_sprite += 0.05
                 if int(self.current_sprite) >= len(self.animation_images['StandLeft']):
                     self.current_sprite = 0
                 self.image = self.animation_images['StandLeft'][int(self.current_sprite)]
             elif self.direction == 'R':
-                self.current_sprite += 0.1
+                if no_event:
+                    self.current_sprite += 0.3
+                else:
+                    self.current_sprite += 0.05
                 if int(self.current_sprite) >= len(self.animation_images['StandRight']):
                     self.current_sprite = 0
                 self.image = self.animation_images['StandRight'][int(self.current_sprite)]
             else:
-                self.current_sprite += 0.1
+                if no_event:
+                    self.current_sprite += 0.3
+                else:
+                    self.current_sprite += 0.05
                 if int(self.current_sprite) >= len(self.animation_images['StandDown']):
                     self.current_sprite = 0
                 self.image = self.animation_images['StandDown'][int(self.current_sprite)]
@@ -467,6 +487,7 @@ class Jerry(Tom):
                tom_grp = None,
                energy_grp = None,
                ui_grp = None,
+               no_event = True,
                 **kwargs) -> bool:
         if offset:
             self.scale_surface_offset = offset
@@ -484,7 +505,10 @@ class Jerry(Tom):
                     ui_grp= ui_grp
                 )
 
-        self.current_sprite += 0.05
+        if no_event:
+            self.current_sprite += 0.1
+        else:
+            self.current_sprite += 0.05
         if int(self.current_sprite) >= len(self.animation_images['StandDown']):
             self.current_sprite = 0
         self.image = self.animation_images['StandDown'][int(self.current_sprite)]

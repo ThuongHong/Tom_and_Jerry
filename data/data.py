@@ -115,7 +115,8 @@ def leaderboard(mode: str) -> list:
 
     leaderboard_data = list(db_cursor.execute(F'''
         SELECT  "user_name", "times", "moves" FROM {board}
-        ORDER BY moves ASC, times ASC;
+        ORDER BY "moves" ASC, "times" ASC;
     '''))
+    
 
     return leaderboard_data
