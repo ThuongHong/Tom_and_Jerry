@@ -6,7 +6,6 @@ from algorithm.BDFS import BDFS
 
 import pygame
 import os
-
 class Tom(pygame.sprite.Sprite):
     YELLOW = (255, 255, 0)
     def __init__(self,
@@ -41,6 +40,8 @@ class Tom(pygame.sprite.Sprite):
 
         self.energy_mode = False
         self.hp = 1
+        
+        self.moving_sound = pygame.mixer.Sound(os.path.join('sounds', 'moving_sound.ogg'))
         
         self.current_sprite = 0
 
@@ -154,6 +155,7 @@ class Tom(pygame.sprite.Sprite):
 
                 self.window_screen.blit(scale_surface, scale_rect.topleft + self.scale_surface_offset) ###
                 
+
                 ui_grp.draw_ui()
                 pygame.display.update()
                 
@@ -161,10 +163,12 @@ class Tom(pygame.sprite.Sprite):
 
                 # if current_sprite > len(sprites) - 1 :
                 #     break
+                
+            if ui_grp.sound_on: pygame.mixer.Sound.play(self.moving_sound)
 
             if energy_grp:
                 for energy_item in energy_grp:
-                    energy_item.update(self, energy_grp)
+                    energy_item.update(self, energy_grp, ui_grp.sound_on)
                 # for energy in pygame.sprite.spritecollide(
                 #     sprite= self,
                 #     group= energy,
