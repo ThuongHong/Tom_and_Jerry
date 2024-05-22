@@ -46,11 +46,12 @@ while game_menu.running:
             insane_mode=game_menu.insane_mode,
             maze_visualizer=game_menu.maze_visualizer,
         )
-        game_launcher.launch()
+        game_launcher.launch(game_menu.algorithm)
 
         game_menu.game_state = "main menu"
         game_menu.energy_mode = False
         game_menu.insane_mode = False
+        game_menu.algorithm = 'HAK'
         game_menu.maze_visualizer = False
         game_menu.fade_transition(
             game_menu.background_main_menu, game_launcher.background

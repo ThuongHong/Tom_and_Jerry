@@ -153,6 +153,7 @@ class Launcher():
                     self.Game.save_game()
                     #            ^
                     # Check this |
+                    # Update snapshots here
                 if self.button_home.draw(self.window_screen, pos, event, self.sound_on):
                     """ Exit to main menu """
                     if self.saved == False and self.former_user_id is not None:
@@ -173,6 +174,7 @@ class Launcher():
                     # self.Game.save_game()
                     #            ^
                     # Check this |
+                    # Update snapshots here
                 if self.button_no.draw(self.window_screen, pos, event, self.sound_on):
                     """ Exit to main menu"""
                     self.save_confirm = False
@@ -285,15 +287,15 @@ class Launcher():
         self.lose = False
         self.is_restarted = False
 
-    def launch(self):
+    def launch(self, algorithm):
         if self.is_restarted: 
             self.restart()
             self.maze_visualizer = False
         if self.maze_visualizer:
             self.background.draw(self.window_screen)
-            self.Game.generate(algorithm= 'HAK', ondraw=self.maze_visualizer)
+            self.Game.generate(algorithm= algorithm, ondraw=self.maze_visualizer)
         else:
-            self.Game.generate(algorithm= 'HAK', ondraw= False)
+            self.Game.generate(algorithm= algorithm, ondraw= False)
         # Game.select_position_spawn()
         if self.spawning == 'random': self.Game.spawn_random()
         else: self.Game.select_position_spawn(self)
