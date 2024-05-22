@@ -524,7 +524,86 @@ class GamePlay():
         ui_grp.background.draw(self.window_screen)
         self.screen.fill((0, 0, 0))
 
-    def run(self, ui_grp):
+    def get_action(self, event, ui_grp):
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+        # MOVE -> Dang mac dinh la khi move thi show process se bi dung
+        if event.type == pygame.KEYDOWN and not ui_grp.paused and self.game_state == 'in_game':
+            if event.key == pygame.K_LEFT:
+                self.player.update(direction= 'L', 
+                                    maze= self.Maze, 
+                                    offset= self.scale_surface_offset, 
+                                    energy_grp= self.Energy_Items, 
+                                    jerry_grp= self.npc, 
+                                    ui_grp= ui_grp)
+                if self.insane_mode:
+                    self.npc.update(maze= self.Maze, 
+                                    scale= self.scale, 
+                                    offset= self.scale_surface_offset, 
+                                    tom_grp= self.player,
+                                    energy_grp= self.Energy_Items,
+                                    ui_grp= ui_grp)
+            elif event.key == pygame.K_RIGHT:
+                self.player.update(direction= 'R', 
+                                    maze= self.Maze, 
+                                    offset= self.scale_surface_offset,
+                                    energy_grp= self.Energy_Items, 
+                                    jerry_grp= self.npc, 
+                                    ui_grp= ui_grp)
+                if self.insane_mode:
+                    self.npc.update(maze= self.Maze, 
+                                    scale= self.scale, 
+                                    offset= self.scale_surface_offset, 
+                                    tom_grp= self.player,
+                                    energy_grp= self.Energy_Items,
+                                    ui_grp= ui_grp)
+            elif event.key == pygame.K_UP:
+                self.player.update(direction= 'T', 
+                                    maze= self.Maze, 
+                                    offset= self.scale_surface_offset,
+                                    energy_grp= self.Energy_Items, 
+                                    jerry_grp= self.npc, 
+                                    ui_grp= ui_grp)
+                if self.insane_mode:
+                    self.npc.update(maze= self.Maze, 
+                                    scale= self.scale, 
+                                    offset= self.scale_surface_offset, 
+                                    tom_grp= self.player,
+                                    energy_grp= self.Energy_Items,
+                                    ui_grp= ui_grp)
+            elif event.key == pygame.K_DOWN:
+                self.player.update(direction= 'B', 
+                                    maze= self.Maze, 
+                                    offset= self.scale_surface_offset,
+                                    energy_grp= self.Energy_Items, 
+                                    jerry_grp= self.npc, 
+                                    ui_grp= ui_grp)
+                if self.insane_mode:
+                    self.npc.update(maze= self.Maze, 
+                                    scale= self.scale, 
+                                    offset= self.scale_surface_offset, 
+                                    tom_grp= self.player,
+                                    energy_grp= self.Energy_Items,
+                                    ui_grp= ui_grp)
+            elif event.key == pygame.K_e:
+                self.scale += 0.1
+            elif event.key == pygame.K_f:
+                self.scale -= 0.1
+            elif event.key == pygame.K_w:
+                self.scale_surface_offset.y += 50 * self.scale
+            elif event.key == pygame.K_a:
+                self.scale_surface_offset.x += 50 * self.scale
+            elif event.key == pygame.K_s:
+                self.scale_surface_offset.y -= 50 * self.scale
+            elif event.key == pygame.K_d:
+                self.scale_surface_offset.x -= 50 * self.scale
+            elif event.key == pygame.K_SPACE:
+                self.game_centering()
+            elif event.key == pygame.K_x:
+                self.game_normal_view()
+                
+    def update_ingame(self, event, ui_grp):
         """This method will use in a while loop
         Get all the event while th game is run and handle it
         """  
@@ -539,10 +618,12 @@ class GamePlay():
             self.player.update(scale= self.scale, 
                             maze= self.Maze, 
                             offset= self.scale_surface_offset,
-                            energy_grp= self.Energy_Items)
+                            energy_grp= self.Energy_Items,
+                            no_event=event == pygame.NOEVENT)
             
             self.npc.update(scale= self.scale,
-                            offset= self.scale_surface_offset)
+                            offset= self.scale_surface_offset,
+                            no_event=event == pygame.NOEVENT)
         # DRAW
         self.Maze.draw(self.screen)
         if self.Energy_Items: 
@@ -550,89 +631,6 @@ class GamePlay():
         self.npc.draw(self.screen)
         self.player.draw(self.screen)
         
-
-        # EVENT HANDLE
-        events = pygame.event.get()
-        for event in events:
-            # QUIT
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            # MOVE -> Dang mac dinh la khi move thi show process se bi dung
-            if event.type == pygame.KEYDOWN and not ui_grp.paused and self.game_state == 'in_game':
-                if event.key == pygame.K_LEFT:
-                    self.player.update(direction= 'L', 
-                                       maze= self.Maze, 
-                                       offset= self.scale_surface_offset, 
-                                       energy_grp= self.Energy_Items, 
-                                       jerry_grp= self.npc, 
-                                       ui_grp= ui_grp)
-                    if self.insane_mode:
-                        self.npc.update(maze= self.Maze, 
-                                        scale= self.scale, 
-                                        offset= self.scale_surface_offset, 
-                                        tom_grp= self.player,
-                                        energy_grp= self.Energy_Items,
-                                        ui_grp= ui_grp)
-                elif event.key == pygame.K_RIGHT:
-                    self.player.update(direction= 'R', 
-                                       maze= self.Maze, 
-                                       offset= self.scale_surface_offset,
-                                       energy_grp= self.Energy_Items, 
-                                       jerry_grp= self.npc, 
-                                       ui_grp= ui_grp)
-                    if self.insane_mode:
-                        self.npc.update(maze= self.Maze, 
-                                        scale= self.scale, 
-                                        offset= self.scale_surface_offset, 
-                                        tom_grp= self.player,
-                                        energy_grp= self.Energy_Items,
-                                        ui_grp= ui_grp)
-                elif event.key == pygame.K_UP:
-                    self.player.update(direction= 'T', 
-                                       maze= self.Maze, 
-                                       offset= self.scale_surface_offset,
-                                       energy_grp= self.Energy_Items, 
-                                       jerry_grp= self.npc, 
-                                       ui_grp= ui_grp)
-                    if self.insane_mode:
-                        self.npc.update(maze= self.Maze, 
-                                        scale= self.scale, 
-                                        offset= self.scale_surface_offset, 
-                                        tom_grp= self.player,
-                                        energy_grp= self.Energy_Items,
-                                        ui_grp= ui_grp)
-                elif event.key == pygame.K_DOWN:
-                    self.player.update(direction= 'B', 
-                                       maze= self.Maze, 
-                                       offset= self.scale_surface_offset,
-                                       energy_grp= self.Energy_Items, 
-                                       jerry_grp= self.npc, 
-                                       ui_grp= ui_grp)
-                    if self.insane_mode:
-                        self.npc.update(maze= self.Maze, 
-                                        scale= self.scale, 
-                                        offset= self.scale_surface_offset, 
-                                        tom_grp= self.player,
-                                        energy_grp= self.Energy_Items,
-                                        ui_grp= ui_grp)
-                elif event.key == pygame.K_e:
-                    self.scale += 0.1
-                elif event.key == pygame.K_f:
-                    self.scale -= 0.1
-                elif event.key == pygame.K_w:
-                    self.scale_surface_offset.y += 50 * self.scale
-                elif event.key == pygame.K_a:
-                    self.scale_surface_offset.x += 50 * self.scale
-                elif event.key == pygame.K_s:
-                    self.scale_surface_offset.y -= 50 * self.scale
-                elif event.key == pygame.K_d:
-                    self.scale_surface_offset.x -= 50 * self.scale
-                elif event.key == pygame.K_SPACE:
-                    self.game_centering()
-                elif event.key == pygame.K_x:
-                    self.game_normal_view()
-
         # If draw_process is True so this one will run
         self.draw_process()
 
@@ -838,6 +836,8 @@ class GamePlay():
             self.scale += 1 / max_frame
             self.game_centering()
             self.frame += 1
+            return False
+        return True
     
     def normal_zoom_linear(self, max_frame):
         if self.frame == 0:

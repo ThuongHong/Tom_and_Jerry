@@ -24,9 +24,9 @@ class Button:
         # check mouseover and clicked conditions
         if self.image_rect.collidepoint(pos) and self.mouse_click == False:
             surface.blit(self.hover_image, self.hover_image_rect)
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event and event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse_down = True
-            if event.type == pygame.MOUSEBUTTONUP and self.mouse_down == True:
+            if event and event.type == pygame.MOUSEBUTTONUP and self.mouse_down == True:
                 self.mouse_click = True
                 
         else:
