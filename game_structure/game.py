@@ -733,7 +733,16 @@ class GamePlay():
             db_cursor.execute('SELECT "game_id" FROM "game_saves" WHERE "game_id" = ?', ([self.id]))
         )
 
-        if check_data: return 
+        # Delete current data if it already saved
+        if check_data: 
+            db_cursor.execute(
+                '''
+                DELETE FROM "game_saves"
+                WHERE "game_id" = ?
+                ''',
+
+                ([self.id])
+            ) 
 
         maze_data = []
         for i in range(self.Maze.maze_size):
@@ -741,14 +750,6 @@ class GamePlay():
                 maze_data.append(
                     self.Maze.grids[i, j].walls
                 )
-
-        # maze_data.append(
-        #     self.Maze.grids[self.Maze.start_position[0], -1].walls
-        # )
-        
-        # maze_data.append(
-        #     self.Maze.grids[self.Maze.end_position[0], self.maze_size].walls
-        # )
 
         maze_data_str = json.dumps(maze_data, indent= 4) 
 
