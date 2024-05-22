@@ -28,6 +28,7 @@ class GameScreen:
         self.running = True
         # self.font = pygame.font.SysFont('The Fountain of Wishes Regular', 40)
         self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 40)
+        self.leaderboard_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 30)
         self.game_state = 'main menu'
         self.help_state = False
         self.difficulty = ''
@@ -384,6 +385,23 @@ class GameScreen:
                 self.leaderboard_state = 'hard'
             self.leaderboard.draw(self.screen)
             self.leaderboard_easy.draw(self.screen)
+            records = data.leaderboard(mode='EASY')
+            for i in range(min(len(records), DISPLAY.RECORD_LIMIT)):
+                username = self.font.render(records[i][0], True, COLOR.BLACK)
+                time = self.font.render(records[i][1], True, COLOR.BLACK)
+                steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
+                self.screen.blit(username, 
+                                 ((self.leaderboard.x_coord - username.get_rect().width * 0.5 - self.leaderboard.modified_width * 0.22, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
+                self.screen.blit(steps, 
+                                 ((self.leaderboard.x_coord + self.leaderboard.modified_width * 0.01, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
+                self.screen.blit(time, 
+                                 ((self.leaderboard.x_coord + self.leaderboard.modified_width * 0.2, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
                 
         if self.leaderboard_state == 'medium':
             if self.button_leaderboard_easy.draw(self.screen, pos, event, self.sound):
@@ -392,6 +410,23 @@ class GameScreen:
                 self.leaderboard_state = 'hard'
             self.leaderboard.draw(self.screen)
             self.leaderboard_medium.draw(self.screen)
+            records = data.leaderboard(mode='MEDIUM')
+            for i in range(min(len(records), DISPLAY.RECORD_LIMIT)):
+                username = self.font.render(records[i][0], True, COLOR.BLACK)
+                time = self.font.render(records[i][1], True, COLOR.BLACK)
+                steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
+                self.screen.blit(username, 
+                                 ((self.leaderboard.x_coord - username.get_rect().width * 0.5 - self.leaderboard.modified_width * 0.22, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
+                self.screen.blit(steps, 
+                                 ((self.leaderboard.x_coord + self.leaderboard.modified_width * 0.01, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
+                self.screen.blit(time, 
+                                 ((self.leaderboard.x_coord + self.leaderboard.modified_width * 0.2, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
                 
         if self.leaderboard_state == 'hard':
             if self.button_leaderboard_easy.draw(self.screen, pos, event, self.sound):
@@ -400,6 +435,23 @@ class GameScreen:
                 self.leaderboard_state = 'medium'
             self.leaderboard.draw(self.screen)
             self.leaderboard_hard.draw(self.screen)
+            records = data.leaderboard(mode='HARD')
+            for i in range(min(len(records), DISPLAY.RECORD_LIMIT)):
+                username = self.font.render(records[i][0], True, COLOR.BLACK)
+                time = self.font.render(records[i][1], True, COLOR.BLACK)
+                steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
+                self.screen.blit(username, 
+                                 ((self.leaderboard.x_coord - username.get_rect().width * 0.5 - self.leaderboard.modified_width * 0.22, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
+                self.screen.blit(steps, 
+                                 ((self.leaderboard.x_coord + self.leaderboard.modified_width * 0.01, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
+                self.screen.blit(time, 
+                                 ((self.leaderboard.x_coord + self.leaderboard.modified_width * 0.2, 
+                                   self.leaderboard.y_coord - self.leaderboard.modified_height * 0.13 
+                                   + self.background_leaderboard.modified_height * 0.07 * i)))
         
         if self.button_back.draw(self.screen, pos, event, self.sound):
             self.game_state = 'main menu'
