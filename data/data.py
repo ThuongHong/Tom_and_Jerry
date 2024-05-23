@@ -49,7 +49,7 @@ def get_img_and_game_id_load_game(user_id: int):
         user_id (int): _description_
 
     Returns:
-        _type_: _description_
+        _type_: list of all thing we need
     """
     db_connect = sqlite3.connect(r'database/TomJerry.db')
 
@@ -58,7 +58,7 @@ def get_img_and_game_id_load_game(user_id: int):
     saved_game_ids = list(
         db_cursor.execute(
             '''
-            SELECT "game_id" FROM "game_saves"
+            SELECT "game_id", "times", "moves" FROM "game_saves"
             WHERE "game_id" IN (
                 SELECT "game_id" FROM "played"
                 WHERE "user_id" = ? AND save_state = 1
@@ -69,20 +69,40 @@ def get_img_and_game_id_load_game(user_id: int):
     )
 
     format_game_ids = [saved_game_ids[i][0] for i in range(len(saved_game_ids))]
-    print(format_game_ids)
+    game_saves_data = []
 
-    saved_game_ids = []
-    game_images = []
-    
-    for game_id in format_game_ids:
+    for i in range(len(format_game_ids)):
+        game_id = format_game_ids[i]
+
         try:
             img = pygame.image.load(join('database', 'save_game_images', 'Game_' + str(game_id) + '.png')).convert_alpha()
-            # return img
-            saved_game_ids.append(game_id)
-            game_images.append(img)
+
+            single_data_row = []
+
+            # Game Id
+            single_data_row.append(game_id)
+            # Image
+            single_data_row.append(img)
+            # Mode
+            single_data_row.extend(
+                list(
+                    db_cursor.execute(
+                        '''
+                        SELECT "game_mode", "energy_mode", "insane_mode" FROM "games"
+                        WHERE "id" = ?
+                        ''',
+                        ([game_id])
+                    )
+                )[0]
+            )
+
+            game_saves_data.append(
+                single_data_row
+            )            
         except FileNotFoundError:
-            pass
-    return list(zip(saved_game_ids, game_images))
+            continue
+    
+    return game_saves_data
 
 def remove_game_save(game_id: int):
     db_connect = sqlite3.connect(r'database/TomJerry.db')
@@ -120,3 +140,8 @@ def leaderboard(mode: str) -> list:
     
 
     return leaderboard_data
+
+if __name__ == '__main__':
+    pygame.init()
+    sc = pygame.display.set_mode((100, 100))
+    print(get_img_and_game_id_load_game(3))
