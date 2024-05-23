@@ -623,7 +623,7 @@ class GameScreen:
             if self.button_newgame.draw(self.screen, pos, event, self.sound):
                 if len(self.saved_games) >= DISPLAY.SAVE_LIMIT:
                     self.full_save = True
-                    self.first_game_id = self.saved_games[0]
+                    self.first_game_id = self.saved_games[0][0]
                 else:
                     self.full_save = False
                     self.game_state = "new game"
@@ -821,7 +821,7 @@ class GameScreen:
                     if self.login == True:
                         self.username = new_username
                         self.game_state = "main menu"
-                        # self.get_saved_data()
+                        self.get_saved_data()
                         # Check numbers of save files
                     
                     
@@ -1239,7 +1239,7 @@ class GameScreen:
         if self.button_back.draw(self.screen, pos, event, self.sound):
             if self.load_game_state == 'list':
                 self.game_state = 'main menu'
-                self.music_player.play_music(self.game_state)
+                # if self.music: self.music_player.play_music(self.game_state)
                 self.skip_login = False
             if self.load_game_state == 'detail':
                 self.load_game_state = 'list'

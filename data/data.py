@@ -37,7 +37,7 @@ def login(username: str, password: str):
     if is_user_exist:
         if check_password_hash(pwhash= is_user_exist[0][0], password= password):
             user_id = list(db_cursor.execute(f'SELECT "id" FROM "users" WHERE "username" = ?', [username]))[0][0]
-            print(True, user_id)
+            # print(True, user_id)
             return [True, user_id]
     
     return [False, None]
@@ -61,8 +61,9 @@ def get_saved_game(user_id: int):
             SELECT "game_id", "times", "moves" FROM "game_saves"
             WHERE "game_id" IN (
                 SELECT "game_id" FROM "played"
-                WHERE "user_id" = ? AND save_state = 1
+                WHERE "user_id" = ?
             )
+            AND save_state = 1
             ''',
             ([user_id])
         )

@@ -221,15 +221,14 @@ class Launcher():
             if self.overwrite_confirm == True:
                 self.box_confirm_overwrite.draw(self.window_screen)
                 if self.button_overwrite.draw(self.window_screen, pos, event, self.sound_on):
-                    # self.Game.save_game()
-                    # data.remove()
+                    self.Game.save_game(self.time_at_pause)
+                    data.remove_game_save(self.first_game_id)
                     self.saved = True
                     # Remember to set this to False if player moves after saved
                     self.paused = False
                     self.save_confirm = False
                     self.overwrite_confirm = False
                 if self.button_cancel.draw(self.window_screen, pos, event, self.sound_on):
-                    print(self.saved)
                     self.paused = False
                     self.save_confirm = False
                     self.overwrite_confirm = False
@@ -295,6 +294,7 @@ class Launcher():
         self.paused = False
         self.saved = False
         self.save_confirm = False
+        self.overwrite_confirm = False
         self.win = False
         self.lose = False
         self.is_restarted = False
@@ -337,12 +337,13 @@ class Launcher():
         self.overwrite_confirm = False
         self.win = False
         self.lose = False
-        self.is_restarted = False
         self.sound_on = sound_on
         self.maze_visualizer = maze_visualizer
         self.maze_generate_algo = maze_generate_algo
         self.full_save = full_save
         self.is_loaded = False
+        self.first_game_id = first_game_id # for remove first file if it is full storage
+        self.Game.create_new_game_id(self.maze_generate_algo)
         
         # For restart game
         self.user_id = user_id
@@ -350,26 +351,16 @@ class Launcher():
         self.maze_size = maze_size
         
     def restart(self):
-        self.Game = GamePlay(user_id= self.user_id,
-                             maze_size= self.maze_size,
-                             grid_size= 28,
-                             scale= 1,
-                             window_screen= self.window_screen,
-                             energy=self.energy,
-                             insane_mode= self.insane_mode)
+
         self.paused = False
         self.saved = False
         self.save_confirm = False
         self.overwrite_confirm = False
         self.win = False
         self.lose = False
-        self.is_restarted = False
 
     def launch(self):
-        if self.is_restarted: 
-            self.restart()
-            self.maze_visualizer = False
-            
+
         if self.is_loaded == True: self.is_loaded = False
         else:
             if self.maze_visualizer:
@@ -404,7 +395,7 @@ class Launcher():
                 break
             
             if self.Game.game_state == 'start':
-                self.is_restarted = True
+                self.restart()
                 self.launch()
                 break
               

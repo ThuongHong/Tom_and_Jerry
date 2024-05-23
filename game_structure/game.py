@@ -56,6 +56,7 @@ class GamePlay:
         """
         self.user_id = user_id
 
+        
         # self.grid_size = int(20 * 28 / maze_size)
         self.grid_size = grid_size
         if maze_size == 100:
@@ -63,7 +64,7 @@ class GamePlay:
         # 20 -> 28
 
         self._maze_size = maze_size
-
+        
         # self.window_screen = window_screen
         if not window_screen:
             self.window_screen = pygame.display.get_surface()
@@ -123,6 +124,15 @@ class GamePlay:
         self.is_stop_process = True
 
         self.frame = 0
+        
+        # Intialize super basic maze
+        self.Maze = Maze(
+            maze_size=self.maze_size,
+            maze_grid_size=self.grid_size,
+            scale=self.scale,
+            screen=self.screen,
+            window_screen=self.window_screen,
+        )
 
     @property
     def maze_size(self):
@@ -411,20 +421,13 @@ class GamePlay:
             ondraw (bool, optional): Want to see process or not. Defaults to True.
             draw_speed (str, optional): Speed Showing Process. Defaults to 'FAST'.
         """
-        # Intialize super basic maze
-        self.Maze = Maze(
-            maze_size=self.maze_size,
-            maze_grid_size=self.grid_size,
-            scale=self.scale,
-            screen=self.screen,
-            window_screen=self.window_screen,
-        )
 
         # Generate that maze
         self.Maze.generate_new_maze(
             algorithm=algorithm, draw=ondraw, draw_speed=draw_speed
         )
 
+    def create_new_game_id(self, generate_algo):
         # After generate maze -> Ingame -> Save game data to Database
         # Insert to database
         if self.user_id:
@@ -444,7 +447,7 @@ class GamePlay:
                     self.insane_mode,
                     self.grid_size,
                     self.player_skin,
-                    algorithm,
+                    generate_algo,
                 ),
             )
 
