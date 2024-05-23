@@ -421,13 +421,21 @@ class GamePlay:
             ondraw (bool, optional): Want to see process or not. Defaults to True.
             draw_speed (str, optional): Speed Showing Process. Defaults to 'FAST'.
         """
+        self.on_draw = ondraw
+        self.generate_algo = algorithm
+
+        # Intialize super basic maze
+        self.Maze = Maze(maze_size= self.maze_size,
+                         maze_grid_size= self.grid_size,
+                         scale= self.scale,
+                         screen= self.screen,
+                         window_screen= self.window_screen)
 
         # Generate that maze
-        self.Maze.generate_new_maze(
-            algorithm=algorithm, draw=ondraw, draw_speed=draw_speed
-        )
-
-    def create_new_game_id(self, generate_algo):
+        self.Maze.generate_new_maze(algorithm= algorithm,
+                                    draw= ondraw,
+                                    draw_speed= draw_speed)
+    def create_new_game_id(self):
         # After generate maze -> Ingame -> Save game data to Database
         # Insert to database
         if self.user_id:
@@ -436,19 +444,18 @@ class GamePlay:
             db_cursor = db_connect.cursor()
 
             # Insert to table games (this table store game_information)
-            db_cursor.execute(
-                """INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "insane_mode", "grid_size", "player_skin", "generate_algorithm")
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-                (
-                    self.Maze.maze_size,
-                    self.game_mode,
-                    self.energy,
-                    self.insane_mode,
-                    self.grid_size,
-                    self.player_skin,
-                    generate_algo,
-                ),
+            db_cursor.execute('''INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "insane_mode", "grid_size", "player_skin", "generate_algorithm", "is_generate")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                self.Maze.maze_size,
+                self.game_mode,
+                self.energy,
+                self.insane_mode,
+                self.grid_size,
+                self.player_skin,
+                self.generate_algo,
+                self.on_draw
+            )            
             )
 
             # Set the id for this game
@@ -1021,52 +1028,43 @@ def load_GamePlay(game_id: int) -> GamePlay:
         )
     )[0][0]
     # If the game_id is fine -> Go Go to load
-    game_data_1 = list(
-        db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id}')
-    )[
-        0
-    ]  # Get that row
+    game_saves_data = list(db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id}'))[0]
+    # game_data_1 = list(db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id}'))[0] # Get that row
 
-    game_data_2 = list(
-        db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}')
-    )[
-        0
-    ]  # Get that row
+    games_data = list(db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}'))[0] # Get that row
+    # game_data_2 = list(db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}'))[0] # Get that row
 
     # Category the info that we get
     # Get the data that useful
-    maze_size = int(game_data_2[2])
+    maze_size = int(games_data[2])
+    game_mode = games_data[3]
+    energy_mode = int(games_data[4])
+    insane_mode = int(games_data[5])
+    grid_size = int(games_data[6])
+    player_skin = games_data[7]
+    generate_algorithm = games_data[8]
+    is_visualize = int(games_data[9])
 
-    grid_size = int(game_data_2[6])
-
-    player_skin = game_data_2[7]
-
-    is_energy = int(game_data_2[4])
-
-    is_insane = int(game_data_2[5])
-
-    energy_info = game_data_1[9]
-
-    scale = int(game_data_1[5])
-
-    times = float(game_data_1[-4].rstrip(" s")) * 1000
-
-    moves = int(game_data_1[-3])
+    maze = game_saves_data[1]
+    current_position = str_to_tuple(game_saves_data[2])
+    start_position = str_to_tuple(game_saves_data[3])
+    end_position = str_to_tuple(game_saves_data[4])
+    scale = int(game_saves_data[5])
+    times = int(game_saves_data[7])
+    moves = int(game_saves_data[8])
+    energy_info = game_saves_data[9]
+    tom_hp = game_saves_data[10]
 
     # Intialize a basic Game
     Game = GamePlay(
-        user_id=user_id,
-        maze_size=maze_size,
-        grid_size=grid_size,
-        player_skin=player_skin,
-        energy=is_energy,
-        scale=scale,
-        insane_mode=is_insane,
+        user_id= user_id,
+        maze_size= maze_size,
+        grid_size= grid_size,
+        player_skin= player_skin,
+        energy= energy_mode,
+        scale= scale,
+        insane_mode= insane_mode 
     )
-
-    current_position = str_to_tuple(game_data_1[2])
-    start_position = str_to_tuple(game_data_1[3])
-    end_position = str_to_tuple(game_data_1[4])
 
     # Set the game.id to according to the data
     Game.id = game_id
@@ -1080,12 +1078,10 @@ def load_GamePlay(game_id: int) -> GamePlay:
         window_screen=Game.window_screen,
     )
 
-    maze_info = json.loads(game_data_1[1])
-
     for i in range(maze_size):
         for j in range(maze_size):
-            tmp_maze.grids[i, j].walls = maze_info[i * maze_size + j].copy()
-
+            tmp_maze.grids[i, j].walls = maze[i * maze_size + j].copy()
+        
     for grid in tmp_maze.grids:
         tmp_maze.grids[grid].is_visited = True
         tmp_maze.grids[grid].set_image()
@@ -1096,7 +1092,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
     Game.Maze.end_position = end_position
 
     # Load Energy Items
-    if is_energy == 1:
+    if energy_mode == 1:
         energy_data = json.loads(energy_info)
 
         for single_energy_data in energy_data:
@@ -1109,25 +1105,24 @@ def load_GamePlay(game_id: int) -> GamePlay:
                 img_directory=single_energy_data["img_directory"],
             )
 
-        Tom_hp = int(game_data_1[10])
-    if is_insane:
+    if insane_mode:
         Game.insane_mode = True
 
     # Create player
     Game.player = pygame.sprite.GroupSingle()
 
     Game.Tom = Tom(
-        start_position=current_position,
-        grid_size=Game.grid_size,
-        img_scale=Game.scale,
-        screen=Game.screen,
-        window_screen=Game.window_screen,
-        # tom_img_directory=game_data_2[6],
+        start_position= current_position, 
+        grid_size= Game.grid_size, 
+        img_scale= Game.scale,
+        screen= Game.screen,
+        window_screen= Game.window_screen,
+        tom_img_directory= player_skin
     )
     Game.player.add(Game.Tom)
 
-    if is_energy == 1:
-        Game.Tom.hp = Tom_hp
+    if energy_mode == 1:
+        Game.Tom.hp = tom_hp
         Game.Tom.energy_mode = True
 
     # Create Jerry

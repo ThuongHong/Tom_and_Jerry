@@ -98,6 +98,35 @@ def get_saved_game(user_id: int):
             game_saves_data.append(
                 single_data_row
             )            
+    # format_game_ids = [saved_game_ids[i][0] for i in range(len(saved_game_ids))]
+    game_saves_data = []
+
+    for i in range(len(saved_game_ids)):
+        game_id = saved_game_ids[i][0]
+        time = saved_game_ids[i][1]
+        steps = saved_game_ids[i][2]
+        try:
+            single_data_row = []
+
+            # Game Id
+            # single_data_row.append(game_id)
+            single_data_row.extend([game_id, time, steps])
+            # Mode
+            single_data_row.extend(
+                list(
+                    db_cursor.execute(
+                        '''
+                        SELECT "game_mode", "energy_mode", "insane_mode" FROM "games"
+                        WHERE "id" = ?
+                        ''',
+                        ([game_id])
+                    )
+                )[0]
+            )
+
+            game_saves_data.append(
+                single_data_row
+            )            
         except FileNotFoundError:
             continue
     
@@ -141,3 +170,8 @@ def leaderboard(mode: str) -> list:
     
 
     return leaderboard_data
+
+# if __name__ == '__main__':
+#     pygame.init()
+#     sc = pygame.display.set_mode((100, 100))
+#     print(get_img_and_game_id_load_game(3))
