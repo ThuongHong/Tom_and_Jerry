@@ -2,7 +2,7 @@ import json
 import sqlite3 # Using this later. May be when merge to develop :>>.
 from werkzeug.security import check_password_hash, generate_password_hash
 import pygame
-from os.path import join
+from os import remove
 
 def register(new_username: str, new_password: str):
     db_connect = sqlite3.connect(r'database/TomJerry.db')
@@ -42,14 +42,14 @@ def login(username: str, password: str):
     
     return [False, None]
 
-def get_img_and_game_id_load_game(user_id: int):
+def get_saved_game(user_id: int):
     """Return a list of game_id and image
 
     Args:
-        user_id (int): _description_
+        user_id (int): description
 
     Returns:
-        _type_: _description_
+        type: list of all thing we need
     """
     db_connect = sqlite3.connect(r'database/TomJerry.db')
 
@@ -58,7 +58,7 @@ def get_img_and_game_id_load_game(user_id: int):
     saved_game_ids = list(
         db_cursor.execute(
             '''
-            SELECT "game_id" FROM "game_saves"
+            SELECT "game_id", "times", "moves" FROM "game_saves"
             WHERE "game_id" IN (
                 SELECT "game_id" FROM "played"
                 WHERE "user_id" = ? AND save_state = 1
@@ -68,21 +68,39 @@ def get_img_and_game_id_load_game(user_id: int):
         )
     )
 
-    format_game_ids = [saved_game_ids[i][0] for i in range(len(saved_game_ids))]
-    print(format_game_ids)
+    # format_game_ids = [saved_game_ids[i][0] for i in range(len(saved_game_ids))]
+    game_saves_data = []
 
-    saved_game_ids = []
-    game_images = []
-    
-    for game_id in format_game_ids:
+    for i in range(len(saved_game_ids)):
+        game_id = saved_game_ids[i][0]
+        time = saved_game_ids[i][1]
+        steps = saved_game_ids[i][2]
         try:
-            img = pygame.image.load(join('database', 'save_game_images', 'Game_' + str(game_id) + '.png')).convert_alpha()
-            # return img
-            saved_game_ids.append(game_id)
-            game_images.append(img)
+            single_data_row = []
+
+            # Game Id
+            # single_data_row.append(game_id)
+            single_data_row.extend([game_id, time, steps])
+            # Mode
+            single_data_row.extend(
+                list(
+                    db_cursor.execute(
+                        '''
+                        SELECT "game_mode", "energy_mode", "insane_mode" FROM "games"
+                        WHERE "id" = ?
+                        ''',
+                        ([game_id])
+                    )
+                )[0]
+            )
+
+            game_saves_data.append(
+                single_data_row
+            )            
         except FileNotFoundError:
-            pass
-    return list(zip(saved_game_ids, game_images))
+            continue
+    
+    return game_saves_data
 
 def remove_game_save(game_id: int):
     db_connect = sqlite3.connect(r'database/TomJerry.db')
@@ -97,6 +115,8 @@ def remove_game_save(game_id: int):
         ''',
         ([game_id])
     )
+    saved_image_path = f"database/save_game_images/Game_{game_id}.png"
+    remove(saved_image_path)
 
     db_connect.commit()
 

@@ -19,6 +19,9 @@ sound_source = "sounds"
 game_menu = visualize.GameScreen(screen, image_source, sound_source)
 game_launcher = Launcher(screen)
 
+# load game handle
+load_id = None
+
 while game_menu.running:
     clock.tick(DISPLAY.FPS)
 
@@ -31,27 +34,40 @@ while game_menu.running:
     elif game_menu.game_state == "new game":
         game_menu.draw_new_game(event)
     elif game_menu.game_state == "load game":
-        game_menu.draw_load_game(event)
+        load_id = game_menu.draw_load_game(event)
+        if load_id is not None:
+            game_menu.game_state = "ingame"
     elif game_menu.game_state == "leaderboard":
         game_menu.draw_leaderboard(event)
     elif game_menu.game_state == "login signin":
         game_menu.draw_login_signin(event)
     elif game_menu.game_state == "ingame":
-        game_launcher.init_setting(
-            maze_size=game_menu.difficulty,
-            sound_on=game_menu.sound,
-            spawning=game_menu.spawning,
-            energy=game_menu.energy_mode,
-            user_id=game_menu.user_id,
-            insane_mode=game_menu.insane_mode,
-            maze_visualizer=game_menu.maze_visualizer,
-        )
-        game_launcher.launch(game_menu.algorithm)
 
+        # Load game | New game
+        if load_id is not None:
+            game_launcher.load_game(load_id, sound_on=game_menu.sound)
+        else:
+            game_launcher.new_game(
+                maze_size=game_menu.difficulty,
+                sound_on=game_menu.sound,
+                spawning=game_menu.spawning,
+                energy=game_menu.energy_mode,
+                user_id=game_menu.user_id,
+                insane_mode=game_menu.insane_mode,
+                maze_visualizer=game_menu.maze_visualizer,
+                maze_generate_algo=game_menu.maze_generate_algo,
+            )
+
+        # Launch game
+        game_launcher.launch()
+
+        # Back to menu
+        if game_launcher.saved:
+            game_menu.get_saved_data()
         game_menu.game_state = "main menu"
         game_menu.energy_mode = False
         game_menu.insane_mode = False
-        game_menu.algorithm = 'HAK'
+        game_menu.maze_generate_algo = "HAK"
         game_menu.maze_visualizer = False
         game_menu.fade_transition(
             game_menu.background_main_menu, game_launcher.background

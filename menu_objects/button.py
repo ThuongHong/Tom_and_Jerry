@@ -2,6 +2,8 @@ import pygame
 
 class Button:
     def __init__(self, x_coord, y_coord, image, sound, scale=1, hover_scale=1.1):
+        self.x_coord = x_coord
+        self.y_coord = y_coord
         width = image.get_width()
         height = image.get_height()
         self.modified_width = int(width * scale)
@@ -19,14 +21,14 @@ class Button:
         self.mouse_down = False
         self.mouse_click = False
     
-    def draw(self, surface, pos, event, sound_on=True):
+    def draw(self, surface, pos, event=None, sound_on=True):
         action = False
         # check mouseover and clicked conditions
         if self.image_rect.collidepoint(pos) and self.mouse_click == False:
             surface.blit(self.hover_image, self.hover_image_rect)
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event and event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse_down = True
-            if event.type == pygame.MOUSEBUTTONUP and self.mouse_down == True:
+            if event and event.type == pygame.MOUSEBUTTONUP and self.mouse_down == True:
                 self.mouse_click = True
                 
         else:

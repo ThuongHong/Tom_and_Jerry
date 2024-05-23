@@ -85,7 +85,6 @@ class Launcher():
             self.background_images.append(img)
             
         self.background = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, self.background_images[0], 1)
-        self.current_background = 0
         
     def draw_ui(self, event=None):
         pos = pygame.mouse.get_pos()
@@ -144,7 +143,7 @@ class Launcher():
                     self.paused = False
                     self.Game.resume_time()
                     self.Game.set_new_game_state("start")
-                if self.former_user_id is not None and self.button_save_game.draw(self.window_screen, pos, event, self.sound_on):
+                if self.user_id is not None and self.button_save_game.draw(self.window_screen, pos, event, self.sound_on):
                     """ Save game """
                     self.saved = True
                     # Remember to set this to False if player moves after saved
@@ -156,7 +155,7 @@ class Launcher():
                     # Update snapshots here
                 if self.button_home.draw(self.window_screen, pos, event, self.sound_on):
                     """ Exit to main menu """
-                    if self.saved == False and self.former_user_id is not None:
+                    if self.saved == False and self.user_id is not None:
                         self.save_confirm = True
                     else:
                         self.Game.set_new_game_state("back_menu")
@@ -167,6 +166,7 @@ class Launcher():
                 self.box_save_confirm.draw(self.window_screen)
                 if self.button_yes.draw(self.window_screen, pos, event, self.sound_on):
                     """ Save game """
+                    self.saved = True
                     self.save_confirm = False
                     self.paused = False
                     self.Game.save_game()
@@ -229,21 +229,43 @@ class Launcher():
                 self.Game.set_new_game_state("start")
         
         pygame.display.update()
+    
+    def load_game(self, game_id, sound_on=True):
+        self.Game = load_GamePlay(game_id)
+        self.current_algo = "AStar_MinBinaryHeap"
+        self.current_theme = '2'
+        self.current_background = 0
+        self.spawning = "random"
+        self.energy = self.Game.energy
+        self.insane_mode = self.Game.insane_mode
+        self.time_at_pause = ''
+        self.paused = False
+        self.saved = False
+        self.save_confirm = False
+        self.win = False
+        self.lose = False
+        self.is_restarted = False
+        self.sound_on = sound_on
+        self.is_loaded = True
+        self.maze_visualizer = False
+        self.maze_generate_algo = "HAK"
         
-    def init_setting(self, maze_size, 
+        # For restart game
+        self.user_id = self.Game.user_id
+        self.maze_size = self.Game.maze_size
+        
+    def new_game(self, maze_size, 
                      sound_on,
-                     start_coord_screen=(0, 0), end_coord_screen=(500, 500), 
                      spawning='random', 
                      energy= False,
                      user_id= None,
                      insane_mode: bool = False,
-                     maze_visualizer=False):
+                     maze_visualizer=False,
+                     maze_generate_algo="HAK"):
         
         self.Game = GamePlay(user_id= user_id,
                              maze_size= maze_size,
                              grid_size= 28,
-                             start_coord_screen= start_coord_screen,
-                             end_coord_screen= end_coord_screen,
                              scale= 1,
                              window_screen= self.window_screen,
                              energy=energy,
@@ -251,6 +273,7 @@ class Launcher():
         
         self.current_algo = "AStar_MinBinaryHeap"
         self.current_theme = '2'
+        self.current_background = 0
         self.spawning = spawning
         self.energy = energy
         self.insane_mode = insane_mode
@@ -263,19 +286,18 @@ class Launcher():
         self.is_restarted = False
         self.sound_on = sound_on
         self.maze_visualizer = maze_visualizer
+        self.maze_generate_algo = maze_generate_algo
+        
+        self.is_loaded = False
         
         # For restart game
-        self.former_user_id = user_id
-        self.former_maze_size = maze_size
-        self.former_start_coord_screen = start_coord_screen
-        self.former_end_coord_screen = end_coord_screen
+        self.user_id = user_id
+        self.maze_size = maze_size
         
     def restart(self):
-        self.Game = GamePlay(user_id= self.former_user_id,
-                             maze_size= self.former_maze_size,
+        self.Game = GamePlay(user_id= self.user_id,
+                             maze_size= self.maze_size,
                              grid_size= 28,
-                             start_coord_screen= self.former_start_coord_screen,
-                             end_coord_screen= self.former_end_coord_screen,
                              scale= 1,
                              window_screen= self.window_screen,
                              energy=self.energy,
@@ -287,19 +309,22 @@ class Launcher():
         self.lose = False
         self.is_restarted = False
 
-    def launch(self, algorithm):
+    def launch(self):
         if self.is_restarted: 
             self.restart()
             self.maze_visualizer = False
-        if self.maze_visualizer:
-            self.background.draw(self.window_screen)
-            self.Game.generate(algorithm= algorithm, ondraw=self.maze_visualizer)
+            
+        if self.is_loaded == True: self.is_loaded = False
         else:
-            self.Game.generate(algorithm= algorithm, ondraw= False)
-        # Game.select_position_spawn()
-        if self.spawning == 'random': self.Game.spawn_random()
-        else: self.Game.select_position_spawn(self)
-        self.Game.game_centering()
+            if self.maze_visualizer:
+                self.background.draw(self.window_screen)
+                self.Game.generate(algorithm= self.maze_generate_algo, ondraw=self.maze_visualizer)
+            else:
+                self.Game.generate(algorithm= self.maze_generate_algo, ondraw= False)
+            if self.spawning == 'random': self.Game.spawn_random()
+            else: self.Game.select_position_spawn(self)
+            self.Game.game_centering()
+
 
         while True:
             event = pygame.event.wait(10)

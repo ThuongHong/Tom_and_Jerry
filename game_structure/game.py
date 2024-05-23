@@ -894,9 +894,8 @@ class GamePlay:
             ),
         )
 
-        pygame.image.save(
-            self.screen, f"./database/save_game_images/Game_{self.id}.png"
-        )
+        save_image = pygame.transform.scale(self.screen, (520, 520))
+        pygame.image.save(save_image, f"./database/save_game_images/Game_{self.id}.png")
 
         db_connect.commit()
 
@@ -1104,7 +1103,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
         img_scale=Game.scale,
         screen=Game.screen,
         window_screen=Game.window_screen,
-        tom_img_directory=game_data_2[6],
+        # tom_img_directory=game_data_2[6],
     )
     Game.player.add(Game.Tom)
 
@@ -1128,6 +1127,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
     # Get the delta times and plus that to the times that player play
     Game.player.sprite.step_moves = moves
     Game.start_time = pygame.time.get_ticks() - times
+    Game.time_at_pause = Game.start_time
 
     # After load all the game -> Go to game
     Game.set_new_game_state("in_game")
