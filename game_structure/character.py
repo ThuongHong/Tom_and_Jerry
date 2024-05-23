@@ -388,9 +388,9 @@ class Jerry(Tom):
                 tmp_img_width = tmp_img.get_width()
                 
                 bigger_size = tmp_img_height if (tmp_img_height > tmp_img_width) else tmp_img_width
-                scale_index = bigger_size / self.grid_size
+                scale_index = self._grid_size / tmp_img_width
                 
-                image = pygame.transform.scale(tmp_img, (tmp_img_width / scale_index, tmp_img_height / scale_index))
+                image = pygame.transform.scale(tmp_img, (tmp_img_width * scale_index, tmp_img_height * scale_index))
                 # image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
 
                 self.animation_images[folder].append(image)
@@ -398,11 +398,11 @@ class Jerry(Tom):
         # Rect will be draw while we using GroupSingle then add this character
         self.image = self.animation_images['StandDown'][0]
 
-        real_img_size = (self._grid_size / 28) * bigger_size
+        real_img_size = (self._grid_size / 30) * bigger_size
         coord_adjust = (self._grid_size - real_img_size) / 2
 
-        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size + coord_adjust * 2,
-                                                  self.position[1] * self._grid_size - coord_adjust * 2))        
+        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size,
+                                                  self.position[1] * self._grid_size))        
     @property
     def grid_size(self):
         return self._grid_size * self.scale
@@ -479,6 +479,19 @@ class Jerry(Tom):
                 # if current_sprite > len(sprites) - 1 :
                 #     break
             maze.end_position = self.position
+    
+    def escape_teleport(self, maze, energy_grp= None, tom_grp= None, ui_grp= None):
+        current_distance = mahathan_distance(self.position, tom_grp.sprite.position)
+
+        for i in range(maze.maze_size):
+            for j in range(maze.maze_size):
+                if mahathan_distance((i, j), tom_grp.sprite.position) >= current_distance and BDFS(grids= maze.grids,
+                                                                                                   player_current_position= tom_grp.sprite.position,
+                                                                                                   player_winning_position= (i, j),
+                                                                                                   
+                                                                                                   algorithm= 'BFS'):
+                    self.position = (i, j)
+                    return
                 
     def update(self, 
                maze= None,
@@ -498,7 +511,7 @@ class Jerry(Tom):
         if tom_grp:
             steps = tom_grp.sprite.step_moves
             if steps % 2 == 0:
-                self.escape_move(
+                self.escape_teleport(
                     maze= maze,
                     energy_grp= energy_grp,
                     tom_grp= tom_grp,

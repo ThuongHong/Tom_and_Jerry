@@ -17,6 +17,7 @@ CREATE TABLE "games" (
     "grid_size" INTEGER NOT NULL CHECK("grid_size" > 0),
     "player_skin" TEXT DEFAULT NULL,
     "generate_algorithm" TEXT DEFAULT NULL,
+    "is_visualize" INT DEFAULT 0,
     PRIMARY KEY("id" AUTOINCREMENT)
 );
 
@@ -39,6 +40,8 @@ CREATE TABLE "game_saves" (
     "moves" INT NOT NULL CHECK ("moves" >= 0),
     "energy_info" BLOB DEFAULT NULL,
     "tom_hp" INT DEFAULT 0,
+    "theme" INT NOT NULL,
+    "background" NOT NULL,
     FOREIGN KEY("game_id") REFERENCES "games"("id")
 );
 

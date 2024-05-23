@@ -2,7 +2,7 @@ import json
 import sqlite3 # Using this later. May be when merge to develop :>>.
 from werkzeug.security import check_password_hash, generate_password_hash
 import pygame
-from os.path import join
+from os import remove
 
 def register(new_username: str, new_password: str):
     db_connect = sqlite3.connect(r'database/TomJerry.db')
@@ -42,14 +42,14 @@ def login(username: str, password: str):
     
     return [False, None]
 
-def get_img_and_game_id_load_game(user_id: int):
+def get_saved_game(user_id: int):
     """Return a list of game_id and image
 
     Args:
-        user_id (int): _description_
+        user_id (int): description
 
     Returns:
-        _type_: list of all thing we need
+        type: list of all thing we need
     """
     db_connect = sqlite3.connect(r'database/TomJerry.db')
 
@@ -61,28 +61,26 @@ def get_img_and_game_id_load_game(user_id: int):
             SELECT "game_id", "times", "moves" FROM "game_saves"
             WHERE "game_id" IN (
                 SELECT "game_id" FROM "played"
-                WHERE "user_id" = ? AND save_state = 1
-            )
+                WHERE "user_id" = ? 
+            ) AND "save_state" = 1
             ''',
             ([user_id])
         )
     )
 
-    format_game_ids = [saved_game_ids[i][0] for i in range(len(saved_game_ids))]
+    # format_game_ids = [saved_game_ids[i][0] for i in range(len(saved_game_ids))]
     game_saves_data = []
 
-    for i in range(len(format_game_ids)):
-        game_id = format_game_ids[i]
-
+    for i in range(len(saved_game_ids)):
+        game_id = saved_game_ids[i][0]
+        time = saved_game_ids[i][1]
+        steps = saved_game_ids[i][2]
         try:
-            img = pygame.image.load(join('database', 'save_game_images', 'Game_' + str(game_id) + '.png')).convert_alpha()
-
             single_data_row = []
 
             # Game Id
-            single_data_row.append(game_id)
-            # Image
-            single_data_row.append(img)
+            # single_data_row.append(game_id)
+            single_data_row.extend([game_id, time, steps])
             # Mode
             single_data_row.extend(
                 list(
@@ -117,6 +115,8 @@ def remove_game_save(game_id: int):
         ''',
         ([game_id])
     )
+    saved_image_path = f"database/save_game_images/Game_{game_id}.png"
+    remove(saved_image_path)
 
     db_connect.commit()
 
@@ -141,7 +141,7 @@ def leaderboard(mode: str) -> list:
 
     return leaderboard_data
 
-if __name__ == '__main__':
-    pygame.init()
-    sc = pygame.display.set_mode((100, 100))
-    print(get_img_and_game_id_load_game(3))
+# if __name__ == '__main__':
+#     pygame.init()
+#     sc = pygame.display.set_mode((100, 100))
+#     print(get_img_and_game_id_load_game(3))
