@@ -56,6 +56,8 @@ while game_menu.running:
                 insane_mode=game_menu.insane_mode,
                 maze_visualizer=game_menu.maze_visualizer,
                 maze_generate_algo=game_menu.maze_generate_algo,
+                full_save=game_menu.full_save,
+                first_game_id = game_menu.first_game_id
             )
 
         # Launch game
@@ -65,6 +67,7 @@ while game_menu.running:
         if game_launcher.saved:
             game_menu.get_saved_data()
         game_menu.game_state = "main menu"
+        game_menu.full_save = False
         game_menu.energy_mode = False
         game_menu.insane_mode = False
         game_menu.maze_generate_algo = "HAK"

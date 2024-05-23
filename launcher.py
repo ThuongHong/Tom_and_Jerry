@@ -1,6 +1,7 @@
 from game_structure.maze import Maze
 from game_structure.character import Tom
 from game_structure.game import GamePlay, load_GamePlay
+from data import data
 import pygame
 import time
 import os
@@ -17,11 +18,13 @@ images_source = 'images/UI'
 
 class Launcher():
     def __init__(self, window_screen):
+        click_sound = pygame.mixer.Sound(os.path.join('sounds', 'click.ogg'))
         self.window_screen = window_screen
 
         box_save_confirm_img = create_img(images_source, 'box_save_confirm')
         box_game_win_img = create_img(images_source, 'box_game_win')
         box_game_lose_img = create_img(images_source, 'box_game_lose')
+        box_confirm_overwrite_img = create_img(images_source, 'box_confirm_overwrite')
         self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 30)
         self.end_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 50)
         
@@ -42,6 +45,8 @@ class Launcher():
         button_switch_themes_img = create_img(images_source, 'button_switch_themes')
         button_box_game_home_img = create_img(images_source, 'button_box_game_home')
         button_box_game_restart_img = create_img(images_source, 'button_box_game_restart')
+        button_overwrite_img = create_img(images_source, 'button_overwrite')
+        button_cancel_img = create_img(images_source, 'button_cancel')
         
         
         self.box_save_confirm = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, box_save_confirm_img, 0.3)
@@ -55,26 +60,32 @@ class Launcher():
         box_game_win_x_coord = self.box_game_win.x_coord
         box_game_win_y_coord = self.box_game_win.y_coord
         self.box_game_lose = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, box_game_lose_img, 0.3)
+        self.box_confirm_overwrite = Graphic(DISPLAY.SCREEN_WIDTH * 0.5, DISPLAY.SCREEN_HEIGHT * 0.5, box_confirm_overwrite_img, 0.3)
+        box_confirm_overwrite_width = self.box_confirm_overwrite.modified_width
+        box_confirm_overwrite_height = self.box_confirm_overwrite.modified_height
+        box_confirm_overwrite_x_coord = self.box_confirm_overwrite.x_coord
+        box_confirm_overwrite_y_coord = self.box_confirm_overwrite.y_coord
         
 
-        self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarlist_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_astarheap = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarheap_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_bfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_bfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_dfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_dfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_algo_gbfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_gbfs_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_pause_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_pause_game_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_resume = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_resume_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_restart = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.72, button_restart_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_save_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.52, button_save_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, button_home_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_yes = Button(box_save_confirm_x_coord - box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_yes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_no_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.75, DISPLAY.SCREEN_HEIGHT * 0.92, button_switch_themes_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_box_game_restart = Button(box_game_win_x_coord - box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_restart_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_box_game_home = Button(box_game_win_x_coord + box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_home_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        
+        self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_on_img, click_sound, 0.25, 0.26)
+        self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_off_img, click_sound, 0.25, 0.26)
+        self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarlist_img, click_sound, 0.25, 0.26)
+        self.button_algo_astarheap = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarheap_img, click_sound, 0.25, 0.26)
+        self.button_algo_bfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_bfs_img, click_sound, 0.25, 0.26)
+        self.button_algo_dfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_dfs_img, click_sound, 0.25, 0.26)
+        self.button_algo_gbfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_gbfs_img, click_sound, 0.25, 0.26)
+        self.button_pause_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_pause_game_img, click_sound, 0.25, 0.26)
+        self.button_resume = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_resume_img, click_sound, 0.25, 0.26)
+        self.button_restart = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.72, button_restart_img, click_sound, 0.25, 0.26)
+        self.button_save_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.52, button_save_img, click_sound, 0.25, 0.26)
+        self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, button_home_img, click_sound, 0.25, 0.26)
+        self.button_yes = Button(box_save_confirm_x_coord - box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_yes_img, click_sound, 0.25, 0.26)
+        self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_no_img, click_sound, 0.25, 0.26)
+        self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.75, DISPLAY.SCREEN_HEIGHT * 0.92, button_switch_themes_img, click_sound, 0.25, 0.26)
+        self.button_box_game_restart = Button(box_game_win_x_coord - box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_restart_img, click_sound, 0.25, 0.26)
+        self.button_box_game_home = Button(box_game_win_x_coord + box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_home_img, click_sound, 0.25, 0.26)
+        self.button_overwrite = Button(box_confirm_overwrite_x_coord - box_confirm_overwrite_width * 0.24, box_confirm_overwrite_y_coord + box_confirm_overwrite_height * 0.24, button_overwrite_img, click_sound, 0.3, 0.31)
+        self.button_cancel = Button(box_confirm_overwrite_x_coord + box_confirm_overwrite_width * 0.24, box_confirm_overwrite_y_coord + box_confirm_overwrite_height * 0.24, button_cancel_img, click_sound, 0.3, 0.31)
         self.load_background()
 
     def load_background(self):
@@ -145,43 +156,57 @@ class Launcher():
                     self.Game.set_new_game_state("start")
                 if self.user_id is not None and self.button_save_game.draw(self.window_screen, pos, event, self.sound_on):
                     """ Save game """
-                    self.saved = True
-                    # Remember to set this to False if player moves after saved
-                    self.paused = False
-                    # self.Game.set_new_game_state("save_game")
-                    self.Game.save_game()
+                    if self.full_save == True:
+                        self.overwrite_confirm = True
+                    # self.Game.set_new_game_state("save_game") # xoa dong nay ddc ko
                     #            ^
                     # Check this |
                     # Update snapshots here
+                    else:
+                        self.Game.save_game()
+                        self.saved = True
+                        self.paused = False
                 if self.button_home.draw(self.window_screen, pos, event, self.sound_on):
                     """ Exit to main menu """
                     if self.saved == False and self.user_id is not None:
                         self.save_confirm = True
                     else:
                         self.Game.set_new_game_state("back_menu")
-                        #            ^
-                        # Check this |
             
             if self.save_confirm == True:
                 self.box_save_confirm.draw(self.window_screen)
                 if self.button_yes.draw(self.window_screen, pos, event, self.sound_on):
                     """ Save game """
-                    self.saved = True
-                    self.save_confirm = False
-                    self.paused = False
-                    self.Game.save_game()
-                    self.Game.set_new_game_state("back_menu")
-                    # self.Game.save_game()
-                    #            ^
-                    # Check this |
-                    # Update snapshots here
+                    if self.full_save == True:
+                        self.overwrite_confirm = True
+                        self.save_confirm = False
+                    else:
+                        self.saved = True
+                        self.save_confirm = False
+                        self.paused = False
+                        self.Game.save_game()
+                        self.Game.set_new_game_state("back_menu")
                 if self.button_no.draw(self.window_screen, pos, event, self.sound_on):
-                    """ Exit to main menu"""
+                    """ Exit to main menu """
                     self.save_confirm = False
                     self.paused = False
                     self.Game.set_new_game_state("back_menu")
-                    #            ^
-                    # Check this |
+                    
+            if self.overwrite_confirm == True:
+                self.box_confirm_overwrite.draw(self.window_screen)
+                if self.button_overwrite.draw(self.window_screen, pos, event, self.sound_on):
+                    # self.Game.save_game()
+                    # data.remove()
+                    self.saved = True
+                    # Remember to set this to False if player moves after saved
+                    self.paused = False
+                    self.save_confirm = False
+                    self.overwrite_confirm = False
+                if self.button_cancel.draw(self.window_screen, pos, event, self.sound_on):
+                    print(self.saved)
+                    self.paused = False
+                    self.save_confirm = False
+                    self.overwrite_confirm = False
                     
             if self.button_switch_themes.draw(self.window_screen, pos, event, self.sound_on):
                 """ Switch themes"""
@@ -261,7 +286,9 @@ class Launcher():
                      user_id= None,
                      insane_mode: bool = False,
                      maze_visualizer=False,
-                     maze_generate_algo="HAK"):
+                     maze_generate_algo="HAK",
+                     full_save=False,
+                     first_game_id=None):
         
         self.Game = GamePlay(user_id= user_id,
                              maze_size= maze_size,
@@ -281,17 +308,19 @@ class Launcher():
         self.paused = False
         self.saved = False
         self.save_confirm = False
+        self.overwrite_confirm = False
         self.win = False
         self.lose = False
         self.is_restarted = False
         self.sound_on = sound_on
         self.maze_visualizer = maze_visualizer
         self.maze_generate_algo = maze_generate_algo
-        
+        self.full_save = full_save
         self.is_loaded = False
         
         # For restart game
         self.user_id = user_id
+        self.first_game_id = first_game_id
         self.maze_size = maze_size
         
     def restart(self):
@@ -305,6 +334,7 @@ class Launcher():
         self.paused = False
         self.saved = False
         self.save_confirm = False
+        self.overwrite_confirm = False
         self.win = False
         self.lose = False
         self.is_restarted = False

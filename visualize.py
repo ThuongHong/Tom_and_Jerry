@@ -39,6 +39,7 @@ class GameScreen:
         self.load_game_content_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 70)
         self.game_state = "main menu"
         self.help_state = False
+        self.full_save = False
         self.difficulty = ""
         self.login_signin_state = "log in"
         self.leaderboard_state = "easy"
@@ -57,6 +58,7 @@ class GameScreen:
         self.skip_login = False
         self.username = ""
         self.user_id = None
+        self.first_game_id = None
 
         # music and sound player
         self.click_sound_source = pygame.mixer.Sound(
@@ -83,7 +85,8 @@ class GameScreen:
         game_title_img = create_img(self.image_source, "game_title")
         main_menu_jerry_img = create_img(self.image_source, "main_menu_jerry")
         main_menu_tom_img = create_img(self.image_source, "main_menu_tom")
-        game_description_img = create_img(self.image_source, "game_description")
+        box_game_description_img = create_img(self.image_source, "box_game_description")
+        box_notify_overwrite_img = create_img(self.image_source, 'box_notify_overwrite')
 
         """ LOGIN SIGNIN """
         button_login_img = create_img(self.image_source, "button_login")
@@ -149,7 +152,13 @@ class GameScreen:
         box_save_frame_img = create_img(self.image_source, 'box_save_frame')
         box_save_profile_img = create_img(self.image_source, 'box_save_profile')
         
-        """ create button and graphic for the game """
+        
+        
+        """
+        CREATE BUTTON AND GRAPHIC FOR THE GAME
+        """
+        
+        
         """ MAIN MENU """
         # create graphic
         self.background_main_menu = graphic.Graphic(
@@ -164,12 +173,13 @@ class GameScreen:
         self.main_menu_tom = graphic.Graphic(
             SCREEN_WIDTH * 0.77, SCREEN_HEIGHT * 0.63, main_menu_tom_img, 0.32
         )
-        self.game_description = graphic.Graphic(
-            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, game_description_img, 0.3
+        self.box_game_description = graphic.Graphic(
+            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_description_img, 0.3
         )
-        # game_description_width = self.game_description.modified_width
-        game_description_height = self.game_description.modified_height
-
+        box_game_description_height = self.box_game_description.modified_height
+        self.box_notify_overwrite = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_notify_overwrite_img, 0.3)
+        box_notify_overwrite_height = self.box_notify_overwrite.modified_height
+        
         # create buttons
         self.button_newgame = button.Button(
             HALF_SCREEN_WIDTH,
@@ -259,9 +269,17 @@ class GameScreen:
             0.25,
             0.26,
         )
-        self.button_close = button.Button(
+        self.button_close_help = button.Button(
             HALF_SCREEN_WIDTH,
-            HALF_SCREEN_HEIGHT + game_description_height * 0.38,
+            HALF_SCREEN_HEIGHT + box_game_description_height * 0.38,
+            button_close_img,
+            self.click_sound_source,
+            0.3,
+            0.31,
+        )
+        self.button_close_notify = button.Button(
+            HALF_SCREEN_WIDTH,
+            HALF_SCREEN_HEIGHT + box_notify_overwrite_height * 0.2,
             button_close_img,
             self.click_sound_source,
             0.3,
@@ -594,116 +612,21 @@ class GameScreen:
         self.box_save_list = [self.box_save_frame_1, self.box_save_frame_2, self.box_save_frame_3, self.box_save_frame_4, self.box_save_frame_5, self.box_save_frame_6]
         self.button_load = button.Button(box_save_profile_img_x_coord + box_save_profile_img_width * 0.1, box_save_profile_img_y_coord + box_save_profile_img_height * 0.3, button_load_img, self.click_sound_source, 0.3, 0.31)
         self.button_delete = button.Button(box_save_profile_img_x_coord + box_save_profile_img_width * 0.3, box_save_profile_img_y_coord + box_save_profile_img_height * 0.3, button_delete_img, self.click_sound_source, 0.3, 0.31)
-        
-        # create graphic
-        self.background_load_game = graphic.Graphic(
-            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, background_load_game_img, 1.5
-        )
-        # self.saveslot_easy_1 = saveslot.SaveSlot(
-        #     HALF_SCREEN_WIDTH * 0.6,
-        #     HALF_SCREEN_HEIGHT,
-        #     frame_img,
-        #     overlay_img,
-        #     button_load_img,
-        #     button_delete_img,
-        #     self.click_sound_source,
-        #     0.4,
-        #     0.4,
-        # )
-        # self.saveslot_easy_2 = saveslot.SaveSlot(
-        #     HALF_SCREEN_WIDTH * 1.3,
-        #     HALF_SCREEN_HEIGHT,
-        #     frame_img,
-        #     overlay_img,
-        #     button_load_img,
-        #     button_delete_img,
-        #     self.click_sound_source,
-        #     0.4,
-        #     0.4,
-        # )
-        # self.saveslot_medium_1 = saveslot.SaveSlot(
-        #     HALF_SCREEN_WIDTH * 0.6,
-        #     HALF_SCREEN_HEIGHT,
-        #     frame_img,
-        #     overlay_img,
-        #     button_load_img,
-        #     button_delete_img,
-        #     self.click_sound_source,
-        #     0.4,
-        #     0.4,
-        # )
-        # self.saveslot_medium_2 = saveslot.SaveSlot(
-        #     HALF_SCREEN_WIDTH * 1.3,
-        #     HALF_SCREEN_HEIGHT,
-        #     frame_img,
-        #     overlay_img,
-        #     button_load_img,
-        #     button_delete_img,
-        #     self.click_sound_source,
-        #     0.4,
-        #     0.4,
-        # )
-        # self.saveslot_hard_1 = saveslot.SaveSlot(
-        #     HALF_SCREEN_WIDTH * 0.6,
-        #     HALF_SCREEN_HEIGHT,
-        #     frame_img,
-        #     overlay_img,
-        #     button_load_img,
-        #     button_delete_img,
-        #     self.click_sound_source,
-        #     0.4,
-        #     0.4,
-        # )
-        # self.saveslot_hard_2 = saveslot.SaveSlot(
-        #     HALF_SCREEN_WIDTH * 1.3,
-        #     HALF_SCREEN_HEIGHT,
-        #     frame_img,
-        #     overlay_img,
-        #     button_load_img,
-        #     button_delete_img,
-        #     self.click_sound_source,
-        #     0.4,
-        #     0.4,
-        # )
-        self.easy_snapshot_1 = graphic.Graphic(
-            HALF_SCREEN_WIDTH * 0.6, HALF_SCREEN_HEIGHT, easy_snapshot_1_img, 1.5
-        )
-
-        # create buttons
-        self.button_easy_load_game = button.Button(
-            HALF_SCREEN_WIDTH,
-            SCREEN_HEIGHT * 0.15,
-            button_easy_img,
-            self.click_sound_source,
-            0.3,
-            0.31,
-        )
-        self.button_medium_load_game = button.Button(
-            HALF_SCREEN_WIDTH,
-            SCREEN_HEIGHT * 0.15,
-            button_medium_img,
-            self.click_sound_source,
-            0.3,
-            0.31,
-        )
-        self.button_hard_load_game = button.Button(
-            HALF_SCREEN_WIDTH,
-            SCREEN_HEIGHT * 0.15,
-            button_hard_img,
-            self.click_sound_source,
-            0.3,
-            0.31,
-        )
 
     def draw_main_menu(self, event):
         pos = pygame.mouse.get_pos()
         self.background_main_menu.draw(self.screen)
-        if self.help_state == False:
+        if self.help_state == False and self.full_save == False:
             self.game_title.draw(self.screen)
             self.main_menu_jerry.draw(self.screen)
             self.main_menu_tom.draw(self.screen)
             if self.button_newgame.draw(self.screen, pos, event, self.sound):
-                self.game_state = "new game"
+                if len(self.saved_games) >= DISPLAY.SAVE_LIMIT:
+                    self.full_save = True
+                    self.first_game_id = self.saved_games[0]
+                else:
+                    self.full_save = False
+                    self.game_state = "new game"
             if self.button_loadgame.draw(self.screen, pos, event, self.sound):
                 self.game_state = "load game"
             if self.button_leaderboard.draw(self.screen, pos, event, self.sound):
@@ -740,11 +663,15 @@ class GameScreen:
                     self.music = True
             if self.button_help.draw(self.screen, pos, event, self.sound):
                 self.help_state = True
-        else:
-            self.game_description.draw(self.screen)
-            if self.button_close.draw(self.screen, pos, event, self.sound):
+        elif self.help_state == True:
+            self.box_game_description.draw(self.screen)
+            if self.button_close_help.draw(self.screen, pos, event, self.sound):
                 self.game_state = "main menu"
                 self.help_state = False
+        elif self.full_save == True:
+            self.box_notify_overwrite.draw(self.screen)
+            if self.button_close_notify.draw(self.screen, pos, event, self.sound):
+                self.game_state = "new game"
 
     def get_saved_data(self):
         self.saved_games = data.get_saved_game(self.user_id)
@@ -829,7 +756,7 @@ class GameScreen:
                     pygame.display.update()
                     pygame.time.wait(1000)
 
-        if self.login_signin_state == "sign in":
+        elif self.login_signin_state == "sign in":
             if self.button_box_login.draw(self.screen, pos, event, self.sound):
                 self.login_signin_state = "log in"
                 self.username_signin_textbox.text = ""
@@ -894,7 +821,11 @@ class GameScreen:
                     if self.login == True:
                         self.username = new_username
                         self.game_state = "main menu"
-                        self.get_saved_data()
+                        # self.get_saved_data()
+                        # Check numbers of save files
+                    
+                    
+                    
                     else:
                         notification_text1 = self.font.render(
                             "This username is already in use.", True, COLOR.RED
@@ -1205,6 +1136,7 @@ class GameScreen:
                 if self.button_back.draw(self.screen, pos, event, self.sound):
                     self.game_state = "main menu"
                     self.skip_login = False
+                    self.full_save = False
                     self.energy_mode = False
                     self.insane_mode = False
                     self.maze_generate_algo = 'HAK'
