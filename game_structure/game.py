@@ -189,8 +189,8 @@ class GamePlay:
 
     def de_visualize_process(self):
         self.is_stop_process = True
-        if self.solving_grid_process:
-            self.solve_position = self.solving_grid_process[self.solve_index]
+        # if self.solving_grid_process:
+        #     self.solve_position = self.solving_grid_process[self.solve_index]
 
     def create_start_end_energy(
         self, start: tuple[int, int], end: tuple[int, int], is_in: bool, fake_adjust=0
@@ -619,6 +619,10 @@ class GamePlay:
             and self.game_state == "in_game"
         ):
             if event.key == pygame.K_LEFT:
+                ui_grp.saved = False
+                if not self.is_stop_process:
+                    self.de_visualize_process()
+                    self.de_visualize_solution()
                 self.player.update(
                     direction="L",
                     maze=self.Maze,
@@ -637,6 +641,10 @@ class GamePlay:
                         ui_grp=ui_grp,
                     )
             elif event.key == pygame.K_RIGHT:
+                ui_grp.saved = False
+                if not self.is_stop_process:
+                    self.de_visualize_process()
+                    self.de_visualize_solution()
                 self.player.update(
                     direction="R",
                     maze=self.Maze,
@@ -655,6 +663,10 @@ class GamePlay:
                         ui_grp=ui_grp,
                     )
             elif event.key == pygame.K_UP:
+                ui_grp.saved = False
+                if not self.is_stop_process:
+                    self.de_visualize_process()
+                    self.de_visualize_solution()
                 self.player.update(
                     direction="T",
                     maze=self.Maze,
@@ -673,6 +685,10 @@ class GamePlay:
                         ui_grp=ui_grp,
                     )
             elif event.key == pygame.K_DOWN:
+                ui_grp.saved = False
+                if not self.is_stop_process:
+                    self.de_visualize_process()
+                    self.de_visualize_solution()
                 self.player.update(
                     direction="B",
                     maze=self.Maze,
@@ -793,7 +809,7 @@ class GamePlay:
             for i in range(self.solve_index + 1):
                 mark_grid(self.Maze.grids, self.screen, self.solving_grid_process[i])
 
-            pygame.time.wait(5)
+            pygame.time.wait(1)
 
             self.solve_index += 1
             if self.solve_index == len(self.solving_grid_process):
@@ -831,7 +847,7 @@ class GamePlay:
             return True
         return False
 
-    def save_game(self):
+    def save_game(self, time_at_pause):
         """Save for the game for later load"""
         if not self.user_id:
             return
@@ -887,7 +903,7 @@ class GamePlay:
                 self.Maze.start_position.__str__(),
                 self.Maze.end_position.__str__(),
                 self.scale,
-                self.get_time,
+                time_at_pause,
                 self.step_moves,
                 energy_data_str,
                 self.Tom.hp,
@@ -1126,8 +1142,8 @@ def load_GamePlay(game_id: int) -> GamePlay:
 
     # Get the delta times and plus that to the times that player play
     Game.player.sprite.step_moves = moves
-    Game.start_time = pygame.time.get_ticks() - times
-    Game.time_at_pause = Game.start_time
+    Game.start_time = pygame.time.get_ticks()
+    Game.time_at_pause = times
 
     # After load all the game -> Go to game
     Game.set_new_game_state("in_game")

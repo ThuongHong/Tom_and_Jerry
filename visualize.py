@@ -894,7 +894,7 @@ class GameScreen:
                     if self.login == True:
                         self.username = new_username
                         self.game_state = "main menu"
-                        self.get_saved_data()
+                        # self.get_saved_data()
                     else:
                         notification_text1 = self.font.render(
                             "This username is already in use.", True, COLOR.RED
