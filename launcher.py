@@ -28,6 +28,8 @@ class Launcher():
         self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 30)
         self.end_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 50)
         
+        button_visualize_process_on_img = create_img(images_source, 'button_visualize_process_on')
+        button_visualize_process_off_img = create_img(images_source, 'button_visualize_process_off')
         button_hint_on_img = create_img(images_source, 'button_hint_on')
         button_hint_off_img = create_img(images_source, 'button_hint_off')
         button_algo_astarlist_img = create_img(images_source, 'button_algo_astarlist')
@@ -66,9 +68,10 @@ class Launcher():
         box_confirm_overwrite_x_coord = self.box_confirm_overwrite.x_coord
         box_confirm_overwrite_y_coord = self.box_confirm_overwrite.y_coord
         
-
-        self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_on_img, click_sound, 0.25, 0.26)
-        self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.81, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_off_img, click_sound, 0.25, 0.26)
+        self.button_visualize_process_on = Button(DISPLAY.SCREEN_WIDTH * 0.74, DISPLAY.SCREEN_HEIGHT * 0.92, button_visualize_process_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_visualize_process_off = Button(DISPLAY.SCREEN_WIDTH * 0.74, DISPLAY.SCREEN_HEIGHT * 0.92, button_visualize_process_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.80, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_on_img, click_sound, 0.25, 0.26)
+        self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.80, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_off_img, click_sound, 0.25, 0.26)
         self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarlist_img, click_sound, 0.25, 0.26)
         self.button_algo_astarheap = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarheap_img, click_sound, 0.25, 0.26)
         self.button_algo_bfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_bfs_img, click_sound, 0.25, 0.26)
@@ -81,7 +84,7 @@ class Launcher():
         self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, button_home_img, click_sound, 0.25, 0.26)
         self.button_yes = Button(box_save_confirm_x_coord - box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_yes_img, click_sound, 0.25, 0.26)
         self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_no_img, click_sound, 0.25, 0.26)
-        self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.75, DISPLAY.SCREEN_HEIGHT * 0.92, button_switch_themes_img, click_sound, 0.25, 0.26)
+        self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.65, DISPLAY.SCREEN_HEIGHT * 0.92, button_switch_themes_img, click_sound, 0.25, 0.26)
         self.button_box_game_restart = Button(box_game_win_x_coord - box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_restart_img, click_sound, 0.25, 0.26)
         self.button_box_game_home = Button(box_game_win_x_coord + box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_home_img, click_sound, 0.25, 0.26)
         self.button_overwrite = Button(box_confirm_overwrite_x_coord - box_confirm_overwrite_width * 0.24, box_confirm_overwrite_y_coord + box_confirm_overwrite_height * 0.24, button_overwrite_img, click_sound, 0.3, 0.31)
@@ -112,8 +115,16 @@ class Launcher():
                 energy_left = self.font.render(f'Energy: {self.Game.Tom.hp}', True, (255, 255, 255))
                 self.window_screen.blit(energy_left, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.15))
             
+            if self.Game.is_stop_process:
+                if self.button_visualize_process_off.draw(self.window_screen, pos, event, self.sound_on):
+                    self.Game.visualize_process(algorithm=self.current_algo)
+                    self.Game.de_visualize_solution()
+            else:
+                if self.button_visualize_process_on.draw(self.window_screen, pos, event, self.sound_on):
+                    self.Game.de_visualize_process()
+            
             if not self.Game.is_draw_solution:
-                if self.button_hint_off.draw(self.window_screen, pos, event, self.sound_on):
+                if self.button_hint_off.draw(self.window_screen, pos, event, self.sound_on) and self.Game.is_stop_process:
                     self.Game.visualize_solution(algorithm=self.current_algo)
             else:
                 if self.button_hint_on.draw(self.window_screen, pos, event, self.sound_on):
@@ -123,22 +134,37 @@ class Launcher():
                 if self.button_algo_astarlist.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'BFS'
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
+                    if not self.Game.is_stop_process: 
+                        self.Game.visualize_process(algorithm=self.current_algo)
+                        self.Game.de_visualize_solution()
             elif self.current_algo == 'BFS':
                 if self.button_algo_bfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'DFS'
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
+                    if not self.Game.is_stop_process: 
+                        self.Game.visualize_process(algorithm=self.current_algo)
+                        self.Game.de_visualize_solution()
             elif self.current_algo == 'DFS':
                 if self.button_algo_dfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'GBFS'
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
+                    if not self.Game.is_stop_process: 
+                        self.Game.visualize_process(algorithm=self.current_algo)
+                        self.Game.de_visualize_solution()
             elif self.current_algo == 'GBFS':
                 if self.button_algo_gbfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'AStar_MinBinaryHeap'
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
+                    if not self.Game.is_stop_process: 
+                        self.Game.visualize_process(algorithm=self.current_algo)
+                        self.Game.de_visualize_solution()
             elif self.current_algo == 'AStar_MinBinaryHeap':
                 if self.button_algo_astarheap.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'AStar_OrderedList'
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
+                    if not self.Game.is_stop_process: 
+                        self.Game.visualize_process(algorithm=self.current_algo)
+                        self.Game.de_visualize_solution()
                     
             if self.paused == False:
                 if self.button_pause_game.draw(self.window_screen, pos, event, self.sound_on):
@@ -158,13 +184,13 @@ class Launcher():
                     """ Save game """
                     if self.full_save == True:
                         self.overwrite_confirm = True
-                    # self.Game.set_new_game_state("save_game") # xoa dong nay ddc ko
-                    #            ^
-                    # Check this |
-                    # Update snapshots here
+
                     else:
-                        self.Game.save_game()
+                        self.Game.save_game(self.time_at_pause)
+                        self.Game.resume_time()
+                        # self.Game.save_game()
                         self.saved = True
+                        # Remember to set this to False if player moves after saved
                         self.paused = False
                 if self.button_home.draw(self.window_screen, pos, event, self.sound_on):
                     """ Exit to main menu """
@@ -184,7 +210,7 @@ class Launcher():
                         self.saved = True
                         self.save_confirm = False
                         self.paused = False
-                        self.Game.save_game()
+                        self.Game.save_game(self.time_at_pause)
                         self.Game.set_new_game_state("back_menu")
                 if self.button_no.draw(self.window_screen, pos, event, self.sound_on):
                     """ Exit to main menu """
@@ -211,7 +237,7 @@ class Launcher():
             if self.button_switch_themes.draw(self.window_screen, pos, event, self.sound_on):
                 """ Switch themes"""
                 self.current_theme = str(int(self.current_theme) + 1)
-                if (self.current_theme == '8'):
+                if (self.current_theme == '7'):
                     self.current_theme = '1'
                 self.Game.change_theme(self.current_theme)
                 
@@ -261,6 +287,8 @@ class Launcher():
         self.current_theme = '2'
         self.current_background = 0
         self.spawning = "random"
+        self.maze_visualizer = False
+        self.maze_generate_algo = "HAK"
         self.energy = self.Game.energy
         self.insane_mode = self.Game.insane_mode
         self.time_at_pause = ''
@@ -272,8 +300,6 @@ class Launcher():
         self.is_restarted = False
         self.sound_on = sound_on
         self.is_loaded = True
-        self.maze_visualizer = False
-        self.maze_generate_algo = "HAK"
         
         # For restart game
         self.user_id = self.Game.user_id

@@ -568,6 +568,7 @@ class Jerry(Tom):
 
             # Loop 28 frame
             for _ in range(self._grid_size):
+                ui_grp.background.draw(self.window_screen)
                 self.image = sprites[int(current_sprite)]
                 self.rect.topleft = self.rect.topleft + move_coord
 
