@@ -599,12 +599,16 @@ class Jerry(Tom):
 
         for i in range(maze.maze_size):
             for j in range(maze.maze_size):
-                if mahathan_distance((i, j), tom_grp.sprite.position) >= current_distance and BDFS(grids= maze.grids,
+                if i == self.position[0] and j == self.position[1]: continue
+                if mahathan_distance((i, j), tom_grp.sprite.position) > current_distance and BDFS(grids= maze.grids,
                                                                                                    player_current_position= tom_grp.sprite.position,
                                                                                                    player_winning_position= (i, j),
-                                                                                                   
                                                                                                    algorithm= 'BFS'):
                     self.position = (i, j)
+                    maze.end_position = self.position
+                    self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size,
+                                                              self.position[1] * self._grid_size))        
+
                     return
                 
     def update(self, 
@@ -624,7 +628,12 @@ class Jerry(Tom):
                 self.scale = scale
         if tom_grp:
             steps = tom_grp.sprite.step_moves
-            if steps % 2 == 0:
+            if 0 <= steps < 20: threshold = 5
+            elif steps < 40: threshold = 8
+            elif steps < 80: threshold = 15
+            elif steps < 100: threshold = 20
+            else: threshold = steps + 1
+            if steps % threshold == 0:
                 self.escape_teleport(
                     maze= maze,
                     energy_grp= energy_grp,

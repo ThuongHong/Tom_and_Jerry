@@ -484,10 +484,12 @@ class GamePlay:
             db_connect.commit()
 
     def spawn_random(self):
+        self.spawn_mode = 'RANDOM'
         self.Maze.spawn_start_end_position("TOP_BOTTOM")
         self.create_player()
 
     def select_position_spawn(self, ui_grp):
+        self.spawn_mode = 'MANUAL'
         self.game_normal_view()
         self.scale = 20 / self.Maze.maze_size
 
@@ -500,18 +502,20 @@ class GamePlay:
 
             if self.Maze.is_have_start():
                 mark_grid(
-                    self.Maze.grids,
-                    self.screen,
-                    self.Maze.start_position,
+                    grids= self.Maze.grids,
+                    screen= self.screen,
+                    current_grid= self.Maze.start_position,
+                    tom= True,
                     COLOR=(0, 0, 255),
                 )
                 counter += 1
 
             if self.Maze.is_have_end():
                 mark_grid(
-                    self.Maze.grids,
-                    self.screen,
-                    self.Maze.end_position,
+                    grids= self.Maze.grids,
+                    screen= self.screen,
+                    current_grid= self.Maze.end_position,
+                    jerry= True,
                     COLOR=(255, 0, 0),
                 )
                 counter += 1
@@ -522,12 +526,13 @@ class GamePlay:
                     start_position=self.Maze.start_position,
                     end_position=self.Maze.end_position,
                 ):
-                    break
+                    counter = 2
                 else:
                     self.Maze.grids[self.Maze.start_position].is_start = False
                     self.Maze.grids[self.Maze.end_position].is_end = False
                     self.Maze.start_position = None
                     self.Maze.end_position = None
+                    counter =0
 
             scale_surface = pygame.transform.scale(
                 self.screen, self.screen_vector * self.scale
@@ -557,6 +562,11 @@ class GamePlay:
                     )
 
             pygame.display.update()
+
+            if counter == 2: 
+                pygame.time.wait(500)
+                break
+
         self.scale = 1
 
         self.create_player()
@@ -915,8 +925,8 @@ class GamePlay:
 
         db_cursor.execute(
             """
-            INSERT INTO "game_saves"("game_id", "maze", "current_position", "start_position", "end_position", "scale", "times", "moves", "energy_info", "tom_hp", "background", "theme")
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO "game_saves"("game_id", "maze", "current_position", "start_position", "end_position", "scale", "times", "moves", "energy_info", "tom_hp", "background", "theme", "spawning_mode")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 self.id,
@@ -931,7 +941,8 @@ class GamePlay:
                 self.Tom.hp,
                 background,
                 theme,
-            ),
+                self.spawn_mode
+            )
         )
 
         save_image = pygame.transform.scale(self.screen, (520, 520))
@@ -1045,14 +1056,12 @@ def load_GamePlay(game_id: int) -> GamePlay:
     game_saves_data = list(
         db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id}')
     )[0]
-    # game_data_1 = list(db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id}'))[0] # Get that row
 
     games_data = list(
         db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}')
     )[
         0
-    ]  # Get that row
-    # game_data_2 = list(db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}'))[0] # Get that row
+    ]
 
     # Category the info that we get
     # Get the data that useful

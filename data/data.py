@@ -85,7 +85,7 @@ def get_saved_game(user_id: int):
             )
             AND save_state = 1
             """,
-            ([user_id]),
+            ([user_id])
         )
     )
 
@@ -100,9 +100,11 @@ def get_saved_game(user_id: int):
 
         steps = saved_game_ids[i][2]
 
-        background = saved_game_ids[i][-2]
+        background = saved_game_ids[i][-3]
 
-        theme = saved_game_ids[i][-1]
+        theme = saved_game_ids[i][-2]
+
+        spawn_mode = saved_game_ids[i][-1]
 
         try:
             single_data_row = []
@@ -122,7 +124,8 @@ def get_saved_game(user_id: int):
                     )
                 )[0]
             )
-            single_data_row.extend([background, theme])
+            # Background and Theme and Spawning_mode
+            single_data_row.extend([background, theme, spawn_mode])
 
             game_saves_data.append(single_data_row)
         except FileNotFoundError:
@@ -155,12 +158,15 @@ def leaderboard(mode: str) -> list:
 
     db_cursor = db_connect.cursor()
 
-    if mode.upper() == "EASY":
-        board = "easy_leaderboard"
-    elif mode.upper() == "MEDIUM":
-        board = "medium_leaderboard"
-    elif mode.upper() == "HARD":
-        board = "hard_leaderboard"
+    if mode.upper() == "PUREEASY": board = "pure_easy_leaderboard"
+    elif mode.upper() == "PUREMEDIUM": board = "pure_medium_leaderboard"
+    elif mode.upper() == "PUREHARD": board = "pure_hard_leaderboard"
+    elif mode.upper == 'ENERGYEASY': board = "energy_easy_leaderboard"
+    elif mode.upper == 'ENERGYMEDIUM': board = "energy_medium_leaderboard"
+    elif mode.upper == 'ENERGYHARD': board = "energy_hard_leaderboard"
+    elif mode.upper == 'INSANEEASY': board = "insane_easy_leaderboard"
+    elif mode.upper == 'INSANEMEDIUM': board = "insane_medium_leaderboard"
+    elif mode.upper == 'INSANEHARD': board = "insane_hard_leaderboard"
 
     leaderboard_data = list(
         db_cursor.execute(

@@ -42,6 +42,7 @@ CREATE TABLE "game_saves" (
     "tom_hp" INT DEFAULT 0,
     "theme" INT NOT NULL,
     "background" NOT NULL,
+    "spawning_mode" TEXT DEFAULT 'RANDOM',
     FOREIGN KEY("game_id") REFERENCES "games"("id")
 );
 
@@ -75,7 +76,7 @@ SELECT "id",
 FROM "users";
 
 -- -- CREATE A FULLY SHOW LEADERBOARD TO ACESS EASIER
-CREATE VIEW "easy_leaderboard" AS
+CREATE VIEW "pure_easy_leaderboard" AS
 SELECT "users"."username" AS "user_name", 
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
@@ -84,9 +85,11 @@ SELECT "users"."username" AS "user_name",
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
-WHERE "game_mode" = 'Easy';
+WHERE "game_mode" = 'Easy'
+AND "energy_mode" = 0
+AND "insane_mode" = 0;
 
-CREATE VIEW "medium_leaderboard" AS
+CREATE VIEW "pure_medium_leaderboard" AS
 SELECT "users"."username" AS "user_name", 
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
@@ -95,9 +98,11 @@ SELECT "users"."username" AS "user_name",
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
-WHERE "game_mode" = 'Medium';
+WHERE "game_mode" = 'Medium'
+AND "energy_mode" = 0
+AND "insane_mode" = 0;
 
-CREATE VIEW "hard_leaderboard" AS
+CREATE VIEW "pure_hard_leaderboard" AS
 SELECT "users"."username" AS "user_name", 
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
@@ -106,7 +111,87 @@ SELECT "users"."username" AS "user_name",
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
-WHERE "game_mode" = 'Hard';
+WHERE "game_mode" = 'Hard'
+AND "energy_mode" = 0
+AND "insane_mode" = 0;
+
+CREATE VIEW "energy_easy_leaderboard" AS
+SELECT "users"."username" AS "user_name", 
+        "games"."game_mode" AS "game_mode",
+        "games"."energy_mode" AS "energy_mode",
+        "leaderboard"."times" AS "times", 
+        "leaderboard"."moves" AS "moves"
+FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
+JOIN "games" ON "played"."game_id" = "games"."id"
+JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
+WHERE "game_mode" = 'Easy'
+AND "energy_mode" = 1
+AND "insane_mode" = 0;
+
+CREATE VIEW "energy_medium_leaderboard" AS
+SELECT "users"."username" AS "user_name", 
+        "games"."game_mode" AS "game_mode",
+        "games"."energy_mode" AS "energy_mode",
+        "leaderboard"."times" AS "times", 
+        "leaderboard"."moves" AS "moves"
+FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
+JOIN "games" ON "played"."game_id" = "games"."id"
+JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
+WHERE "game_mode" = 'Medium'
+AND "energy_mode" = 1
+AND "insane_mode" = 0;
+
+CREATE VIEW "energy_hard_leaderboard" AS
+SELECT "users"."username" AS "user_name", 
+        "games"."game_mode" AS "game_mode",
+        "games"."energy_mode" AS "energy_mode",
+        "leaderboard"."times" AS "times", 
+        "leaderboard"."moves" AS "moves"
+FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
+JOIN "games" ON "played"."game_id" = "games"."id"
+JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
+WHERE "game_mode" = 'Hard'
+AND "energy_mode" = 1
+AND "insane_mode" = 0;
+
+CREATE VIEW "insane_easy_leaderboard" AS
+SELECT "users"."username" AS "user_name", 
+        "games"."game_mode" AS "game_mode",
+        "games"."energy_mode" AS "energy_mode",
+        "leaderboard"."times" AS "times", 
+        "leaderboard"."moves" AS "moves"
+FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
+JOIN "games" ON "played"."game_id" = "games"."id"
+JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
+WHERE "game_mode" = 'Easy'
+AND "energy_mode" = 0
+AND "insane_mode" = 1;
+
+CREATE VIEW "insane_medium_leaderboard" AS
+SELECT "users"."username" AS "user_name", 
+        "games"."game_mode" AS "game_mode",
+        "games"."energy_mode" AS "energy_mode",
+        "leaderboard"."times" AS "times", 
+        "leaderboard"."moves" AS "moves"
+FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
+JOIN "games" ON "played"."game_id" = "games"."id"
+JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
+WHERE "game_mode" = 'Medium'
+AND "energy_mode" = 0
+AND "insane_mode" = 1;
+
+CREATE VIEW "insane_hard_leaderboard" AS
+SELECT "users"."username" AS "user_name", 
+        "games"."game_mode" AS "game_mode",
+        "games"."energy_mode" AS "energy_mode",
+        "leaderboard"."times" AS "times", 
+        "leaderboard"."moves" AS "moves"
+FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
+JOIN "games" ON "played"."game_id" = "games"."id"
+JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
+WHERE "game_mode" = 'Hard'
+AND "energy_mode" = 0
+AND "insane_mode" = 1;
 
 -- CREATE TRIGGER "delete_game_save"
 -- INSTEAD OF DELETE ON "game_saves"
