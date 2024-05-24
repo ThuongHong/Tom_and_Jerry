@@ -4,7 +4,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import pygame
 from os import remove
 
-
 def register(new_username: str, new_password: str):
     db_connect = sqlite3.connect(r"database/TomJerry.db")
 
@@ -161,12 +160,12 @@ def leaderboard(mode: str) -> list:
     if mode.upper() == "PUREEASY": board = "pure_easy_leaderboard"
     elif mode.upper() == "PUREMEDIUM": board = "pure_medium_leaderboard"
     elif mode.upper() == "PUREHARD": board = "pure_hard_leaderboard"
-    elif mode.upper == 'ENERGYEASY': board = "energy_easy_leaderboard"
-    elif mode.upper == 'ENERGYMEDIUM': board = "energy_medium_leaderboard"
-    elif mode.upper == 'ENERGYHARD': board = "energy_hard_leaderboard"
-    elif mode.upper == 'INSANEEASY': board = "insane_easy_leaderboard"
-    elif mode.upper == 'INSANEMEDIUM': board = "insane_medium_leaderboard"
-    elif mode.upper == 'INSANEHARD': board = "insane_hard_leaderboard"
+    elif mode.upper() == 'ENERGYEASY': board = "energy_easy_leaderboard"
+    elif mode.upper() == 'ENERGYMEDIUM': board = "energy_medium_leaderboard"
+    elif mode.upper() == 'ENERGYHARD': board = "energy_hard_leaderboard"
+    elif mode.upper() == 'INSANEEASY': board = "insane_easy_leaderboard"
+    elif mode.upper() == 'INSANEMEDIUM': board = "insane_medium_leaderboard"
+    elif mode.upper() == 'INSANEHARD': board = "insane_hard_leaderboard"
 
     leaderboard_data = list(
         db_cursor.execute(

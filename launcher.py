@@ -9,7 +9,7 @@ from menu_objects.button import Button
 from menu_objects.graphic import Graphic
 # from menu_objects.music import MusicController
 
-from CONSTANTS import DISPLAY
+from CONSTANTS import DISPLAY, COLOR
 
 def create_img(images_source, image_name):
     image_name = image_name + '.png'
@@ -108,15 +108,15 @@ class Launcher():
         pos = pygame.mouse.get_pos()
         if self.win == False and self.lose == False:
             if self.paused:
-                time_used = self.font.render(f'Time  : {self.time_at_pause}', True, (255, 255, 255))
+                time_used = self.font.render(f'Time  : {self.time_at_pause}', True, COLOR.WHITE)
             else:
-                time_used = self.font.render(f'Time  : {self.Game.format_time(self.Game.get_time)}', True, (255, 255, 255))
-            step_used = self.font.render(f'Steps: {self.Game.Tom.step_moves}', True, (255, 255, 255))
+                time_used = self.font.render(f'Time  : {self.Game.format_time(self.Game.get_time)}', True, COLOR.WHITE)
+            step_used = self.font.render(f'Steps: {self.Game.Tom.step_moves}', True, COLOR.WHITE)
             self.window_screen.blit(time_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.05))
             self.window_screen.blit(step_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.10))
             
             if self.energy:
-                energy_left = self.font.render(f'Energy: {self.Game.Tom.hp}', True, (255, 255, 255))
+                energy_left = self.font.render(f'Energy: {self.Game.Tom.hp}', True, COLOR.WHITE)
                 self.window_screen.blit(energy_left, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.15))
             
             if self.Game.is_stop_process:
@@ -251,11 +251,13 @@ class Launcher():
                 
         
         if self.win == True:
-            time_end = self.end_font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, (0, 0, 0))
-            step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, (0, 0, 0))
+            step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
+            time_end = self.end_font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, COLOR.BLACK)
+            score = self.end_font.render(f'Score:        {123}', True, COLOR.BLACK)
             self.box_game_win.draw(self.window_screen)
-            self.window_screen.blit(time_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord - self.box_game_win.modified_height * 0.01))
-            self.window_screen.blit(step_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.2))
+            self.window_screen.blit(step_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord - self.box_game_win.modified_height * 0.08))
+            self.window_screen.blit(time_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.09))
+            self.window_screen.blit(score, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.26))
 
             if self.button_box_game_home.draw(self.window_screen, pos, event, self.sound_on):
                 self.save_confirm = False
@@ -267,11 +269,11 @@ class Launcher():
                 self.Game.set_new_game_state("start")
                 
         if self.lose == True:
-            time_end = self.end_font.render(f'Time  :        {self.Game.end_time}', True, (0, 0, 0))
-            step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, (0, 0, 0))
+            step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
+            time_end = self.end_font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, COLOR.BLACK)
             self.box_game_lose.draw(self.window_screen)
-            self.window_screen.blit(time_end, (self.box_game_lose.x_coord - self.box_game_lose.modified_width * 0.18, self.box_game_lose.y_coord - self.box_game_win.modified_height * 0.01))
-            self.window_screen.blit(step_end, (self.box_game_lose.x_coord - self.box_game_lose.modified_width * 0.18, self.box_game_lose.y_coord + self.box_game_win.modified_height * 0.2))
+            self.window_screen.blit(step_end, (self.box_game_lose.x_coord - self.box_game_lose.modified_width * 0.18, self.box_game_lose.y_coord - self.box_game_win.modified_height * 0.01))
+            self.window_screen.blit(time_end, (self.box_game_lose.x_coord - self.box_game_lose.modified_width * 0.18, self.box_game_lose.y_coord + self.box_game_win.modified_height * 0.17))
 
             if self.button_box_game_home.draw(self.window_screen, pos, event, self.sound_on):
                 self.save_confirm = False
