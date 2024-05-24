@@ -42,7 +42,8 @@ class GameScreen:
         self.full_save = False
         self.difficulty = ""
         self.login_signin_state = "log in"
-        self.leaderboard_state = "easy"
+        self.leaderboard_difficulty = "easy"
+        self.leaderboard_mode = "normal"
         self.new_game_state = "choose difficulty"
         self.spawning = ""
         self.energy_mode = False
@@ -118,6 +119,9 @@ class GameScreen:
         leaderboard_easy_img = create_img(self.image_source, "leaderboard_easy")
         leaderboard_medium_img = create_img(self.image_source, "leaderboard_medium")
         leaderboard_hard_img = create_img(self.image_source, "leaderboard_hard")
+        trophy_gold_img = create_img(self.image_source, 'trophy_gold')
+        trophy_silver_img = create_img(self.image_source, 'trophy_silver')
+        trophy_bronze_img = create_img(self.image_source, 'trophy_bronze')
 
         """ NEW GAME """
         button_yes_img = create_img(self.image_source, "button_yes")
@@ -395,28 +399,33 @@ class GameScreen:
         )
         leaderbboard_width = self.leaderboard.modified_width
         leaderbboard_height = self.leaderboard.modified_height
+        leaderbboard_x_coord = self.leaderboard.x_coord
+        leaderbboard_y_coord = self.leaderboard.y_coord
         self.leaderboard_easy = graphic.Graphic(
-            HALF_SCREEN_WIDTH + leaderbboard_width * 0.367,
+            HALF_SCREEN_WIDTH + leaderbboard_width * 0.39,
             HALF_SCREEN_HEIGHT - leaderbboard_height * 0.12,
             leaderboard_easy_img,
             0.3,
         )
         self.leaderboard_medium = graphic.Graphic(
-            HALF_SCREEN_WIDTH + leaderbboard_width * 0.367,
+            HALF_SCREEN_WIDTH + leaderbboard_width * 0.39,
             HALF_SCREEN_HEIGHT + leaderbboard_height * 0.1,
             leaderboard_medium_img,
             0.3,
         )
         self.leaderboard_hard = graphic.Graphic(
-            HALF_SCREEN_WIDTH + leaderbboard_width * 0.367,
+            HALF_SCREEN_WIDTH + leaderbboard_width * 0.39,
             HALF_SCREEN_HEIGHT + leaderbboard_height * 0.32,
             leaderboard_hard_img,
             0.3,
         )
+        self.trophy_gold = graphic.Graphic(self.leaderboard.x_coord - self.leaderboard.modified_width * 0.32, self.leaderboard.y_coord - self.leaderboard.modified_height * 0.025 + self.background_leaderboard.modified_height * 0.07 * 0, trophy_gold_img, 0.3)
+        self.trophy_silver = graphic.Graphic(self.leaderboard.x_coord - self.leaderboard.modified_width * 0.32, self.leaderboard.y_coord - self.leaderboard.modified_height * 0.025 + self.background_leaderboard.modified_height * 0.07 * 1, trophy_silver_img, 0.3)
+        self.trophy_bronze = graphic.Graphic(self.leaderboard.x_coord - self.leaderboard.modified_width * 0.32, self.leaderboard.y_coord - self.leaderboard.modified_height * 0.025+ self.background_leaderboard.modified_height * 0.07 * 2, trophy_bronze_img, 0.3)
 
         # create buttons
         self.button_leaderboard_easy = button.Button(
-            HALF_SCREEN_WIDTH + leaderbboard_width * 0.367,
+            HALF_SCREEN_WIDTH + leaderbboard_width * 0.39,
             HALF_SCREEN_HEIGHT - leaderbboard_height * 0.12,
             button_leaderboard_easy_img,
             self.click_sound_source,
@@ -424,7 +433,7 @@ class GameScreen:
             0.31,
         )
         self.button_leaderboard_medium = button.Button(
-            HALF_SCREEN_WIDTH + leaderbboard_width * 0.367,
+            HALF_SCREEN_WIDTH + leaderbboard_width * 0.39,
             HALF_SCREEN_HEIGHT + leaderbboard_height * 0.1,
             button_leaderboard_medium_img,
             self.click_sound_source,
@@ -432,13 +441,23 @@ class GameScreen:
             0.31,
         )
         self.button_leaderboard_hard = button.Button(
-            HALF_SCREEN_WIDTH + leaderbboard_width * 0.367,
+            HALF_SCREEN_WIDTH + leaderbboard_width * 0.39,
             HALF_SCREEN_HEIGHT + leaderbboard_height * 0.32,
             button_leaderboard_hard_img,
             self.click_sound_source,
             0.3,
             0.31,
         )
+        self.button_uncheck_normal = button.Button(
+            leaderbboard_x_coord - leaderbboard_width * 0.2, 
+            leaderbboard_y_coord - leaderbboard_height * 0.173, 
+            button_uncheck_img, self.click_sound_source, 0.3, 0.3
+            )
+        self.button_uncheck_energy = button.Button(leaderbboard_x_coord - leaderbboard_width * 0.043, leaderbboard_y_coord - leaderbboard_height * 0.173, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_uncheck_insane = button.Button(leaderbboard_x_coord + leaderbboard_width * 0.115, leaderbboard_y_coord - leaderbboard_height * 0.173, button_uncheck_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_normal = button.Button(leaderbboard_x_coord - leaderbboard_width * 0.2, leaderbboard_y_coord - leaderbboard_height * 0.173, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_energy = button.Button(leaderbboard_x_coord - leaderbboard_width * 0.043, leaderbboard_y_coord - leaderbboard_height * 0.173, button_check_img, self.click_sound_source, 0.3, 0.3)
+        self.button_check_insane = button.Button(leaderbboard_x_coord + leaderbboard_width * 0.115, leaderbboard_y_coord - leaderbboard_height * 0.173, button_check_img, self.click_sound_source, 0.3, 0.3)
 
         """ NEW GAME"""
         # create graphic
@@ -856,164 +875,101 @@ class GameScreen:
             self.username_signin_textbox.text = ""
             self.password_login_textbox.text = ""
             self.password_signin_textbox.text = ""
-
+    
     def draw_leaderboard(self, event):
         pos = pygame.mouse.get_pos()
 
         self.background_leaderboard.draw(self.screen)
-        if self.leaderboard_state == "easy":
+        
+        if self.leaderboard_difficulty == "easy":
             if self.button_leaderboard_medium.draw(self.screen, pos, event, self.sound):
-                self.leaderboard_state = "medium"
+                self.leaderboard_difficulty = "medium"
             if self.button_leaderboard_hard.draw(self.screen, pos, event, self.sound):
-                self.leaderboard_state = "hard"
+                self.leaderboard_difficulty = "hard"
             self.leaderboard.draw(self.screen)
             self.leaderboard_easy.draw(self.screen)
-            records = data.leaderboard(mode="EASY")
-            for i in range(min(len(records), DISPLAY.RECORD_LIMIT)):
-                username = self.font.render(records[i][0], True, COLOR.BLACK)
-                time = self.font.render(records[i][1], True, COLOR.BLACK)
-                steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
-                self.screen.blit(
-                    username,
-                    (
-                        (
-                            self.leaderboard.x_coord
-                            - username.get_rect().width * 0.5
-                            - self.leaderboard.modified_width * 0.22,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-                self.screen.blit(
-                    steps,
-                    (
-                        (
-                            self.leaderboard.x_coord
-                            + self.leaderboard.modified_width * 0.01,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-                self.screen.blit(
-                    time,
-                    (
-                        (
-                            self.leaderboard.x_coord
-                            + self.leaderboard.modified_width * 0.2,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-
-        if self.leaderboard_state == "medium":
+        if self.leaderboard_difficulty == "medium":
             if self.button_leaderboard_easy.draw(self.screen, pos, event, self.sound):
-                self.leaderboard_state = "easy"
+                self.leaderboard_difficulty = "easy"
             if self.button_leaderboard_hard.draw(self.screen, pos, event, self.sound):
-                self.leaderboard_state = "hard"
+                self.leaderboard_difficulty = "hard"
             self.leaderboard.draw(self.screen)
             self.leaderboard_medium.draw(self.screen)
-            records = data.leaderboard(mode="MEDIUM")
-            for i in range(min(len(records), DISPLAY.RECORD_LIMIT)):
-                username = self.font.render(records[i][0], True, COLOR.BLACK)
-                time = self.font.render(records[i][1], True, COLOR.BLACK)
-                steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
-                self.screen.blit(
-                    username,
-                    (
-                        (
-                            self.leaderboard.x_coord
-                            - username.get_rect().width * 0.5
-                            - self.leaderboard.modified_width * 0.22,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-                self.screen.blit(
-                    steps,
-                    (
-                        (
-                            self.leaderboard.x_coord
-                            + self.leaderboard.modified_width * 0.01,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-                self.screen.blit(
-                    time,
-                    (
-                        (
-                            self.leaderboard.x_coord
-                            + self.leaderboard.modified_width * 0.2,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-
-        if self.leaderboard_state == "hard":
+        if self.leaderboard_difficulty == "hard":
             if self.button_leaderboard_easy.draw(self.screen, pos, event, self.sound):
-                self.leaderboard_state = "easy"
+                self.leaderboard_difficulty = "easy"
             if self.button_leaderboard_medium.draw(self.screen, pos, event, self.sound):
-                self.leaderboard_state = "medium"
+                self.leaderboard_difficulty = "medium"
             self.leaderboard.draw(self.screen)
             self.leaderboard_hard.draw(self.screen)
-            records = data.leaderboard(mode="HARD")
-            for i in range(min(len(records), DISPLAY.RECORD_LIMIT)):
-                username = self.font.render(records[i][0], True, COLOR.BLACK)
-                time = self.font.render(records[i][1], True, COLOR.BLACK)
-                steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
-                self.screen.blit(
-                    username,
+                   
+        if self.leaderboard_mode == "normal":
+            self.button_check_normal.draw(self.screen, pos, event, self.sound)
+            if self.button_uncheck_energy.draw(self.screen, pos, event, self.sound):
+                self.leaderboard_mode = "energy"
+            if self.button_uncheck_insane.draw(self.screen, pos, event, self.sound):
+                self.leaderboard_mode = "insane"
+        if self.leaderboard_mode == "energy":
+            self.button_check_energy.draw(self.screen, pos, event, self.sound)
+            if self.button_uncheck_normal.draw(self.screen, pos, event, self.sound):
+                self.leaderboard_mode = "normal"
+            if self.button_uncheck_insane.draw(self.screen, pos, event, self.sound):
+                self.leaderboard_mode = "insane"
+        if self.leaderboard_mode == "insane":
+            self.button_check_insane.draw(self.screen, pos, event, self.sound)
+            if self.button_uncheck_normal.draw(self.screen, pos, event, self.sound):
+                self.leaderboard_mode = "normal"
+            if self.button_uncheck_energy.draw(self.screen, pos, event, self.sound):
+                self.leaderboard_mode = "energy"
+        
+                
+        records = data.leaderboard(mode=self.leaderboard_difficulty.upper())
+        for i in range(min(len(records), DISPLAY.RECORD_LIMIT)):
+            username = self.font.render(records[i][0], True, COLOR.BLACK)
+            time = self.font.render(records[i][1], True, COLOR.BLACK)
+            steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
+            self.screen.blit(
+                username,
+                (
                     (
-                        (
-                            self.leaderboard.x_coord
-                            - username.get_rect().width * 0.5
-                            - self.leaderboard.modified_width * 0.22,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-                self.screen.blit(
-                    steps,
+                        self.leaderboard.x_coord - username.get_rect().width * 0.5 - self.leaderboard.modified_width * 0.22,
+                        self.leaderboard.y_coord - self.leaderboard.modified_height * 0.05 + self.background_leaderboard.modified_height * 0.07 * i,
+                    )
+                ),
+            )
+            self.screen.blit(
+                steps,
+                (
                     (
-                        (
-                            self.leaderboard.x_coord
-                            + self.leaderboard.modified_width * 0.01,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-                self.screen.blit(
-                    time,
+                        self.leaderboard.x_coord - self.leaderboard.modified_width * 0.04 - steps.get_rect().width,
+                        self.leaderboard.y_coord - self.leaderboard.modified_height * 0.05 + self.background_leaderboard.modified_height * 0.07 * i,
+                    )
+                ),
+            )
+            self.screen.blit(
+                time,
+                (
                     (
-                        (
-                            self.leaderboard.x_coord
-                            + self.leaderboard.modified_width * 0.2,
-                            self.leaderboard.y_coord
-                            - self.leaderboard.modified_height * 0.13
-                            + self.background_leaderboard.modified_height * 0.07 * i,
-                        )
-                    ),
-                )
-
+                        self.leaderboard.x_coord
+                        + self.leaderboard.modified_width * 0.2,
+                        self.leaderboard.y_coord
+                        - self.leaderboard.modified_height * 0.05
+                        + self.background_leaderboard.modified_height * 0.07 * i,
+                    )
+                ),
+            )
+        ranks = len(records)
+        if ranks > 0:
+            self.trophy_gold.draw(self.screen)
+        if ranks > 1:
+            self.trophy_silver.draw(self.screen)
+        if ranks > 2:
+            self.trophy_bronze.draw(self.screen)
+        
         if self.button_back.draw(self.screen, pos, event, self.sound):
             self.game_state = "main menu"
-            self.leaderboard_state = "easy"
+            self.leaderboard_difficulty = "easy"
+            self.leaderboard_mode = "normal"
 
     def draw_new_game(self, event):
         pos = pygame.mouse.get_pos()
@@ -1147,29 +1103,6 @@ class GameScreen:
         pos = pygame.mouse.get_pos()
 
         self.background_load_game.draw(self.screen)
-        # if self.load_game_state == "easy":
-        #     self.easy_snapshot_1.draw(self.screen)
-        #     self.saveslot_easy_1.manage_save(self.screen, pos, event)
-        #     self.saveslot_easy_2.manage_save(self.screen, pos, event)
-        #     if self.button_easy_load_game.draw(self.screen, pos, event, self.sound):
-        #         self.load_game_state = "medium"
-        # if self.load_game_state == "medium":
-        #     self.saveslot_medium_1.manage_save(self.screen, pos, event)
-        #     self.saveslot_medium_2.manage_save(self.screen, pos, event)
-        #     if self.button_medium_load_game.draw(self.screen, pos, event, self.sound):
-        #         self.load_game_state = "hard"
-        # if self.load_game_state == "hard":
-        #     self.saveslot_hard_1.manage_save(self.screen, pos, event)
-        #     self.saveslot_hard_2.manage_save(self.screen, pos, event)
-        #     if self.button_hard_load_game.draw(self.screen, pos, event, self.sound):
-        #         self.load_game_state = "easy"
-        # if self.button_back.draw(self.screen, pos, event, self.sound):
-        #     self.game_state = 'main menu'
-        #     self.music_player.play_music(self.game_state)
-        #     self.skip_login = False
-        
-        
-        # snapshots = [snapshot]
         
         if self.load_game_state == 'list':
             # for snapshot in snapshots:
