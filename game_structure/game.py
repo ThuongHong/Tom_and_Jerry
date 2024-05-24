@@ -164,6 +164,10 @@ class GamePlay:
         mili_sec = pygame.time.get_ticks() - self.start_time + self.time_at_pause
         return mili_sec
 
+    @property
+    def score(self):
+        return self.step_moves / int(self.get_time / 1000)
+
     def pause_time(self):
         self.time_at_pause = (
             pygame.time.get_ticks() - self.start_time + self.time_at_pause
@@ -971,10 +975,10 @@ class GamePlay:
 
         # Insert to leaderboard
         insert_query = (
-            'INSERT INTO "leaderboard"("game_id", "times", "moves") VALUES(?, ?, ?)'
+            'INSERT INTO "leaderboard"("game_id", "times", "moves", "score") VALUES(?, ?, ?, ?)'
         )
 
-        db_cursor.execute(insert_query, (self.id, self.get_time, self.step_moves))
+        db_cursor.execute(insert_query, (self.id, self.get_time, self.step_moves, self.score))
 
         # Push to Real Database
         db_connect.commit()

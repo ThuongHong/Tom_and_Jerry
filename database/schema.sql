@@ -50,6 +50,7 @@ CREATE TABLE "leaderboard" (
     "game_id" INTEGER,
     "times" REAL NOT NULL CHECK("times" > 0),
     "moves" INTEGER NOT NULL CHECK("moves" > 0),
+    "score" REAL NOT NULL CHECK ("score" >= 0),
     FOREIGN KEY("game_id") REFERENCES "games"("id")
 );
 --------------------------INDEX-----------------------------------

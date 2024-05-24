@@ -167,12 +167,24 @@ def leaderboard(mode: str) -> list:
     elif mode.upper() == 'INSANEMEDIUM': board = "insane_medium_leaderboard"
     elif mode.upper() == 'INSANEHARD': board = "insane_hard_leaderboard"
 
+    # ----- OLD -------------------------------------------------#
+    # leaderboard_data = list(
+    #     db_cursor.execute(
+    #         f"""
+    #     SELECT  "user_name", "times", "moves" FROM {board}
+    #     ORDER BY "moves" ASC, "times" ASC;
+    # """
+    #     )
+    # )
+
+    # ----- NEW -------------------------------------------------#
     leaderboard_data = list(
         db_cursor.execute(
-            f"""
-        SELECT  "user_name", "times", "moves" FROM {board}
-        ORDER BY "moves" ASC, "times" ASC;
-    """
+            """
+            SELECT  "user_name", "times", "moves", "score" FROM ?
+            ORDER BY "score" DESC;
+            """,
+            ([board])
         )
     )
 
