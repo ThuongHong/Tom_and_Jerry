@@ -20,7 +20,7 @@ game_menu = visualize.GameScreen(screen, image_source, sound_source)
 game_launcher = Launcher(screen)
 
 # load game handle
-load_id = None
+load_data = None
 
 while game_menu.running:
     clock.tick(DISPLAY.FPS)
@@ -34,8 +34,8 @@ while game_menu.running:
     elif game_menu.game_state == "new game":
         game_menu.draw_new_game(event)
     elif game_menu.game_state == "load game":
-        load_id = game_menu.draw_load_game(event)
-        if load_id is not None:
+        load_data = game_menu.draw_load_game(event)
+        if load_data is not None:
             game_menu.game_state = "ingame"
     elif game_menu.game_state == "leaderboard":
         game_menu.draw_leaderboard(event)
@@ -44,8 +44,8 @@ while game_menu.running:
     elif game_menu.game_state == "ingame":
 
         # Load game | New game
-        if load_id is not None:
-            game_launcher.load_game(load_id, sound_on=game_menu.sound)
+        if load_data is not None:
+            game_launcher.load_game(*load_data, sound_on=game_menu.sound)
         else:
             game_launcher.new_game(
                 maze_size=game_menu.difficulty,
@@ -72,6 +72,7 @@ while game_menu.running:
         game_menu.insane_mode = False
         game_menu.maze_generate_algo = "HAK"
         game_menu.maze_visualizer = False
+        game_menu.music_player.play_music(game_menu.game_state)
         game_menu.fade_transition(
             game_menu.background_main_menu, game_launcher.background
         )

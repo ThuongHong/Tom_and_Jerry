@@ -23,6 +23,7 @@ class EnergyItem(pygame.sprite.Sprite):
         self.is_visited = False
         
         self.collect_energy_sound = pygame.mixer.Sound(join('sounds', 'collect_energy_sound.mp3'))
+        self.collect_energy_sound.set_volume(0.3)
 
         if hp <= 0:
             self.hp = 1
@@ -60,7 +61,7 @@ class EnergyItem(pygame.sprite.Sprite):
             if player.position == self.position:
                 player.hp += self.hp
                 energy_grp.remove(self)
-                pygame.mixer.Sound.play(self.collect_energy_sound)
+                self.collect_energy_sound.play()
         if self.transparency_index >= 255:
             self.index_sign = -1
         if self.transparency_index <= 0:

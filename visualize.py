@@ -642,7 +642,7 @@ class GameScreen:
             if self.button_newgame.draw(self.screen, pos, event, self.sound):
                 if len(self.saved_games) >= DISPLAY.SAVE_LIMIT:
                     self.full_save = True
-                    self.first_game_id = self.saved_games[0]
+                    self.first_game_id = self.saved_games[0][0]
                 else:
                     self.full_save = False
                     self.game_state = "new game"
@@ -840,7 +840,7 @@ class GameScreen:
                     if self.login == True:
                         self.username = new_username
                         self.game_state = "main menu"
-                        # self.get_saved_data()
+                        self.get_saved_data()
                         # Check numbers of save files
                     
                     
@@ -1162,7 +1162,15 @@ class GameScreen:
             if self.button_load.draw(self.screen, pos, event, self.sound):
                 """ LOAD SAVE """
                 self.load_game_state = 'list'
-                return self.saved_games[self.load_id][0]
+                game_id = self.saved_games[self.load_id][0]
+                difficulty = self.saved_games[self.load_id][3] + ' mode'
+                is_visualize_generator = self.saved_games[self.load_id][-3]
+                current_background = self.saved_games[self.load_id][-2]
+                current_theme = self.saved_games[self.load_id][-1]
+                
+                self.music_player.play_music(difficulty.lower())
+                
+                return [game_id, is_visualize_generator, current_background, current_theme]
             if self.button_delete.draw(self.screen, pos, event, self.sound):
                 data.remove_game_save(self.saved_games[self.load_id][0])
                 self.get_saved_data()
@@ -1172,7 +1180,7 @@ class GameScreen:
         if self.button_back.draw(self.screen, pos, event, self.sound):
             if self.load_game_state == 'list':
                 self.game_state = 'main menu'
-                self.music_player.play_music(self.game_state)
+                # if self.music: self.music_player.play_music(self.game_state)
                 self.skip_login = False
             if self.load_game_state == 'detail':
                 self.load_game_state = 'list'

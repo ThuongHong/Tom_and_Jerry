@@ -14,6 +14,7 @@ from algorithm.SBFS import SBFS
 from algorithm.BDFS import BDFS
 from algorithm.GBFS import GBFS
 from solving_maze.solving_maze import solve_maze
+from menu_objects.music import MusicController
 import json
 import random
 
@@ -124,6 +125,17 @@ class GamePlay:
 
         self.frame = 0
 
+        # Intialize super basic maze
+        self.Maze = Maze(
+            maze_size=self.maze_size,
+            maze_grid_size=self.grid_size,
+            scale=self.scale,
+            screen=self.screen,
+            window_screen=self.window_screen,
+        )
+        
+        self.music_player = MusicController()
+
     @property
     def maze_size(self):
         return self._maze_size
@@ -148,16 +160,17 @@ class GamePlay:
     @property
     def get_time(self):
         mili_sec = pygame.time.get_ticks() - self.start_time + self.time_at_pause
-
-        # return f"{str(format(round(mili_sec / 1000, 2)))} s"
-        return f"{str(int(mili_sec / 1000))} s"
+        return mili_sec
 
     def pause_time(self):
         self.time_at_pause = (
             pygame.time.get_ticks() - self.start_time + self.time_at_pause
         )
-        # return f"{str(format(round(self.time_at_pause / 1000, 2)))} s"
-        return f"{str(int(self.time_at_pause / 1000))} s"
+        return self.time_at_pause
+
+    def format_time(self, time):
+        # return f"{str(format(round(mili_sec / 1000, 2)))} s"
+        return f"{str(int(time / 1000))} s"
 
     def resume_time(self):
         self.start_time = pygame.time.get_ticks()
@@ -411,6 +424,7 @@ class GamePlay:
             ondraw (bool, optional): Want to see process or not. Defaults to True.
             draw_speed (str, optional): Speed Showing Process. Defaults to 'FAST'.
         """
+
         # Intialize super basic maze
         self.Maze = Maze(
             maze_size=self.maze_size,
@@ -425,8 +439,11 @@ class GamePlay:
             algorithm=algorithm, draw=ondraw, draw_speed=draw_speed
         )
 
+    def create_new_game_id(self, on_draw, generate_algo):
         # After generate maze -> Ingame -> Save game data to Database
         # Insert to database
+        self.on_draw = on_draw
+        self.generate_algo = generate_algo
         if self.user_id:
             # Set the connecttion with Game database
             db_connect = sqlite3.connect(r"database/TomJerry.db")
@@ -434,8 +451,8 @@ class GamePlay:
 
             # Insert to table games (this table store game_information)
             db_cursor.execute(
-                """INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "insane_mode", "grid_size", "player_skin", "generate_algorithm")
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+                """INSERT INTO "games"("maze_size", "game_mode", "energy_mode", "insane_mode", "grid_size", "player_skin", "generate_algorithm", "is_visualize")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     self.Maze.maze_size,
@@ -444,7 +461,8 @@ class GamePlay:
                     self.insane_mode,
                     self.grid_size,
                     self.player_skin,
-                    algorithm,
+                    self.generate_algo,
+                    self.on_draw,
                 ),
             )
 
@@ -466,10 +484,12 @@ class GamePlay:
             db_connect.commit()
 
     def spawn_random(self):
+        self.spawn_mode = 'RANDOM'
         self.Maze.spawn_start_end_position("TOP_BOTTOM")
         self.create_player()
 
     def select_position_spawn(self, ui_grp):
+        self.spawn_mode = 'MANUAL'
         self.game_normal_view()
         self.scale = 20 / self.Maze.maze_size
 
@@ -482,18 +502,20 @@ class GamePlay:
 
             if self.Maze.is_have_start():
                 mark_grid(
-                    self.Maze.grids,
-                    self.screen,
-                    self.Maze.start_position,
+                    grids= self.Maze.grids,
+                    screen= self.screen,
+                    current_grid= self.Maze.start_position,
+                    tom= True,
                     COLOR=(0, 0, 255),
                 )
                 counter += 1
 
             if self.Maze.is_have_end():
                 mark_grid(
-                    self.Maze.grids,
-                    self.screen,
-                    self.Maze.end_position,
+                    grids= self.Maze.grids,
+                    screen= self.screen,
+                    current_grid= self.Maze.end_position,
+                    jerry= True,
                     COLOR=(255, 0, 0),
                 )
                 counter += 1
@@ -504,12 +526,13 @@ class GamePlay:
                     start_position=self.Maze.start_position,
                     end_position=self.Maze.end_position,
                 ):
-                    break
+                    counter = 2
                 else:
                     self.Maze.grids[self.Maze.start_position].is_start = False
                     self.Maze.grids[self.Maze.end_position].is_end = False
                     self.Maze.start_position = None
                     self.Maze.end_position = None
+                    counter =0
 
             scale_surface = pygame.transform.scale(
                 self.screen, self.screen_vector * self.scale
@@ -539,6 +562,11 @@ class GamePlay:
                     )
 
             pygame.display.update()
+
+            if counter == 2: 
+                pygame.time.wait(500)
+                break
+
         self.scale = 1
 
         self.create_player()
@@ -764,9 +792,11 @@ class GamePlay:
         # If the game is win -> Save to leaderboard
         if self.game_state == "in_game":
             if self.check_win():
+                self.music_player.play_music('win game', loops=0)
                 self.save_leaderboard()
 
-            self.check_lose()
+            if self.check_lose():
+                self.music_player.play_music('lose game', loops=0)
 
         # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
         scale_surface = pygame.transform.scale(
@@ -839,6 +869,8 @@ class GamePlay:
         if self.energy and self.Tom.hp == 0:
             self.end_time = self.get_time
             self.set_new_game_state("lose_game")
+            return True
+        return False
 
     def check_win(self):
         self.end_time = self.get_time
@@ -847,7 +879,7 @@ class GamePlay:
             return True
         return False
 
-    def save_game(self, time_at_pause):
+    def save_game(self, time_at_pause, background, theme):
         """Save for the game for later load"""
         if not self.user_id:
             return
@@ -893,8 +925,8 @@ class GamePlay:
 
         db_cursor.execute(
             """
-            INSERT INTO "game_saves"("game_id", "maze", "current_position", "start_position", "end_position", "scale", "times", "moves", "energy_info", "tom_hp")
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO "game_saves"("game_id", "maze", "current_position", "start_position", "end_position", "scale", "times", "moves", "energy_info", "tom_hp", "background", "theme", "spawning_mode")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 self.id,
@@ -907,7 +939,10 @@ class GamePlay:
                 self.step_moves,
                 energy_data_str,
                 self.Tom.hp,
-            ),
+                background,
+                theme,
+                self.spawn_mode
+            )
         )
 
         save_image = pygame.transform.scale(self.screen, (520, 520))
@@ -1018,37 +1053,36 @@ def load_GamePlay(game_id: int) -> GamePlay:
         )
     )[0][0]
     # If the game_id is fine -> Go Go to load
-    game_data_1 = list(
+    game_saves_data = list(
         db_cursor.execute(f'SELECT * FROM "game_saves" WHERE "game_id" = {game_id}')
-    )[
-        0
-    ]  # Get that row
+    )[0]
 
-    game_data_2 = list(
+    games_data = list(
         db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}')
     )[
         0
-    ]  # Get that row
+    ]
 
     # Category the info that we get
     # Get the data that useful
-    maze_size = int(game_data_2[2])
+    maze_size = int(games_data[2])
+    game_mode = games_data[3]
+    energy_mode = int(games_data[4])
+    insane_mode = int(games_data[5])
+    grid_size = int(games_data[6])
+    player_skin = games_data[7]
+    generate_algorithm = games_data[8]
+    is_visualize = int(games_data[9])
 
-    grid_size = int(game_data_2[6])
-
-    player_skin = game_data_2[7]
-
-    is_energy = int(game_data_2[4])
-
-    is_insane = int(game_data_2[5])
-
-    energy_info = game_data_1[9]
-
-    scale = int(game_data_1[5])
-
-    times = float(game_data_1[-4].rstrip(" s")) * 1000
-
-    moves = int(game_data_1[-3])
+    maze = game_saves_data[1]
+    current_position = str_to_tuple(game_saves_data[2])
+    start_position = str_to_tuple(game_saves_data[3])
+    end_position = str_to_tuple(game_saves_data[4])
+    scale = int(game_saves_data[5])
+    times = int(game_saves_data[7])
+    moves = int(game_saves_data[8])
+    energy_info = game_saves_data[9]
+    tom_hp = game_saves_data[10]
 
     # Intialize a basic Game
     Game = GamePlay(
@@ -1056,14 +1090,10 @@ def load_GamePlay(game_id: int) -> GamePlay:
         maze_size=maze_size,
         grid_size=grid_size,
         player_skin=player_skin,
-        energy=is_energy,
+        energy=energy_mode,
         scale=scale,
-        insane_mode=is_insane,
+        insane_mode=insane_mode,
     )
-
-    current_position = str_to_tuple(game_data_1[2])
-    start_position = str_to_tuple(game_data_1[3])
-    end_position = str_to_tuple(game_data_1[4])
 
     # Set the game.id to according to the data
     Game.id = game_id
@@ -1076,12 +1106,10 @@ def load_GamePlay(game_id: int) -> GamePlay:
         screen=Game.screen,
         window_screen=Game.window_screen,
     )
-
-    maze_info = json.loads(game_data_1[1])
-
+    maze = json.loads(maze)
     for i in range(maze_size):
         for j in range(maze_size):
-            tmp_maze.grids[i, j].walls = maze_info[i * maze_size + j].copy()
+            tmp_maze.grids[i, j].walls = maze[i * maze_size + j].copy()
 
     for grid in tmp_maze.grids:
         tmp_maze.grids[grid].is_visited = True
@@ -1093,7 +1121,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
     Game.Maze.end_position = end_position
 
     # Load Energy Items
-    if is_energy == 1:
+    if energy_mode == 1:
         energy_data = json.loads(energy_info)
 
         for single_energy_data in energy_data:
@@ -1106,8 +1134,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
                 img_directory=single_energy_data["img_directory"],
             )
 
-        Tom_hp = int(game_data_1[10])
-    if is_insane:
+    if insane_mode:
         Game.insane_mode = True
 
     # Create player
@@ -1119,12 +1146,12 @@ def load_GamePlay(game_id: int) -> GamePlay:
         img_scale=Game.scale,
         screen=Game.screen,
         window_screen=Game.window_screen,
-        # tom_img_directory=game_data_2[6],
+        tom_img_directory=player_skin,
     )
     Game.player.add(Game.Tom)
 
-    if is_energy == 1:
-        Game.Tom.hp = Tom_hp
+    if energy_mode == 1:
+        Game.Tom.hp = tom_hp
         Game.Tom.energy_mode = True
 
     # Create Jerry
