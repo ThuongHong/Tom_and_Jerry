@@ -43,7 +43,7 @@ class GameScreen:
         self.difficulty = ""
         self.login_signin_state = "log in"
         self.leaderboard_difficulty = "easy"
-        self.leaderboard_mode = "normal"
+        self.leaderboard_mode = "pure"
         self.new_game_state = "choose difficulty"
         self.spawning = ""
         self.energy_mode = False
@@ -903,7 +903,7 @@ class GameScreen:
             self.leaderboard.draw(self.screen)
             self.leaderboard_hard.draw(self.screen)
                    
-        if self.leaderboard_mode == "normal":
+        if self.leaderboard_mode == "pure":
             self.button_check_normal.draw(self.screen, pos, event, self.sound)
             if self.button_uncheck_energy.draw(self.screen, pos, event, self.sound):
                 self.leaderboard_mode = "energy"
@@ -912,28 +912,31 @@ class GameScreen:
         if self.leaderboard_mode == "energy":
             self.button_check_energy.draw(self.screen, pos, event, self.sound)
             if self.button_uncheck_normal.draw(self.screen, pos, event, self.sound):
-                self.leaderboard_mode = "normal"
+                self.leaderboard_mode = "pure"
             if self.button_uncheck_insane.draw(self.screen, pos, event, self.sound):
                 self.leaderboard_mode = "insane"
         if self.leaderboard_mode == "insane":
             self.button_check_insane.draw(self.screen, pos, event, self.sound)
             if self.button_uncheck_normal.draw(self.screen, pos, event, self.sound):
-                self.leaderboard_mode = "normal"
+                self.leaderboard_mode = "pure"
             if self.button_uncheck_energy.draw(self.screen, pos, event, self.sound):
                 self.leaderboard_mode = "energy"
         
-                
-        records = data.leaderboard(mode=self.leaderboard_difficulty.upper())
+        records = data.leaderboard(mode=self.leaderboard_mode + self.leaderboard_difficulty)
         for i in range(min(len(records), DISPLAY.RECORD_LIMIT)):
             username = self.font.render(records[i][0], True, COLOR.BLACK)
-            time = self.font.render(records[i][1], True, COLOR.BLACK)
+            time = self.font.render(f"{str(int(records[i][1] / 1000))} s", True, COLOR.BLACK)
             steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
+            # score = self.font.render(str(records[i][3]), True, COLOR.BLACK)
+            score = self.font.render("123", True, COLOR.BLACK)
             self.screen.blit(
                 username,
                 (
                     (
-                        self.leaderboard.x_coord - username.get_rect().width * 0.5 - self.leaderboard.modified_width * 0.22,
-                        self.leaderboard.y_coord - self.leaderboard.modified_height * 0.05 + self.background_leaderboard.modified_height * 0.07 * i,
+                        self.leaderboard.x_coord - self.leaderboard.modified_width * 0.20 - username.get_rect().width * 0.5,
+                        self.leaderboard.y_coord 
+                        - self.leaderboard.modified_height * 0.05 
+                        + self.background_leaderboard.modified_height * 0.07 * i,
                     )
                 ),
             )
@@ -941,8 +944,10 @@ class GameScreen:
                 steps,
                 (
                     (
-                        self.leaderboard.x_coord - self.leaderboard.modified_width * 0.04 - steps.get_rect().width,
-                        self.leaderboard.y_coord - self.leaderboard.modified_height * 0.05 + self.background_leaderboard.modified_height * 0.07 * i,
+                        self.leaderboard.x_coord - self.leaderboard.modified_width * 0.02 - steps.get_rect().width,
+                        self.leaderboard.y_coord 
+                        - self.leaderboard.modified_height * 0.05 
+                        + self.background_leaderboard.modified_height * 0.07 * i,
                     )
                 ),
             )
@@ -950,14 +955,25 @@ class GameScreen:
                 time,
                 (
                     (
-                        self.leaderboard.x_coord
-                        + self.leaderboard.modified_width * 0.2,
+                        self.leaderboard.x_coord + self.leaderboard.modified_width * 0.14 - time.get_rect().width,
                         self.leaderboard.y_coord
                         - self.leaderboard.modified_height * 0.05
                         + self.background_leaderboard.modified_height * 0.07 * i,
                     )
                 ),
             )
+            self.screen.blit(
+                score,
+                (
+                    (
+                        self.leaderboard.x_coord + self.leaderboard.modified_width * 0.30 - score.get_rect().width,
+                        self.leaderboard.y_coord
+                        - self.leaderboard.modified_height * 0.05
+                        + self.background_leaderboard.modified_height * 0.07 * i,
+                    )
+                ),
+            )
+            
         ranks = len(records)
         if ranks > 0:
             self.trophy_gold.draw(self.screen)
@@ -969,7 +985,7 @@ class GameScreen:
         if self.button_back.draw(self.screen, pos, event, self.sound):
             self.game_state = "main menu"
             self.leaderboard_difficulty = "easy"
-            self.leaderboard_mode = "normal"
+            self.leaderboard_mode = "pure"
 
     def draw_new_game(self, event):
         pos = pygame.mouse.get_pos()
