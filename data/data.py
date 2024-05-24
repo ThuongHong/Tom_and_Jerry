@@ -180,11 +180,10 @@ def leaderboard(mode: str) -> list:
     # ----- NEW -------------------------------------------------#
     leaderboard_data = list(
         db_cursor.execute(
-            """
-            SELECT  "user_name", "times", "moves", "score" FROM ?
+            f"""
+            SELECT  "user_name", "times", "moves", "score" FROM {board}
             ORDER BY "score" DESC;
-            """,
-            ([board])
+            """
         )
     )
 

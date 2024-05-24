@@ -927,8 +927,8 @@ class GameScreen:
             username = self.font.render(records[i][0], True, COLOR.BLACK)
             time = self.font.render(f"{str(int(records[i][1] / 1000))} s", True, COLOR.BLACK)
             steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
-            # score = self.font.render(str(records[i][3]), True, COLOR.BLACK)
-            score = self.font.render("123", True, COLOR.BLACK)
+            score = self.font.render(str(records[i][3]), True, COLOR.BLACK)
+            # score = self.font.render("123", True, COLOR.BLACK)
             self.screen.blit(
                 username,
                 (

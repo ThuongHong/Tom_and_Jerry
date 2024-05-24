@@ -253,7 +253,7 @@ class Launcher():
         if self.win == True:
             step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
             time_end = self.end_font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, COLOR.BLACK)
-            score = self.end_font.render(f'Score:        {123}', True, COLOR.BLACK)
+            score = self.end_font.render(f'Score:        {self.Game.score}', True, COLOR.BLACK)
             self.box_game_win.draw(self.window_screen)
             self.window_screen.blit(step_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord - self.box_game_win.modified_height * 0.08))
             self.window_screen.blit(time_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.09))
