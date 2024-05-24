@@ -122,6 +122,8 @@ class GamePlay:
         self.is_move = False
 
         self.is_stop_process = True
+        
+        self.spawn_mode = "RANDOM"
 
         self.frame = 0
 

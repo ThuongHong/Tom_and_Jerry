@@ -46,6 +46,7 @@ while game_menu.running:
         # Load game | New game
         if load_data is not None:
             game_launcher.load_game(*load_data, sound_on=game_menu.sound)
+            load_data = None
         else:
             game_launcher.new_game(
                 maze_size=game_menu.difficulty,
