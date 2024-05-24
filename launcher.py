@@ -7,6 +7,7 @@ import time
 import os
 from menu_objects.button import Button
 from menu_objects.graphic import Graphic
+# from menu_objects.music import MusicController
 
 from CONSTANTS import DISPLAY
 
@@ -21,6 +22,8 @@ class Launcher():
         click_sound = pygame.mixer.Sound(os.path.join('sounds', 'click.ogg'))
         self.window_screen = window_screen
 
+        # self.music_player = MusicController()
+        
         box_save_confirm_img = create_img(images_source, 'box_save_confirm')
         box_game_win_img = create_img(images_source, 'box_game_win')
         box_game_lose_img = create_img(images_source, 'box_game_lose')
@@ -68,8 +71,8 @@ class Launcher():
         box_confirm_overwrite_x_coord = self.box_confirm_overwrite.x_coord
         box_confirm_overwrite_y_coord = self.box_confirm_overwrite.y_coord
         
-        self.button_visualize_process_on = Button(DISPLAY.SCREEN_WIDTH * 0.74, DISPLAY.SCREEN_HEIGHT * 0.92, button_visualize_process_on_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
-        self.button_visualize_process_off = Button(DISPLAY.SCREEN_WIDTH * 0.74, DISPLAY.SCREEN_HEIGHT * 0.92, button_visualize_process_off_img, pygame.mixer.Sound(os.path.join('sounds', 'click.ogg')), 0.25, 0.26)
+        self.button_visualize_process_on = Button(DISPLAY.SCREEN_WIDTH * 0.74, DISPLAY.SCREEN_HEIGHT * 0.92, button_visualize_process_on_img, click_sound, 0.25, 0.26)
+        self.button_visualize_process_off = Button(DISPLAY.SCREEN_WIDTH * 0.74, DISPLAY.SCREEN_HEIGHT * 0.92, button_visualize_process_off_img, click_sound, 0.25, 0.26)
         self.button_hint_on = Button(DISPLAY.SCREEN_WIDTH * 0.80, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_on_img, click_sound, 0.25, 0.26)
         self.button_hint_off = Button(DISPLAY.SCREEN_WIDTH * 0.80, DISPLAY.SCREEN_HEIGHT * 0.92, button_hint_off_img, click_sound, 0.25, 0.26)
         self.button_algo_astarlist = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_astarlist_img, click_sound, 0.25, 0.26)
@@ -89,6 +92,7 @@ class Launcher():
         self.button_box_game_home = Button(box_game_win_x_coord + box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_home_img, click_sound, 0.25, 0.26)
         self.button_overwrite = Button(box_confirm_overwrite_x_coord - box_confirm_overwrite_width * 0.24, box_confirm_overwrite_y_coord + box_confirm_overwrite_height * 0.24, button_overwrite_img, click_sound, 0.3, 0.31)
         self.button_cancel = Button(box_confirm_overwrite_x_coord + box_confirm_overwrite_width * 0.24, box_confirm_overwrite_y_coord + box_confirm_overwrite_height * 0.24, button_cancel_img, click_sound, 0.3, 0.31)
+        
         self.load_background()
 
     def load_background(self):
@@ -106,7 +110,7 @@ class Launcher():
             if self.paused:
                 time_used = self.font.render(f'Time  : {self.time_at_pause}', True, (255, 255, 255))
             else:
-                time_used = self.font.render(f'Time  : {self.Game.get_time}', True, (255, 255, 255))
+                time_used = self.font.render(f'Time  : {self.Game.format_time(self.Game.get_time)}', True, (255, 255, 255))
             step_used = self.font.render(f'Steps: {self.Game.Tom.step_moves}', True, (255, 255, 255))
             self.window_screen.blit(time_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.05))
             self.window_screen.blit(step_used, (DISPLAY.SCREEN_WIDTH * 0.05, DISPLAY.SCREEN_HEIGHT * 0.10))
@@ -169,7 +173,7 @@ class Launcher():
             if self.paused == False:
                 if self.button_pause_game.draw(self.window_screen, pos, event, self.sound_on):
                     self.paused = True
-                    self.time_at_pause = self.Game.pause_time()
+                    self.time_at_pause = self.Game.format_time(self.Game.pause_time())
                     
             elif self.paused == True:
                 if self.button_resume.draw(self.window_screen, pos, event, self.sound_on):
@@ -186,7 +190,7 @@ class Launcher():
                         self.overwrite_confirm = True
 
                     else:
-                        self.Game.save_game(self.time_at_pause)
+                        self.Game.save_game(self.Game.time_at_pause, self.current_background, int(self.current_theme))
                         self.Game.resume_time()
                         # self.Game.save_game()
                         self.saved = True
@@ -210,7 +214,7 @@ class Launcher():
                         self.saved = True
                         self.save_confirm = False
                         self.paused = False
-                        self.Game.save_game(self.time_at_pause)
+                        self.Game.save_game(self.Game.time_at_pause, self.current_background, int(self.current_theme))
                         self.Game.set_new_game_state("back_menu")
                 if self.button_no.draw(self.window_screen, pos, event, self.sound_on):
                     """ Exit to main menu """
@@ -221,7 +225,7 @@ class Launcher():
             if self.overwrite_confirm == True:
                 self.box_confirm_overwrite.draw(self.window_screen)
                 if self.button_overwrite.draw(self.window_screen, pos, event, self.sound_on):
-                    self.Game.save_game(self.time_at_pause)
+                    self.Game.save_game(self.Game.time_at_pause, self.current_background, int(self.current_theme))
                     data.remove_game_save(self.first_game_id)
                     self.saved = True
                     # Remember to set this to False if player moves after saved
@@ -247,7 +251,7 @@ class Launcher():
                 
         
         if self.win == True:
-            time_end = self.end_font.render(f'Time  :        {self.Game.end_time}', True, (0, 0, 0))
+            time_end = self.end_font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, (0, 0, 0))
             step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, (0, 0, 0))
             self.box_game_win.draw(self.window_screen)
             self.window_screen.blit(time_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord - self.box_game_win.modified_height * 0.01))
@@ -280,13 +284,15 @@ class Launcher():
         
         pygame.display.update()
     
-    def load_game(self, game_id, sound_on=True):
+    def load_game(self, game_id, is_visualize_generator, background, theme, sound_on=True):
         self.Game = load_GamePlay(game_id)
         self.current_algo = "AStar_MinBinaryHeap"
-        self.current_theme = '2'
-        self.current_background = 0
+        self.current_background = background
+        self.background.change_image(self.background_images[self.current_background])
+        self.current_theme = str(theme)
+        self.Game.change_theme(self.current_theme)
         self.spawning = "random"
-        self.maze_visualizer = False
+        self.maze_visualizer = is_visualize_generator
         self.maze_generate_algo = "HAK"
         self.energy = self.Game.energy
         self.insane_mode = self.Game.insane_mode
@@ -295,6 +301,7 @@ class Launcher():
         self.saved = False
         self.save_confirm = False
         self.overwrite_confirm = False
+        self.full_save = False
         self.win = False
         self.lose = False
         self.is_restarted = False
@@ -343,7 +350,8 @@ class Launcher():
         self.full_save = full_save
         self.is_loaded = False
         self.first_game_id = first_game_id # for remove first file if it is full storage
-        self.Game.create_new_game_id(self.maze_generate_algo)
+        self.Game.create_new_game_id(self.maze_visualizer, self.maze_generate_algo)
+        self.background.change_image(self.background_images[self.current_background])
         
         # For restart game
         self.user_id = user_id
@@ -386,6 +394,7 @@ class Launcher():
             
             
             if self.Game.game_state == 'win_game':
+                # self.music_player.play_music('win game')
                 self.win = True
                 
             if self.Game.game_state == 'lose_game':

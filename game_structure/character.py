@@ -50,10 +50,9 @@ class Tom(pygame.sprite.Sprite):
         self.energy_mode = False
         self.hp = 1
 
-        self.moving_sound = pygame.mixer.Sound(
-            os.path.join("sounds", "moving_sound.ogg")
-        )
-
+        self.moving_sound = pygame.mixer.Sound(os.path.join("sounds", "moving_sound.ogg")) 
+        self.moving_sound.set_volume(0.3)
+        
         self.current_sprite = 0
 
         self.animation_images = {
@@ -223,7 +222,8 @@ class Tom(pygame.sprite.Sprite):
                 #     break
 
             if ui_grp.sound_on:
-                pygame.mixer.Sound.play(self.moving_sound)
+                
+                self.moving_sound.play()
 
             if energy_grp:
                 for energy_item in energy_grp:
