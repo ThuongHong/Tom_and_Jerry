@@ -3,6 +3,20 @@ import os
 
 from CONSTANTS import COLOR
 
+footprint_img_directory = r"./images/Footprint"
+footprint_process_images = []
+
+if footprint_img_directory:
+    for file in os.listdir(os.path.join(footprint_img_directory, 'Process')):
+        tmp_img = pygame.image.load(
+            os.path.join(footprint_img_directory, 'Process', file)
+        )
+        image = pygame.transform.rotozoom(tmp_img, 0, 0.5)
+        
+        footprint_process_images.append(image)
+
+footprint_process = footprint_process_images[0]
+
 def draw_two_grids(grids,
                    screen,
                    current_grid: tuple[int],
@@ -23,7 +37,7 @@ def mark_grid(grids,
               tom: bool = False,
               jerry: bool = False,
               COLOR: tuple[int] = COLOR.GREEN):
-    if footprint:
+    if footprint: # Solution
         rect = footprint.get_rect(center=grids[current_grid].grid_coord_center)
         screen.blit(footprint, rect)
     elif tom:
@@ -70,12 +84,14 @@ def mark_grid(grids,
         rect = image.get_rect(center=grids[current_grid].grid_coord_center)
 
         screen.blit(image, rect)
-    else:
-        left, top = grids[current_grid].grid_coord
-        size = grids[current_grid].grid_size
-        rect = pygame.Rect(left + 2, top + 2, size - 4, size - 4)
+    else: # Process
+        # left, top = grids[current_grid].grid_coord
+        # size = grids[current_grid].grid_size
+        # rect = pygame.Rect(left + 2, top + 2, size - 4, size - 4)
 
-        pygame.draw.rect(screen, COLOR, rect)
+        # pygame.draw.rect(screen, COLOR, rect)
+        rect = footprint_process.get_rect(center=grids[current_grid].grid_coord_center)
+        screen.blit(footprint_process, rect)
 
 
     # pygame.display.update()
