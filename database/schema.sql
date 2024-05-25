@@ -82,7 +82,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
@@ -95,7 +96,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
@@ -108,7 +110,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
@@ -121,7 +124,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
@@ -134,7 +138,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
@@ -147,7 +152,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
@@ -160,7 +166,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
@@ -173,7 +180,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
@@ -186,7 +194,8 @@ SELECT "users"."username" AS "user_name",
         "games"."game_mode" AS "game_mode",
         "games"."energy_mode" AS "energy_mode",
         "leaderboard"."times" AS "times", 
-        "leaderboard"."moves" AS "moves"
+        "leaderboard"."moves" AS "moves",
+        "leaderboard"."score" AS "score"
 FROM "users" JOIN "played" ON "users"."id" = "played"."user_id"
 JOIN "games" ON "played"."game_id" = "games"."id"
 JOIN "leaderboard" ON "leaderboard"."game_id" = "games"."id"
