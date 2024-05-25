@@ -144,9 +144,6 @@ class GameMenu:
         background_new_game_img = create_img(self.image_source, "background_new_game")
         box_login_confirm_img = create_img(self.image_source, "box_login_confirm")
         choose_difficulty_img = create_img(self.image_source, "choose_difficulty")
-        box_choose_spawn_point_img = create_img(
-            self.image_source, "box_choose_spawn_point"
-        )
         box_choose_settings_img = create_img(self.image_source, "box_choose_settings")
         mood_easy_img = create_img(self.image_source, "mood_easy")
         mood_medium_img = create_img(self.image_source, "mood_medium")
@@ -154,13 +151,9 @@ class GameMenu:
         # gameplay video
 
         """ LOAD GAME """
-        button_save_img = create_img(self.image_source, 'button_save')
         button_load_img = create_img(self.image_source, 'button_load')
         button_delete_img = create_img(self.image_source, 'button_delete')
         background_load_game_img = create_img(self.image_source, 'background_load_game')
-        overlay_img = create_img(self.image_source, 'overlay')
-        easy_snapshot_1_img = create_img(self.image_source, 'temp_maze_snapshot')
-        self.test_snapshot_img = create_img('database/save_game_images', 'Game_7')
         box_save_frame_img = create_img(self.image_source, 'box_save_frame')
         box_save_profile_img = create_img(self.image_source, 'box_save_profile')
         
@@ -633,8 +626,6 @@ class GameMenu:
         self.snapshots = []
         self.saved_games = []
         self.background_load_game = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, background_load_game_img, 1.5)
-        self.easy_snapshot_1 = graphic.Graphic(450, 440, easy_snapshot_1_img, 2.5)
-        self.test_snapshot = graphic.Graphic(450, 440, self.test_snapshot_img, 0.7)
         self.box_save_profile = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_save_profile_img, 0.3)
         box_save_profile_img_width = self.box_save_profile.modified_width
         box_save_profile_img_height = self.box_save_profile.modified_height
