@@ -38,7 +38,9 @@ class GameScreen:
         self.load_game_difficulty_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 150)
         self.load_game_content_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 70)
         self.game_state = "main menu"
-        self.help_state = False
+        self.help_list = ["", "normal story", "control", "energy story 1", "energy story 2", "insane story", "credits"]
+        self.help_count = 0
+        self.help_state = self.help_list[self.help_count]
         self.full_save = False
         self.difficulty = ""
         self.login_signin_state = "log in"
@@ -82,12 +84,19 @@ class GameScreen:
         button_music_off_img = create_img(self.image_source, "button_music_off")
         button_help_img = create_img(self.image_source, "button_help")
         button_close_img = create_img(self.image_source, "button_close")
+        button_next_img = create_img(self.image_source, "button_next")
+        button_previous_img = create_img(self.image_source, "button_previous")
         background_main_menu_img = create_img(self.image_source, "background_main_menu")
         game_title_img = create_img(self.image_source, "game_title")
         main_menu_jerry_img = create_img(self.image_source, "main_menu_jerry")
         main_menu_tom_img = create_img(self.image_source, "main_menu_tom")
-        box_game_description_img = create_img(self.image_source, "box_game_description")
-        box_notify_overwrite_img = create_img(self.image_source, 'box_notify_overwrite')
+        box_game_normal_story_img = create_img(self.image_source, "box_game_normal_story")
+        box_game_control_img = create_img(self.image_source, "box_game_control")
+        box_game_energy_story_1_img = create_img(self.image_source, "box_game_energy_story_1")
+        box_game_energy_story_2_img = create_img(self.image_source, "box_game_energy_story_2")
+        box_game_insane_story_img = create_img(self.image_source, "box_game_insane_story")
+        box_game_credits_img = create_img(self.image_source, "box_game_credits")
+        box_notify_overwrite_img = create_img(self.image_source, "box_notify_overwrite")
 
         """ LOGIN SIGNIN """
         button_login_img = create_img(self.image_source, "button_login")
@@ -177,10 +186,29 @@ class GameScreen:
         self.main_menu_tom = graphic.Graphic(
             SCREEN_WIDTH * 0.77, SCREEN_HEIGHT * 0.63, main_menu_tom_img, 0.32
         )
-        self.box_game_description = graphic.Graphic(
-            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_description_img, 0.3
+        self.box_game_normal_story = graphic.Graphic(
+            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_normal_story_img, 0.3
         )
-        box_game_description_height = self.box_game_description.modified_height
+        box_game_normal_story_width = self.box_game_normal_story.modified_width
+        box_game_normal_story_height = self.box_game_normal_story.modified_height
+        self.box_game_normal_story = graphic.Graphic(
+            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_normal_story_img, 0.3
+        )
+        self.box_game_control = graphic.Graphic(
+            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_control_img, 0.3
+        )
+        self.box_game_energy_story_1 = graphic.Graphic(
+            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_energy_story_1_img, 0.3
+        )
+        self.box_game_energy_story_2 = graphic.Graphic(
+            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_energy_story_2_img, 0.3
+        )
+        self.box_game_insane_story = graphic.Graphic(
+            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_insane_story_img, 0.3
+        )
+        self.box_game_credits_story = graphic.Graphic(
+            HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_game_credits_img, 0.3
+        )
         self.box_notify_overwrite = graphic.Graphic(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, box_notify_overwrite_img, 0.3)
         box_notify_overwrite_height = self.box_notify_overwrite.modified_height
         
@@ -275,12 +303,14 @@ class GameScreen:
         )
         self.button_close_help = button.Button(
             HALF_SCREEN_WIDTH,
-            HALF_SCREEN_HEIGHT + box_game_description_height * 0.38,
+            HALF_SCREEN_HEIGHT + box_game_normal_story_height * 0.38,
             button_close_img,
             self.click_sound_source,
             0.3,
             0.31,
         )
+        self.button_next = button.Button(HALF_SCREEN_WIDTH + box_game_normal_story_width * 0.55, HALF_SCREEN_HEIGHT, button_next_img, self.click_sound_source, 0.25, 0.26)
+        self.button_previous = button.Button(HALF_SCREEN_WIDTH - box_game_normal_story_width * 0.55, HALF_SCREEN_HEIGHT, button_previous_img, self.click_sound_source, 0.25, 0.26)
         self.button_close_notify = button.Button(
             HALF_SCREEN_WIDTH,
             HALF_SCREEN_HEIGHT + box_notify_overwrite_height * 0.2,
@@ -635,7 +665,7 @@ class GameScreen:
     def draw_main_menu(self, event):
         pos = pygame.mouse.get_pos()
         self.background_main_menu.draw(self.screen)
-        if self.help_state == False and self.full_save == False:
+        if self.help_state == "" and self.full_save == False:
             self.game_title.draw(self.screen)
             self.main_menu_jerry.draw(self.screen)
             self.main_menu_tom.draw(self.screen)
@@ -681,12 +711,32 @@ class GameScreen:
                     self.music_player.unpause_music()
                     self.music = True
             if self.button_help.draw(self.screen, pos, event, self.sound):
-                self.help_state = True
-        elif self.help_state == True:
-            self.box_game_description.draw(self.screen)
+                self.help_count = 1
+                self.help_state = self.help_list[self.help_count]
+                # self.help_state = "normal story"
+        elif self.help_state != "":
+            if self.help_state == "normal story":
+                self.box_game_normal_story.draw(self.screen)
+            if self.help_state == "control":
+                self.box_game_control.draw(self.screen)
+            if self.help_state == "energy story 1":
+                self.box_game_energy_story_1.draw(self.screen)
+            if self.help_state == "energy story 2":
+                self.box_game_energy_story_2.draw(self.screen)
+            if self.help_state == "insane story":
+                self.box_game_insane_story.draw(self.screen)
+            if self.help_state == "credits":
+                self.box_game_credits_story.draw(self.screen)   
             if self.button_close_help.draw(self.screen, pos, event, self.sound):
-                self.game_state = "main menu"
-                self.help_state = False
+                # self.game_state = "main menu"
+                self.help_count = 0
+                self.help_state = self.help_list[self.help_count]
+            if self.help_count < len(self.help_list) - 1 and self.button_next.draw(self.screen, pos, event, self.sound):
+                self.help_count += 1
+                self.help_state = self.help_list[self.help_count]
+            if self.help_count > 1 and self.button_previous.draw(self.screen, pos, event, self.sound):
+                self.help_count -= 1
+                self.help_state = self.help_list[self.help_count]
         elif self.full_save == True:
             self.box_notify_overwrite.draw(self.screen)
             if self.button_close_notify.draw(self.screen, pos, event, self.sound):
