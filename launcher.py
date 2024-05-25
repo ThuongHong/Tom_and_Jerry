@@ -360,6 +360,7 @@ class Launcher():
         self.first_game_id = first_game_id # for remove first file if it is full storage
         self.Game.create_new_game_id(self.maze_visualizer, self.maze_generate_algo)
         self.background.change_image(self.background_images[self.current_background])
+        self.Game.change_theme(self.current_theme)
         
         # For restart game
         self.user_id = user_id
@@ -378,6 +379,8 @@ class Launcher():
         self.Game.de_visualize_process()
         self.Game.scale = 1
         self.Game.frame = 0
+        # self.Game.change_theme(self.current_theme)
+        
         # self.Game.game_normal_view()
 
     def launch(self):
@@ -386,11 +389,11 @@ class Launcher():
         else:
             if self.maze_visualizer:
                 self.background.draw(self.window_screen)
-                self.Game.generate(algorithm= self.maze_generate_algo, ondraw=self.maze_visualizer)
+                self.Game.generate(algorithm= self.maze_generate_algo, ondraw=self.maze_visualizer, skinset=self.current_theme)
             else:
-                self.Game.generate(algorithm= self.maze_generate_algo, ondraw= False)
+                self.Game.generate(algorithm= self.maze_generate_algo, ondraw= False, skinset=self.current_theme)
                 
-            if self.spawning == 'random': self.Game.spawn_random()
+            if self.spawning.lower() == 'random': self.Game.spawn_random()
             else: 
                 self.Game.select_position_spawn(self)
             
@@ -420,6 +423,7 @@ class Launcher():
                 break
             
             if self.Game.game_state == 'start':
+                
                 self.restart()
                 self.launch()
                 break

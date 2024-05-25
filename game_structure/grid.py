@@ -7,7 +7,8 @@ class GridCell(pygame.sprite.Sprite):
                  group,
                  grid_position: tuple[int],
                  grid_size: int,
-                 scale: int = 1
+                 scale: int = 1,
+                 skinset: str = '2'
                  ):
         super().__init__(group)
 
@@ -34,7 +35,7 @@ class GridCell(pygame.sprite.Sprite):
         self.is_start = False
         self.is_end = False
         
-        self.set_image()
+        self.set_image(change = True, skinset=skinset)
     
     @property
     def grid_size(self):

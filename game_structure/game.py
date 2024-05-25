@@ -437,7 +437,7 @@ class GamePlay:
                 fake_adjust=-1,
             )
 
-    def generate(self, algorithm="DFS", ondraw: bool = True, draw_speed: str = "FAST"):
+    def generate(self, algorithm="DFS", ondraw: bool = True, draw_speed: str = "FAST", skinset = '2'):
         """This method will generate new game
 
         Args:
@@ -453,11 +453,12 @@ class GamePlay:
             scale=self.scale,
             screen=self.screen,
             window_screen=self.window_screen,
+            skinset=skinset
         )
 
         # Generate that maze
         self.Maze.generate_new_maze(
-            algorithm=algorithm, draw=ondraw, draw_speed=draw_speed
+            algorithm=algorithm, draw=ondraw, draw_speed=draw_speed, skinset=skinset
         )
 
     def create_new_game_id(self, on_draw, generate_algo):
@@ -1132,7 +1133,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
     tmp_maze = Maze(
         maze_size=Game.maze_size,
         maze_grid_size=grid_size,
-        scale=scale,
+        scale=1,
         screen=Game.screen,
         window_screen=Game.window_screen,
     )
@@ -1160,7 +1161,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
                 grid_position=str_to_tuple(single_energy_data["grid_position"]),
                 grid_size=single_energy_data["grid_size"],
                 hp=single_energy_data["hp"],
-                scale=single_energy_data["scale"],
+                scale=1,
                 img_directory=single_energy_data["img_directory"],
             )
 
@@ -1173,7 +1174,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
     Game.Tom = Tom(
         start_position=current_position,
         grid_size=Game.grid_size,
-        img_scale=Game.scale,
+        img_scale=1,
         screen=Game.screen,
         window_screen=Game.window_screen,
         tom_img_directory=player_skin,
@@ -1190,7 +1191,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
     Game.Jerry = Jerry(
         end_position=Game.Maze.end_position,
         grid_size=grid_size,
-        img_scale=scale,
+        img_scale=1,
         screen=Game.screen,
         window_screen=Game.window_screen,
     )

@@ -15,6 +15,7 @@ class Maze(pygame.sprite.Group):
         scale: int = 1,
         screen=None,
         window_screen=None,
+        skinset='2'
     ):
         super().__init__()
 
@@ -34,7 +35,7 @@ class Maze(pygame.sprite.Group):
         for i in range(self.maze_size):
             for j in range(self.maze_size):
                 self.grids[i, j] = GridCell(
-                    grid_position=(i, j), grid_size=self.maze_grid_size, group=self
+                    grid_position=(i, j), grid_size=self.maze_grid_size, group=self, skinset=skinset
                 )
                 self.add(self.grids[i, j])
 
@@ -308,7 +309,7 @@ class Maze(pygame.sprite.Group):
             current_grid = next_grid
 
     def generate_new_maze(
-        self, algorithm: str = "DFS", draw: bool = False, draw_speed="FAST"
+        self, algorithm: str = "DFS", draw: bool = False, draw_speed="FAST", skinset='2'
     ):
         """Generate new maze using following algorithm
 
@@ -375,7 +376,7 @@ class Maze(pygame.sprite.Group):
                         )
 
         for grid in self.grids:
-            self.grids[grid].set_image()
+            self.grids[grid].set_image(skinset=skinset)
 
     def is_have_start(self):
         for grid in self.grids:
