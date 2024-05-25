@@ -101,8 +101,8 @@ class Launcher():
 
     def load_background(self):
         self.background_images = []
-        num_of_images = 4
-        for i in range(num_of_images):
+        self.num_of_background_images = 12
+        for i in range(self.num_of_background_images):
             img = create_img('images/Ingame_background', str(i))
             self.background_images.append(img)
             
@@ -127,6 +127,7 @@ class Launcher():
                 if self.button_visualize_process_off.draw(self.window_screen, pos, event, self.sound_on):
                     self.Game.visualize_process(algorithm=self.current_algo)
                     self.Game.de_visualize_solution()
+                    self.Game.de_auto_move()
             else:
                 if self.button_visualize_process_on.draw(self.window_screen, pos, event, self.sound_on):
                     self.Game.de_visualize_process()
@@ -141,6 +142,7 @@ class Launcher():
             if self.current_algo == 'AStar_OrderedList':
                 if self.button_algo_astarlist.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'BFS'
+                    if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
                         self.Game.visualize_process(algorithm=self.current_algo)
@@ -148,6 +150,7 @@ class Launcher():
             elif self.current_algo == 'BFS':
                 if self.button_algo_bfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'DFS'
+                    if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
                         self.Game.visualize_process(algorithm=self.current_algo)
@@ -155,6 +158,7 @@ class Launcher():
             elif self.current_algo == 'DFS':
                 if self.button_algo_dfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'GBFS'
+                    if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
                         self.Game.visualize_process(algorithm=self.current_algo)
@@ -162,6 +166,7 @@ class Launcher():
             elif self.current_algo == 'GBFS':
                 if self.button_algo_gbfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'AStar_MinBinaryHeap'
+                    if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
                         self.Game.visualize_process(algorithm=self.current_algo)
@@ -169,6 +174,7 @@ class Launcher():
             elif self.current_algo == 'AStar_MinBinaryHeap':
                 if self.button_algo_astarheap.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'AStar_OrderedList'
+                    if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
                         self.Game.visualize_process(algorithm=self.current_algo)
@@ -249,18 +255,20 @@ class Launcher():
                 self.Game.change_theme(self.current_theme)
                 
                 self.current_background = self.current_background + 1
-                if (self.current_background == 4):
+                if (self.current_background == self.num_of_background_images):
                     self.current_background = 0
                 self.background.change_image(self.background_images[self.current_background])
                 
-            if self.auto_on == True:
+            if self.Game.is_auto_move:
                 if self.button_auto_on.draw(self.window_screen, pos, event, self.sound_on):
-                    print('off')
-                    self.auto_on = False
+                    self.Game.de_auto_move()
             else:
                 if self.button_auto_off.draw(self.window_screen, pos, event, self.sound_on):
-                    print('on')
-                    self.auto_on = True
+                    self.Game.visualize_solution(algorithm=self.current_algo)
+                    self.Game.de_visualize_process()
+                    self.Game.is_auto_move = True
+                    self.Game.solution = None
+                    
         
         if self.win == True:
             step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
@@ -356,7 +364,6 @@ class Launcher():
         self.maze_generate_algo = maze_generate_algo
         self.full_save = full_save
         self.is_loaded = False
-        self.auto_on = False
         self.first_game_id = first_game_id # for remove first file if it is full storage
         self.Game.create_new_game_id(self.maze_visualizer, self.maze_generate_algo)
         self.background.change_image(self.background_images[self.current_background])
@@ -377,6 +384,7 @@ class Launcher():
         self.lose = False
         self.Game.de_visualize_solution()
         self.Game.de_visualize_process()
+        self.Game.de_auto_move()
         self.Game.scale = 1
         self.Game.frame = 0
         self.Game.solution = None
@@ -398,7 +406,7 @@ class Launcher():
             else: 
                 self.Game.select_position_spawn(self)
             
-            self.Game.game_centering()
+            self.Game.tom_centering()
 
 
         while True:

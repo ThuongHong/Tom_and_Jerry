@@ -71,9 +71,9 @@ class Tom(pygame.sprite.Sprite):
         self.footprint_images = []
 
         if footprint_img_directory:
-            for file in os.listdir(os.path.join(footprint_img_directory, 'Solution')):
+            for file in os.listdir(os.path.join(footprint_img_directory, "Solution")):
                 tmp_img = pygame.image.load(
-                    os.path.join(footprint_img_directory, 'Solution', file)
+                    os.path.join(footprint_img_directory, "Solution", file)
                 ).convert_alpha()
 
                 # tmp_img_height = tmp_img.get_height()
@@ -146,20 +146,89 @@ class Tom(pygame.sprite.Sprite):
             return True
         return False
 
-    def move(self, direction: str, maze):
-        if self.is_valid_move(direction=direction, grids=maze.grids):
-            self.position = get_position_after_move(
-                position=self.position, direction=direction
-            )
+    # def auto_move(
+    #     self,
+    #     sprites,
+    #     direction: str,
+    #     maze,
+    #     energy_grp=None,
+    #     jerrgy_grp=None,
+    #     ui_grp=None,
+    # ):
+    #     if self.is_valid_move(direction=direction, grids=maze.grids):
+    #         self.position = get_position_after_move(
+    #             position=self.position, direction=direction
+    #         )
 
-            move_coord = get_diffirent_coord(
-                direction=direction, maze_grid_size=self.grid_size
-            )
-            # self.rect.topleft = self.rect.topleft + move_coord
+    #         move_coord = get_diffirent_coord(
+    #             direction=direction, maze_grid_size=self.grid_size
+    #         )
+    #         move_coord = move_coord / self.grid_size
+    #         # self.rect.topleft = self.rect.topleft + move_coord
+    #         pygame.event.clear()
+    #         current_sprite = 0
+    #         # Loop 28 frame
+    #         for _ in range(self._grid_size):
+    #             # while int(current_sprite) < len(sprites) - 1:
+    #             ui_grp.background.draw(self.window_screen)
+    #             self.image = sprites[int(current_sprite)]
+    #             # self.rect.topleft = self.rect.topleft + move_coord
 
-            maze.update(offset_change=move_coord)
+    #             maze.update(offset= move_coord)
+    #             maze.draw(self.screen)
+    #             if energy_grp:
+    #                 energy_grp.draw(self.screen)
+    #             jerrgy_grp.update()
+    #             jerrgy_grp.draw(self.screen)
 
-        self.step_moves += 1
+    #             # maze.image_draw(self.screen)
+    #             self.screen.blit(self.image, self.rect)
+
+    #             scale_surface = pygame.transform.scale(
+    #                 self.screen, self.screen_vector * self.scale
+    #             )
+    #             # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
+    #             scale_rect = scale_surface.get_rect(
+    #                 center=(
+    #                     self.window_screen.get_width() / 2,
+    #                     self.window_screen.get_height() / 2,
+    #                 )
+    #             )
+
+    #             self.window_screen.blit(
+    #                 scale_surface, scale_rect.topleft + self.scale_surface_offset
+    #             )  ###
+
+    #             ui_grp.draw_ui()
+    #             pygame.display.update()
+
+    #             current_sprite += len(sprites) / self._grid_size
+
+    #             # if current_sprite > len(sprites) - 1 :
+    #             #     break
+
+    #         if ui_grp.sound_on:
+
+    #             self.moving_sound.play()
+
+    #         if energy_grp:
+    #             for energy_item in energy_grp:
+    #                 energy_item.update(self, energy_grp, ui_grp.sound_on)
+    #             # for energy in pygame.sprite.spritecollide(
+    #             #     sprite= self,
+    #             #     group= energy,
+    #             #     dokill= 1
+    #             # ):
+    #             #     self.hp += energy.hp
+
+    #         self.step_moves += 1
+
+    #         if self.energy_mode:
+    #             self.hp -= 1
+
+    #         maze.update(offset_change=move_coord)
+
+    #     self.step_moves += 1
 
     def normal_move(
         self,
@@ -254,7 +323,7 @@ class Tom(pygame.sprite.Sprite):
 
         self.is_center = True
 
-    def draw_solution(self, solution: list, grids=None, footprint=None):
+    def draw_solution(self, solution: list, grids=None):
         """This method will draw a line from current position of Tom to the end position
 
         Args:
@@ -273,7 +342,7 @@ class Tom(pygame.sprite.Sprite):
                     grids=grids,
                     current_grid=current_grid,
                     screen=self.screen,
-                    footprint=footprint,
+                    footprint=self.foot,
                     COLOR=(255, 255, 0),
                 )
 
@@ -415,7 +484,7 @@ class Tom(pygame.sprite.Sprite):
         # If show_solution so draw_solution
         if show_solution:
             solution = solve_maze(player=self, maze=maze, algorithm=algorithm)
-            self.draw_solution(solution=solution, grids=maze.grids, footprint=self.foot)
+            self.draw_solution(solution=solution, grids=maze.grids)
         # More feature like draw, update img, state of character
 
     def set_hp(self, first_energy: tuple[int], grids: dict):

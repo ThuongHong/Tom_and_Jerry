@@ -132,6 +132,7 @@ class GamePlay:
 
         self.frame = 0
         self.jerry_frame = 0
+        self.tom_frame = 0
 
         self.score_config = {
             "Easy": [40, 80, 10],
@@ -442,7 +443,13 @@ class GamePlay:
                 fake_adjust=-1,
             )
 
-    def generate(self, algorithm="DFS", ondraw: bool = True, draw_speed: str = "FAST", skinset = '2'):
+    def generate(
+        self,
+        algorithm="DFS",
+        ondraw: bool = True,
+        draw_speed: str = "FAST",
+        skinset="2",
+    ):
         """This method will generate new game
 
         Args:
@@ -458,7 +465,7 @@ class GamePlay:
             scale=self.scale,
             screen=self.screen,
             window_screen=self.window_screen,
-            skinset=skinset
+            skinset=skinset,
         )
 
         # Generate that maze
@@ -688,7 +695,7 @@ class GamePlay:
             and not ui_grp.paused
             and self.game_state == "in_game"
         ):
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT and not self.is_auto_move:
                 ui_grp.saved = False
                 if not self.is_stop_process:
                     self.de_visualize_process()
@@ -701,6 +708,12 @@ class GamePlay:
                     jerry_grp=self.npc,
                     ui_grp=ui_grp,
                 )
+                # if self.solution and self.Tom.position != self.solution[0][1]: self.set_solution(algorithm=ui_grp.current_algo)
+                # elif self.solution: self.solution.pop(0)
+                if self.Tom.position == self.solution[0][1]:
+                    self.solution.pop(0)
+                else:
+                    self.set_solution(algorithm=ui_grp.current_algo)
                 if self.insane_mode:
                     self.npc.update(
                         maze=self.Maze,
@@ -710,7 +723,7 @@ class GamePlay:
                         energy_grp=self.Energy_Items,
                         ui_grp=ui_grp,
                     )
-            elif event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT and not self.is_auto_move:
                 ui_grp.saved = False
                 if not self.is_stop_process:
                     self.de_visualize_process()
@@ -723,6 +736,12 @@ class GamePlay:
                     jerry_grp=self.npc,
                     ui_grp=ui_grp,
                 )
+                # if self.solution and self.Tom.position != self.solution[0][1]: self.set_solution(algorithm=ui_grp.current_algo)
+                # elif self.solution: self.solution.pop(0)
+                if self.Tom.position == self.solution[0][1]:
+                    self.solution.pop(0)
+                else:
+                    self.set_solution(algorithm=ui_grp.current_algo)
                 if self.insane_mode:
                     self.npc.update(
                         maze=self.Maze,
@@ -732,7 +751,7 @@ class GamePlay:
                         energy_grp=self.Energy_Items,
                         ui_grp=ui_grp,
                     )
-            elif event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP and not self.is_auto_move:
                 ui_grp.saved = False
                 if not self.is_stop_process:
                     self.de_visualize_process()
@@ -745,6 +764,12 @@ class GamePlay:
                     jerry_grp=self.npc,
                     ui_grp=ui_grp,
                 )
+                # if self.solution and self.Tom.position != self.solution[0][1]: self.set_solution(algorithm=ui_grp.current_algo)
+                # elif self.solution: self.solution.pop(0)
+                if self.Tom.position == self.solution[0][1]:
+                    self.solution.pop(0)
+                else:
+                    self.set_solution(algorithm=ui_grp.current_algo)
                 if self.insane_mode:
                     self.npc.update(
                         maze=self.Maze,
@@ -754,7 +779,7 @@ class GamePlay:
                         energy_grp=self.Energy_Items,
                         ui_grp=ui_grp,
                     )
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN and not self.is_auto_move:
                 ui_grp.saved = False
                 if not self.is_stop_process:
                     self.de_visualize_process()
@@ -767,6 +792,12 @@ class GamePlay:
                     jerry_grp=self.npc,
                     ui_grp=ui_grp,
                 )
+                # if self.solution and self.Tom.position != self.solution[0][1]: self.set_solution(algorithm=ui_grp.current_algo)
+                # elif self.solution: self.solution.pop(0)
+                if self.Tom.position == self.solution[0][1]:
+                    self.solution.pop(0)
+                else:
+                    self.set_solution(algorithm=ui_grp.current_algo)
                 if self.insane_mode:
                     self.npc.update(
                         maze=self.Maze,
@@ -780,20 +811,20 @@ class GamePlay:
                 self.scale += 0.1
             elif event.key == pygame.K_q:
                 self.scale -= 0.1
-            elif event.key == pygame.K_w:
+            elif event.key == pygame.K_w and not self.is_auto_move:
                 self.scale_surface_offset.y += 50 * self.scale
-            elif event.key == pygame.K_a:
+            elif event.key == pygame.K_a and not self.is_auto_move:
                 self.scale_surface_offset.x += 50 * self.scale
-            elif event.key == pygame.K_s:
+            elif event.key == pygame.K_s and not self.is_auto_move:
                 self.scale_surface_offset.y -= 50 * self.scale
-            elif event.key == pygame.K_d:
+            elif event.key == pygame.K_d and not self.is_auto_move:
                 self.scale_surface_offset.x -= 50 * self.scale
-            elif event.key == pygame.K_SPACE:
-                self.game_centering()
-            elif event.key == pygame.K_f:
+            elif event.key == pygame.K_SPACE and not self.is_auto_move:
+                self.move_focus_tom(ui_grp=ui_grp)
+            elif event.key == pygame.K_f and not self.is_auto_move:
                 self.game_normal_view()
-            elif event.key == pygame.K_x:
-                self.move_focus_jerry(ui_grp= ui_grp)
+            elif event.key == pygame.K_c and not self.is_auto_move:
+                self.move_focus_jerry(ui_grp=ui_grp)
 
     def update_ingame(self, event, ui_grp):
         """This method will use in a while loop
@@ -802,7 +833,8 @@ class GamePlay:
         # UPDATE STATE
         self.update_screen(ui_grp)
         if not ui_grp.paused:
-            if not self.solution: self.set_solution(algorithm= 'BFS')
+            if not self.solution:
+                self.set_solution(algorithm=ui_grp.current_algo)
 
             self.auto_move(ui_grp)
 
@@ -832,7 +864,7 @@ class GamePlay:
         self.player.draw(self.screen)
 
         # If draw_process is True so this one will run
-        self.draw_process()
+        self.draw_process(ui_grp=ui_grp)
 
         # Same
         self.draw_solution()
@@ -873,15 +905,17 @@ class GamePlay:
 
     def draw_solution(self):
         """Draw solution from player current position"""
+        # if self.is_draw_solution:
+        #     self.player.update(
+        #         maze=self.Maze,
+        #         scale=self.scale,
+        #         show_solution=True,
+        #         algorithm=self.solve_maze_algorithm,
+        #     )
         if self.is_draw_solution:
-            self.player.update(
-                maze=self.Maze,
-                scale=self.scale,
-                show_solution=True,
-                algorithm=self.solve_maze_algorithm,
-            )
+            self.Tom.draw_solution(solution=self.solution.copy(), grids=self.Maze.grids)
 
-    def draw_process(self):
+    def draw_process(self, ui_grp):
         """Each one loop through this method. This one will draw one more grid in process list"""
 
         # Neu khong bi dung va co process_list -> Draw tang dan
@@ -889,7 +923,7 @@ class GamePlay:
             for i in range(self.solve_index + 1):
                 mark_grid(self.Maze.grids, self.screen, self.solving_grid_process[i])
 
-            pygame.time.wait(1) # Crash 
+            pygame.time.wait(1)  # Crash
 
             self.solve_index += 1
             if self.solve_index == len(self.solving_grid_process):
@@ -898,7 +932,7 @@ class GamePlay:
 
                 self.solve_position = None
 
-                self.visualize_solution(algorithm=self.solve_maze_algorithm)
+                self.visualize_solution(algorithm=ui_grp.current_algo)
 
         # Neu bi dung va co process list -> Draw nhung cai hien tai
         elif self.is_stop_process and self.solving_grid_process:
@@ -916,7 +950,11 @@ class GamePlay:
             # self.solving_grid_process = []
 
     def check_lose(self):
-        if (self.energy and self.Tom.hp == 0) or self.get_time // 1000 >= 9999 or self.Tom.step_moves >= 9999:
+        if (
+            (self.energy and self.Tom.hp == 0)
+            or self.get_time // 1000 >= 9999
+            or self.Tom.step_moves >= 9999
+        ):
             self.end_time = self.get_time
             self.set_new_game_state("lose_game")
             return True
@@ -1045,7 +1083,7 @@ class GamePlay:
         ):
             self.scale_surface_offset.y = -rect.height / 2
 
-    def game_centering(self):
+    def tom_centering(self):
         virtual_player_x_coord = (
             self.player.sprite.rect.centerx - self.screen_size[0] / 2
         ) * self.scale
@@ -1056,11 +1094,57 @@ class GamePlay:
             -virtual_player_x_coord, -virtual_player_y_coord
         )
 
+    def move_focus_tom(self, ui_grp, frame=25):
+
+        tom_player_x_coord = (
+            self.player.sprite.rect.centerx - self.screen_size[0] / 2
+        ) * self.scale
+        tom_player_y_coord = (
+            self.player.sprite.rect.centery - self.screen_size[1] / 2
+        ) * self.scale
+
+        self.tom_vector = pygame.math.Vector2(
+            -tom_player_x_coord, -tom_player_y_coord
+        )
+        self.vector_move = self.tom_vector - self.scale_surface_offset
+        self.single_frame_move = self.vector_move / frame
+
+        for i in range(frame):
+            self.scale_surface_offset += self.single_frame_move
+            self.tom_frame += 1
+
+            self.update_screen(ui_grp)
+            # DRAW
+            self.Maze.draw(self.screen)
+            if self.Energy_Items:
+                self.Energy_Items.draw(self.screen)
+            self.npc.draw(self.screen)
+            self.player.draw(self.screen)
+
+            scale_surface = pygame.transform.scale(
+                self.screen, self.screen_vector * self.scale
+            )
+            scale_rect = scale_surface.get_rect(
+                center=(
+                    self.window_screen.get_width() / 2,
+                    self.window_screen.get_height() / 2,
+                )
+            )
+
+            self.limit_maze(rect=scale_rect)
+
+            self.window_screen.blit(
+                scale_surface, scale_rect.topleft + self.scale_surface_offset
+            )
+            ui_grp.draw_ui()
+
+            pygame.display.update()
+
     def game_normal_view(self):
         self.scale_surface_offset.x = 0
         self.scale_surface_offset.y = 0
 
-    def move_focus_jerry(self, ui_grp, frame: int = 50):
+    def move_focus_jerry(self, ui_grp, frame: int = 25):
         jerry_player_x_coord = (
             self.npc.sprite.rect.centerx - self.screen_size[0] / 2
         ) * self.scale
@@ -1068,10 +1152,12 @@ class GamePlay:
             self.npc.sprite.rect.centery - self.screen_size[1] / 2
         ) * self.scale
 
-        self.jerry_vector = pygame.math.Vector2(- jerry_player_x_coord, - jerry_player_y_coord)
-        self.vector_move = self.jerry_vector - self.scale_surface_offset 
+        self.jerry_vector = pygame.math.Vector2(
+            -jerry_player_x_coord, -jerry_player_y_coord
+        )
+        self.vector_move = self.jerry_vector - self.scale_surface_offset
         self.single_frame_move = self.vector_move / frame
-        
+
         for i in range(frame):
             self.scale_surface_offset += self.single_frame_move
             self.jerry_frame += 1
@@ -1099,34 +1185,34 @@ class GamePlay:
             self.window_screen.blit(
                 scale_surface, scale_rect.topleft + self.scale_surface_offset
             )
+            ui_grp.draw_ui()
 
             pygame.display.update()
 
-    def set_solution(self, algorithm: str = 'BFS'):
-        self.solution = solve_maze(
-            player= self.Tom,
-            maze= self.Maze,
-            algorithm= algorithm
-        )
-
-        self.is_auto_move = True
+    def set_solution(self, algorithm: str = "BFS"):
+        self.solution = solve_maze(player=self.Tom, maze=self.Maze, algorithm=algorithm)
 
     def auto_move(self, ui_grp):
         self.auto_index = (self.auto_index + 1) % 10
 
-        if self.is_auto_move and self.solution and self.frame >= self.max_frame and self.auto_index == 0:
-            moving_rule = self.solution.pop(0)[0] # Direction
-            
+        if (
+            self.is_auto_move
+            and self.solution
+            and self.frame >= self.max_frame
+            and self.auto_index == 0
+        ):
+            moving_rule = self.solution.pop(0)[0]  # Direction
+
             self.player.update(
-                direction= moving_rule,
-                maze= self.Maze,
-                offset= self.scale_surface_offset,
-                energy_grp= self.Energy_Items,
-                jerry_grp= self.npc,
-                ui_grp= ui_grp,
+                direction=moving_rule,
+                maze=self.Maze,
+                offset=self.scale_surface_offset,
+                energy_grp=self.Energy_Items,
+                jerry_grp=self.npc,
+                ui_grp=ui_grp,
             )
 
-            self.game_centering()
+            self.move_focus_tom(ui_grp=ui_grp)
 
     def de_auto_move(self):
         self.is_auto_move = False
@@ -1137,7 +1223,7 @@ class GamePlay:
             self.max_frame = max_frame
         if self.frame < self.max_frame:
             self.scale += 1 / self.max_frame
-            self.game_centering()
+            self.tom_centering()
             self.frame += 1
 
     def normal_zoom_linear(self, max_frame):
