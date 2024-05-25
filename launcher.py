@@ -366,6 +366,7 @@ class Launcher():
         self.Game.de_visualize_process()
         self.Game.scale = 1
         self.Game.frame = 0
+        self.Game.solution = None
         # self.Game.change_theme(self.current_theme)
         
         # self.Game.game_normal_view()

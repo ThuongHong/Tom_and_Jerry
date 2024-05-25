@@ -121,12 +121,17 @@ class GamePlay:
         self.solve_index = 0
 
         self.is_move = False
+        self.is_auto_move = False
+        self.auto_index = 0
+
+        self.solution = None
 
         self.is_stop_process = True
 
         self.spawn_mode = "RANDOM"
 
         self.frame = 0
+        self.jerry_frame = 0
 
         self.score_config = {
             "Easy": [40, 80, 10],
@@ -674,6 +679,10 @@ class GamePlay:
             pygame.quit()
             exit()
         # MOVE -> Dang mac dinh la khi move thi show process se bi dung
+        # if not self.solution: self.set_solution(algorithm= 'BFS')
+
+        # self.auto_move(ui_grp)
+
         if (
             event.type == pygame.KEYDOWN
             and not ui_grp.paused
@@ -783,6 +792,8 @@ class GamePlay:
                 self.game_centering()
             elif event.key == pygame.K_f:
                 self.game_normal_view()
+            elif event.key == pygame.K_x:
+                self.move_focus_jerry(ui_grp= ui_grp)
 
     def update_ingame(self, event, ui_grp):
         """This method will use in a while loop
@@ -791,6 +802,10 @@ class GamePlay:
         # UPDATE STATE
         self.update_screen(ui_grp)
         if not ui_grp.paused:
+            if not self.solution: self.set_solution(algorithm= 'BFS')
+
+            self.auto_move(ui_grp)
+
             self.Maze.update(scale=self.scale)
 
             if self.Energy_Items:
@@ -874,7 +889,7 @@ class GamePlay:
             for i in range(self.solve_index + 1):
                 mark_grid(self.Maze.grids, self.screen, self.solving_grid_process[i])
 
-            pygame.time.wait(1)
+            pygame.time.wait(1) # Crash 
 
             self.solve_index += 1
             if self.solve_index == len(self.solving_grid_process):
@@ -1040,17 +1055,88 @@ class GamePlay:
         self.scale_surface_offset = pygame.math.Vector2(
             -virtual_player_x_coord, -virtual_player_y_coord
         )
-        # self.scale_surface_offset = pygame.math.Vector2(0, self.screen_size[1] / 2)
 
     def game_normal_view(self):
         self.scale_surface_offset.x = 0
         self.scale_surface_offset.y = 0
 
+    def move_focus_jerry(self, ui_grp, frame: int = 50):
+        jerry_player_x_coord = (
+            self.npc.sprite.rect.centerx - self.screen_size[0] / 2
+        ) * self.scale
+        jerry_player_y_coord = (
+            self.npc.sprite.rect.centery - self.screen_size[1] / 2
+        ) * self.scale
+
+        self.jerry_vector = pygame.math.Vector2(- jerry_player_x_coord, - jerry_player_y_coord)
+        self.vector_move = self.jerry_vector - self.scale_surface_offset 
+        self.single_frame_move = self.vector_move / frame
+        
+        for i in range(frame):
+            self.scale_surface_offset += self.single_frame_move
+            self.jerry_frame += 1
+
+            self.update_screen(ui_grp)
+            # DRAW
+            self.Maze.draw(self.screen)
+            if self.Energy_Items:
+                self.Energy_Items.draw(self.screen)
+            self.npc.draw(self.screen)
+            self.player.draw(self.screen)
+
+            scale_surface = pygame.transform.scale(
+                self.screen, self.screen_vector * self.scale
+            )
+            scale_rect = scale_surface.get_rect(
+                center=(
+                    self.window_screen.get_width() / 2,
+                    self.window_screen.get_height() / 2,
+                )
+            )
+
+            self.limit_maze(rect=scale_rect)
+
+            self.window_screen.blit(
+                scale_surface, scale_rect.topleft + self.scale_surface_offset
+            )
+
+            pygame.display.update()
+
+    def set_solution(self, algorithm: str = 'BFS'):
+        self.solution = solve_maze(
+            player= self.Tom,
+            maze= self.Maze,
+            algorithm= algorithm
+        )
+
+        self.is_auto_move = True
+
+    def auto_move(self, ui_grp):
+        self.auto_index = (self.auto_index + 1) % 10
+
+        if self.is_auto_move and self.solution and self.frame >= self.max_frame and self.auto_index == 0:
+            moving_rule = self.solution.pop(0)[0] # Direction
+            
+            self.player.update(
+                direction= moving_rule,
+                maze= self.Maze,
+                offset= self.scale_surface_offset,
+                energy_grp= self.Energy_Items,
+                jerry_grp= self.npc,
+                ui_grp= ui_grp,
+            )
+
+            self.game_centering()
+
+    def de_auto_move(self):
+        self.is_auto_move = False
+
     def center_zoom_linear(self, max_frame):
         if self.frame == 0:
             self.scale = 0
-        if self.frame < max_frame:
-            self.scale += 1 / max_frame
+            self.max_frame = max_frame
+        if self.frame < self.max_frame:
+            self.scale += 1 / self.max_frame
             self.game_centering()
             self.frame += 1
 
