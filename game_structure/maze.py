@@ -1,10 +1,10 @@
 from game_structure.grid import GridCell
 from algorithm.BDFS import BDFS
-import random
-import pygame
+
 from os import listdir
 from os.path import join
-import time
+import random
+import pygame
 
 
 class Maze(pygame.sprite.Group):
@@ -15,7 +15,7 @@ class Maze(pygame.sprite.Group):
         scale: int = 1,
         screen=None,
         window_screen=None,
-        skinset='2'
+        skinset="2",
     ):
         super().__init__()
 
@@ -35,7 +35,10 @@ class Maze(pygame.sprite.Group):
         for i in range(self.maze_size):
             for j in range(self.maze_size):
                 self.grids[i, j] = GridCell(
-                    grid_position=(i, j), grid_size=self.maze_grid_size, group=self, skinset=skinset
+                    grid_position=(i, j),
+                    grid_size=self.maze_grid_size,
+                    group=self,
+                    skinset=skinset,
                 )
                 self.add(self.grids[i, j])
 
@@ -309,7 +312,7 @@ class Maze(pygame.sprite.Group):
             current_grid = next_grid
 
     def generate_new_maze(
-        self, algorithm: str = "DFS", draw: bool = False, draw_speed="FAST", skinset='2'
+        self, algorithm: str = "DFS", draw: bool = False, draw_speed="FAST", skinset="2"
     ):
         """Generate new maze using following algorithm
 

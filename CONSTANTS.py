@@ -1,11 +1,11 @@
-
 class DISPLAY:
     FPS = 60
     SCREEN_WIDTH = 1400
-    SCREEN_HEIGHT = int(SCREEN_WIDTH * (9 / 16)) # 787
+    SCREEN_HEIGHT = int(SCREEN_WIDTH * (9 / 16))  # 787
     TEXT_LENGTH = 10
     RECORD_LIMIT = 7
     SAVE_LIMIT = 6
+
 
 class COLOR:
     GREY = (239, 237, 240)
@@ -16,6 +16,7 @@ class COLOR:
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     BEIGE = (217, 211, 186)
+
 
 class DIFFICULTY:
     EASY = 20

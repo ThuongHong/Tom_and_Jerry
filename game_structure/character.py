@@ -1,11 +1,9 @@
-from game_structure.maze import Maze
-from game_structure.utility import (
-    get_position_after_move,
-    get_diffirent_coord,
-    mahathan_distance,
-)
-from solving_maze.solving_maze import solve_maze
-from algorithm.draw_utility import mark_grid
+from utility.algo_utility import get_position_after_move
+from utility.algo_utility import get_diffirent_coord
+from utility.algo_utility import mahathan_distance
+
+from algorithm.solving_maze import solve_maze
+from utility.draw_utility import mark_grid
 from algorithm.BDFS import BDFS
 
 import pygame

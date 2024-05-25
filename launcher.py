@@ -1,15 +1,17 @@
-from game_structure.maze import Maze
-from game_structure.character import Tom
-from game_structure.game import GamePlay, load_GamePlay
-from data import data
 import pygame
-import time
 import os
+
+from game_structure.game_play import GamePlay
+from game_structure.game_play import load_GamePlay
+
+from database import data
+
 from menu_objects.button import Button
 from menu_objects.graphic import Graphic
-# from menu_objects.music import MusicController
 
-from CONSTANTS import DISPLAY, COLOR
+from CONSTANTS import DISPLAY
+from CONSTANTS import COLOR
+
 
 def create_img(images_source, image_name):
     image_name = image_name + '.png'

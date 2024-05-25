@@ -1,15 +1,18 @@
-from game_structure.utility import get_position_after_move
+from utility.algo_utility import get_position_after_move
+
 from os.path import join
 import pygame
 
+
 class GridCell(pygame.sprite.Sprite):
-    def __init__(self,
-                 group,
-                 grid_position: tuple[int],
-                 grid_size: int,
-                 scale: int = 1,
-                 skinset: str = '2'
-                 ):
+    def __init__(
+        self,
+        group,
+        grid_position: tuple[int],
+        grid_size: int,
+        scale: int = 1,
+        skinset: str = "2",
+    ):
         super().__init__(group)
 
         self.offset = pygame.math.Vector2(0, 0)
@@ -17,7 +20,10 @@ class GridCell(pygame.sprite.Sprite):
         self.position = grid_position
         self.scale = scale
         self._grid_size = grid_size
-        self._grid_coord = (grid_position[0] * self.grid_size, grid_position[1] * self.grid_size)
+        self._grid_coord = (
+            grid_position[0] * self.grid_size,
+            grid_position[1] * self.grid_size,
+        )
         # self.thickness = int(self.grid_size * 4 / 30) // 2
 
         # Variable check if cell is go over or not in generate maze by using DFS algorithm
@@ -25,26 +31,24 @@ class GridCell(pygame.sprite.Sprite):
 
         # Walls specify for wall in one grid cell
         # Performd clockwise ----- Important
-        self.walls = {
-            'top': True,
-            'right': True,
-            'bottom': True,
-            'left': True
-        }
+        self.walls = {"top": True, "right": True, "bottom": True, "left": True}
         self.old_feature = ""
         self.is_start = False
         self.is_end = False
-        
-        self.set_image(change = True, skinset=skinset)
-    
+
+        self.set_image(change=True, skinset=skinset)
+
     @property
     def grid_size(self):
         return self._grid_size * self.scale
+
     @property
     def grid_coord(self):
-        return (self._grid_coord[0] * self.scale + self.offset[0], 
-                self._grid_coord[1] * self.scale + self.offset[1])
-    
+        return (
+            self._grid_coord[0] * self.scale + self.offset[0],
+            self._grid_coord[1] * self.scale + self.offset[1],
+        )
+
     def get_wall_direction(self) -> list[str]:
         """This method support for DFS algorithm in generate maze. Opposite with the method below
 
@@ -55,7 +59,7 @@ class GridCell(pygame.sprite.Sprite):
 
         for direction in self.walls:
             # If this direction has wall
-            if self.walls[direction]: 
+            if self.walls[direction]:
                 wall_directions.append(direction[0].upper())
 
         return wall_directions
@@ -70,12 +74,14 @@ class GridCell(pygame.sprite.Sprite):
 
         for direction in self.walls:
             # If this direction does not have wall
-            if not self.walls[direction]: 
+            if not self.walls[direction]:
                 actions.append(direction[0].upper())
-        
+
         return actions
 
-    def get_neighbors(self, is_wall_direction: bool= False, is_get_direction: bool = False) -> list[tuple[int]]:
+    def get_neighbors(
+        self, is_wall_direction: bool = False, is_get_direction: bool = False
+    ) -> list[tuple[int]]:
         """Dafault: Return neighbors that this grid can move. Modified: like description
 
         Args:
@@ -87,24 +93,29 @@ class GridCell(pygame.sprite.Sprite):
         """
         actions = []
         neighbors = []
-        
+
         # If we want to get neighbors grid that can not move to
         if is_wall_direction:
             for direction in self.get_wall_direction():
-                neighbors.append(get_position_after_move(self.get_position(), direction= direction))
-        
+                neighbors.append(
+                    get_position_after_move(self.get_position(), direction=direction)
+                )
+
         # Otherwise
         else:
             for action in self.get_actions():
-                neighbors.append(get_position_after_move(self.get_position(), direction= action))
+                neighbors.append(
+                    get_position_after_move(self.get_position(), direction=action)
+                )
                 actions.append(action)
-        
+
         # If want to get the action
-        if is_get_direction: return zip(actions, neighbors)
-        
+        if is_get_direction:
+            return zip(actions, neighbors)
+
         # Otherwise
         return neighbors
-    
+
     def get_position(self) -> tuple[int]:
         """This method return index of this grid in maze
 
@@ -135,48 +146,64 @@ class GridCell(pygame.sprite.Sprite):
         features = []
 
         # If there is a wall in any direction, append it to features
-        if self.walls['top']: features.append('top')
-        if self.walls['right']: features.append('right')
-        if self.walls['bottom']: features.append('bottom')
-        if self.walls['left']: features.append('left')
+        if self.walls["top"]:
+            features.append("top")
+        if self.walls["right"]:
+            features.append("right")
+        if self.walls["bottom"]:
+            features.append("bottom")
+        if self.walls["left"]:
+            features.append("left")
 
-        if not features: return 'no-wall' + '.png'
+        if not features:
+            return "no-wall" + ".png"
 
-        return '-'.join(features) + '.png'
+        return "-".join(features) + ".png"
 
-    def set_image(self, change=False, skinset='2'):
-        """Use this method after generate maze
-        """
+    def set_image(self, change=False, skinset="2"):
+        """Use this method after generate maze"""
         if self.get_feature != self.old_feature or change == True:
-            self.image = pygame.image.load(join('images/Grids', 'Grids_' + skinset, self.get_feature)).convert_alpha()
+            self.image = pygame.image.load(
+                join("images/Grids", "Grids_" + skinset, self.get_feature)
+            ).convert_alpha()
             self.old_feature = self.get_feature
             # self._grid_size = self.image.get_height()
-            self.image = pygame.transform.rotozoom(self.image, 0, self.grid_size / self.image.get_height())
-            
-            self.rect = self.image.get_rect(topleft= self.grid_coord)
-    
+            self.image = pygame.transform.rotozoom(
+                self.image, 0, self.grid_size / self.image.get_height()
+            )
+
+            self.rect = self.image.get_rect(topleft=self.grid_coord)
+
     # @property
     # def rect(self):
     #     return self._rect.topleft - self.offset
-    
-    def update(self,scale = None, offset_change = None, events: list = None, screen= None, maze= None, **kwargs):
+
+    def update(
+        self,
+        scale=None,
+        offset_change=None,
+        events: list = None,
+        screen=None,
+        maze=None,
+        **kwargs
+    ):
         # if scale:
-            # if scale != self.scale:
-            #     self.set_scale(scale)
+        # if scale != self.scale:
+        #     self.set_scale(scale)
 
         if offset_change:
             self.offset = self.offset - offset_change
         if events:
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    virtual_pos_x = (event.pos[0] - kwargs['topleft_info'][0]) / scale
-                    virtual_pos_y = (event.pos[1] - kwargs['topleft_info'][1]) / scale
+                    virtual_pos_x = (event.pos[0] - kwargs["topleft_info"][0]) / scale
+                    virtual_pos_y = (event.pos[1] - kwargs["topleft_info"][1]) / scale
                     if self.rect.collidepoint((virtual_pos_x, virtual_pos_y)):
                         if maze.is_have_start():
                             self.is_end = True
                             maze.end_position = self.position
                         else:
-                            self.is_start = True   
-                            maze.start_position = self.position    
-        
+                            self.is_start = True
+                            maze.start_position = self.position
+
         self.set_image()

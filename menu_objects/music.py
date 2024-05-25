@@ -29,7 +29,7 @@ class MusicController:
             pygame.mixer.music.set_volume(1)
         elif game_state == "win game":
             pygame.mixer_music.set_volume(0.7)
-        elif game_state == 'lose game':
+        elif game_state == "lose game":
             pygame.mixer_music.set_volume(0.4)
         else:
             pygame.mixer.music.set_volume(0.3)
