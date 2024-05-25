@@ -77,7 +77,7 @@ def get_saved_game(user_id: int):
     saved_game_ids = list(
         db_cursor.execute(
             """
-            SELECT "game_id", "times", "moves", "background", "theme", "spawning" FROM "game_saves"
+            SELECT "game_id", "times", "moves", "background", "theme", "spawning_mode" FROM "game_saves"
             WHERE "game_id" IN (
                 SELECT "game_id" FROM "played"
                 WHERE "user_id" = ?
