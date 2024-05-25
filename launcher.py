@@ -286,7 +286,7 @@ class Launcher():
         
         pygame.display.update()
     
-    def load_game(self, game_id, generate_algorithm, is_visualize_generator, background, theme, spawn_mode, sound_on=True):
+    def load_game(self, game_id, generate_algorithm, is_visualize_generator, background, theme, spawn_mode, sound_on=True, music_on=True):
         self.Game = load_GamePlay(game_id)
         self.current_algo = "AStar_MinBinaryHeap"
         self.current_background = background
@@ -299,6 +299,8 @@ class Launcher():
         self.energy = self.Game.energy
         self.insane_mode = self.Game.insane_mode
         
+        self.sound_on = sound_on
+        self.music_on = music_on
         self.restart()
         self.full_save = False
 
@@ -311,6 +313,7 @@ class Launcher():
         
     def new_game(self, maze_size, 
                      sound_on,
+                     music_on,
                      spawning='random', 
                      energy= False,
                      user_id= None,
@@ -336,6 +339,7 @@ class Launcher():
         self.energy = energy
         self.insane_mode = insane_mode
         self.sound_on = sound_on
+        self.music_on = music_on
         self.maze_visualizer = maze_visualizer
         self.maze_generate_algo = maze_generate_algo
         self.full_save = full_save
@@ -359,6 +363,9 @@ class Launcher():
         self.lose = False
         self.Game.de_visualize_solution()
         self.Game.de_visualize_process()
+        self.Game.scale = 1
+        self.Game.frame = 0
+        # self.Game.game_normal_view()
 
     def launch(self):
 
@@ -369,8 +376,11 @@ class Launcher():
                 self.Game.generate(algorithm= self.maze_generate_algo, ondraw=self.maze_visualizer)
             else:
                 self.Game.generate(algorithm= self.maze_generate_algo, ondraw= False)
+                
             if self.spawning == 'random': self.Game.spawn_random()
-            else: self.Game.select_position_spawn(self)
+            else: 
+                self.Game.select_position_spawn(self)
+            
             self.Game.game_centering()
 
 

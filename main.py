@@ -45,12 +45,13 @@ while game_menu.running:
 
         # Load game | New game
         if load_data is not None:
-            game_launcher.load_game(*load_data, sound_on=game_menu.sound)
+            game_launcher.load_game(*load_data, sound_on=game_menu.sound, music_on=game_menu.music)
             load_data = None
         else:
             game_launcher.new_game(
                 maze_size=game_menu.difficulty,
                 sound_on=game_menu.sound,
+                music_on=game_menu.music,
                 spawning=game_menu.spawning,
                 energy=game_menu.energy_mode,
                 user_id=game_menu.user_id,
@@ -73,7 +74,8 @@ while game_menu.running:
         game_menu.insane_mode = False
         game_menu.maze_generate_algo = "HAK"
         game_menu.maze_visualizer = False
-        game_menu.music_player.play_music(game_menu.game_state)
+        if game_menu.music:
+            game_menu.music_player.play_music(game_menu.game_state)
         game_menu.fade_transition(
             game_menu.background_main_menu, game_launcher.background
         )
