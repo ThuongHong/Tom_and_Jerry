@@ -122,6 +122,8 @@ class GamePlay:
         self.is_move = False
 
         self.is_stop_process = True
+        
+        self.spawn_mode = "RANDOM"
 
         self.frame = 0
 
@@ -164,7 +166,7 @@ class GamePlay:
 
     @property
     def score(self):
-        return self.step_moves / int(self.get_time / 1000)
+        return self.step_moves / int(self.end_time / 1000)
 
     def pause_time(self):
         self.time_at_pause = (

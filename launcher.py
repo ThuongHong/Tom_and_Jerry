@@ -253,7 +253,7 @@ class Launcher():
         if self.win == True:
             step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
             time_end = self.end_font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, COLOR.BLACK)
-            score = self.end_font.render(f'Score:        {123}', True, COLOR.BLACK)
+            score = self.end_font.render(f'Score:        {self.Game.score}', True, COLOR.BLACK)
             self.box_game_win.draw(self.window_screen)
             self.window_screen.blit(step_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord - self.box_game_win.modified_height * 0.08))
             self.window_screen.blit(time_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.09))
@@ -286,27 +286,22 @@ class Launcher():
         
         pygame.display.update()
     
-    def load_game(self, game_id, is_visualize_generator, background, theme, sound_on=True):
+    def load_game(self, game_id, generate_algorithm, is_visualize_generator, background, theme, spawn_mode, sound_on=True):
         self.Game = load_GamePlay(game_id)
         self.current_algo = "AStar_MinBinaryHeap"
         self.current_background = background
         self.background.change_image(self.background_images[self.current_background])
         self.current_theme = str(theme)
         self.Game.change_theme(self.current_theme)
-        self.spawning = "random"
+        self.spawning = spawn_mode
         self.maze_visualizer = is_visualize_generator
-        self.maze_generate_algo = "HAK"
+        self.maze_generate_algo = generate_algorithm
         self.energy = self.Game.energy
         self.insane_mode = self.Game.insane_mode
-        self.time_at_pause = ''
-        self.paused = False
-        self.saved = False
-        self.save_confirm = False
-        self.overwrite_confirm = False
+        
+        self.restart()
         self.full_save = False
-        self.win = False
-        self.lose = False
-        self.is_restarted = False
+
         self.sound_on = sound_on
         self.is_loaded = True
         
@@ -333,19 +328,13 @@ class Launcher():
                              energy=energy,
                              insane_mode= insane_mode)
         
+        self.restart()
         self.current_algo = "AStar_MinBinaryHeap"
         self.current_theme = '2'
         self.current_background = 0
         self.spawning = spawning
         self.energy = energy
         self.insane_mode = insane_mode
-        self.time_at_pause = ''
-        self.paused = False
-        self.saved = False
-        self.save_confirm = False
-        self.overwrite_confirm = False
-        self.win = False
-        self.lose = False
         self.sound_on = sound_on
         self.maze_visualizer = maze_visualizer
         self.maze_generate_algo = maze_generate_algo
@@ -361,13 +350,15 @@ class Launcher():
         self.maze_size = maze_size
         
     def restart(self):
-
+        self.time_at_pause = ''
         self.paused = False
         self.saved = False
         self.save_confirm = False
         self.overwrite_confirm = False
         self.win = False
         self.lose = False
+        self.Game.de_visualize_solution()
+        self.Game.de_visualize_process()
 
     def launch(self):
 

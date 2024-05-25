@@ -50,9 +50,11 @@ class Tom(pygame.sprite.Sprite):
         self.energy_mode = False
         self.hp = 1
 
-        self.moving_sound = pygame.mixer.Sound(os.path.join("sounds", "moving_sound.ogg")) 
+        self.moving_sound = pygame.mixer.Sound(
+            os.path.join("sounds", "moving_sound.ogg")
+        )
         self.moving_sound.set_volume(0.3)
-        
+
         self.current_sprite = 0
 
         self.animation_images = {
@@ -66,32 +68,29 @@ class Tom(pygame.sprite.Sprite):
             "StandDown": [],
         }
 
-        self.footprint_images = {"One": []}
+        self.footprint_images = []
 
         if footprint_img_directory:
-            for folder in os.listdir(
-                footprint_img_directory,
-            ):
-                for file in os.listdir(os.path.join(footprint_img_directory, folder)):
-                    tmp_img = pygame.image.load(
-                        os.path.join(footprint_img_directory, folder, file)
-                    )
+            for file in os.listdir(os.path.join(footprint_img_directory, 'Solution')):
+                tmp_img = pygame.image.load(
+                    os.path.join(footprint_img_directory, 'Solution', file)
+                ).convert_alpha()
 
-                    tmp_img_height = tmp_img.get_height()
-                    tmp_img_width = tmp_img.get_width()
+                # tmp_img_height = tmp_img.get_height()
+                # tmp_img_width = tmp_img.get_width()
 
-                    bigger_size = (
-                        tmp_img_height
-                        if (tmp_img_height > tmp_img_width)
-                        else tmp_img_width
-                    )
-                    scale_index = bigger_size / self.grid_size
+                # bigger_size = (
+                #     tmp_img_height
+                #     if (tmp_img_height > tmp_img_width)
+                #     else tmp_img_width
+                # )
+                # scale_index = bigger_size / self.grid_size
 
-                    # image = pygame.transform.scale(tmp_img, (self.grid_size * 0.75, self.grid_size * 0.75))
-                    image = pygame.transform.rotozoom(tmp_img, 0, 0.75)
+                # image = pygame.transform.scale(tmp_img, (self.grid_size * 0.75, self.grid_size * 0.75))
+                image = pygame.transform.rotozoom(tmp_img, 0, 0.75)
 
-                    self.footprint_images[folder].append(image)
-            self.foot = self.footprint_images["One"][0]
+                self.footprint_images.append(image)
+        self.foot = self.footprint_images[0]
 
         # Load all the image
         for folder in os.listdir(
@@ -100,7 +99,7 @@ class Tom(pygame.sprite.Sprite):
             for file in os.listdir(os.path.join(tom_img_directory, folder)):
                 tmp_img = pygame.image.load(
                     os.path.join(tom_img_directory, folder, file)
-                )
+                ).convert_alpha()
 
                 tmp_img_height = tmp_img.get_height()
                 tmp_img_width = tmp_img.get_width()
@@ -222,7 +221,7 @@ class Tom(pygame.sprite.Sprite):
                 #     break
 
             if ui_grp.sound_on:
-                
+
                 self.moving_sound.play()
 
             if energy_grp:
@@ -481,11 +480,17 @@ class Jerry(Tom):
 
                 tmp_img_height = tmp_img.get_height()
                 tmp_img_width = tmp_img.get_width()
-                
-                bigger_size = tmp_img_height if (tmp_img_height > tmp_img_width) else tmp_img_width
+
+                bigger_size = (
+                    tmp_img_height
+                    if (tmp_img_height > tmp_img_width)
+                    else tmp_img_width
+                )
                 scale_index = self._grid_size / tmp_img_width
-                
-                image = pygame.transform.scale(tmp_img, (tmp_img_width * scale_index, tmp_img_height * scale_index))
+
+                image = pygame.transform.scale(
+                    tmp_img, (tmp_img_width * scale_index, tmp_img_height * scale_index)
+                )
                 # image = pygame.transform.rotozoom(tmp_img, 0, 1 / scale_index)
 
                 self.animation_images[folder].append(image)
@@ -496,8 +501,13 @@ class Jerry(Tom):
         real_img_size = (self._grid_size / 30) * bigger_size
         coord_adjust = (self._grid_size - real_img_size) / 2
 
-        self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size,
-                                                  self.position[1] * self._grid_size))        
+        self.rect = self.image.get_rect(
+            topleft=(
+                self.position[0] * self._grid_size,
+                self.position[1] * self._grid_size,
+            )
+        )
+
     @property
     def grid_size(self):
         return self._grid_size * self.scale
@@ -593,33 +603,44 @@ class Jerry(Tom):
                 # if current_sprite > len(sprites) - 1 :
                 #     break
             maze.end_position = self.position
-    
-    def escape_teleport(self, maze, energy_grp= None, tom_grp= None, ui_grp= None):
+
+    def escape_teleport(self, maze, energy_grp=None, tom_grp=None, ui_grp=None):
         current_distance = mahathan_distance(self.position, tom_grp.sprite.position)
 
         for i in range(maze.maze_size):
             for j in range(maze.maze_size):
-                if i == self.position[0] and j == self.position[1]: continue
-                if mahathan_distance((i, j), tom_grp.sprite.position) > current_distance and BDFS(grids= maze.grids,
-                                                                                                   player_current_position= tom_grp.sprite.position,
-                                                                                                   player_winning_position= (i, j),
-                                                                                                   algorithm= 'BFS'):
+                if i == self.position[0] and j == self.position[1]:
+                    continue
+                if mahathan_distance(
+                    (i, j), tom_grp.sprite.position
+                ) > current_distance and BDFS(
+                    grids=maze.grids,
+                    player_current_position=tom_grp.sprite.position,
+                    player_winning_position=(i, j),
+                    algorithm="BFS",
+                ):
                     self.position = (i, j)
                     maze.end_position = self.position
-                    self.rect = self.image.get_rect(topleft= (self.position[0] * self._grid_size,
-                                                              self.position[1] * self._grid_size))        
+                    self.rect = self.image.get_rect(
+                        topleft=(
+                            self.position[0] * self._grid_size,
+                            self.position[1] * self._grid_size,
+                        )
+                    )
 
                     return
-                
-    def update(self, 
-               maze= None,
-               scale: int = None,
-               offset: int = None,
-               tom_grp = None,
-               energy_grp = None,
-               ui_grp = None,
-               no_event = True,
-                **kwargs) -> bool:
+
+    def update(
+        self,
+        maze=None,
+        scale: int = None,
+        offset: int = None,
+        tom_grp=None,
+        energy_grp=None,
+        ui_grp=None,
+        no_event=True,
+        **kwargs
+    ) -> bool:
         if offset:
             self.scale_surface_offset = offset
         if scale:
@@ -628,17 +649,19 @@ class Jerry(Tom):
                 self.scale = scale
         if tom_grp:
             steps = tom_grp.sprite.step_moves
-            if 0 <= steps < 20: threshold = 5
-            elif steps < 40: threshold = 8
-            elif steps < 80: threshold = 15
-            elif steps < 100: threshold = 20
-            else: threshold = steps + 1
+            if 0 <= steps < 20:
+                threshold = 5
+            elif steps < 40:
+                threshold = 8
+            elif steps < 80:
+                threshold = 15
+            elif steps < 100:
+                threshold = 20
+            else:
+                threshold = steps + 1
             if steps % threshold == 0:
                 self.escape_teleport(
-                    maze= maze,
-                    energy_grp= energy_grp,
-                    tom_grp= tom_grp,
-                    ui_grp= ui_grp
+                    maze=maze, energy_grp=energy_grp, tom_grp=tom_grp, ui_grp=ui_grp
                 )
 
         if no_event:
