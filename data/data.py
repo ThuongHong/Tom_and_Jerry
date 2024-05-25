@@ -77,7 +77,7 @@ def get_saved_game(user_id: int):
     saved_game_ids = list(
         db_cursor.execute(
             """
-            SELECT "game_id", "times", "moves", "background", "theme" FROM "game_saves"
+            SELECT "game_id", "times", "moves", "background", "theme", "spawning" FROM "game_saves"
             WHERE "game_id" IN (
                 SELECT "game_id" FROM "played"
                 WHERE "user_id" = ?
@@ -116,7 +116,7 @@ def get_saved_game(user_id: int):
                 list(
                     db_cursor.execute(
                         """
-                        SELECT "game_mode", "energy_mode", "insane_mode", "is_visualize" FROM "games"
+                        SELECT "game_mode", "energy_mode", "insane_mode", "generate_algorithm", "is_visualize" FROM "games"
                         WHERE "id" = ?
                         """,
                         ([game_id]),
@@ -180,11 +180,10 @@ def leaderboard(mode: str) -> list:
     # ----- NEW -------------------------------------------------#
     leaderboard_data = list(
         db_cursor.execute(
-            """
-            SELECT  "user_name", "times", "moves", "score" FROM ?
+            f"""
+            SELECT  "user_name", "times", "moves", "score" FROM {board}
             ORDER BY "score" DESC;
-            """,
-            ([board])
+            """
         )
     )
 
