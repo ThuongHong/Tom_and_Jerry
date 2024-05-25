@@ -847,7 +847,7 @@ class GameScreen:
                 self.screen,
                 COLOR.BLACK,
                 is_password=True,
-                censored=False,
+                censored=True,
                 activated=False,
             )
 
@@ -1176,22 +1176,22 @@ class GameScreen:
             # for snapshot in snapshots:
             # calculate coordinates of snapshots to blit
  
-            if self.box_save_frame_1.draw(self.screen, pos, event):
+            if self.box_save_frame_1.draw(self.screen, pos, event, self.sound):
                 self.load_game_state = 'detail'
                 self.load_id = 0
-            if self.box_save_frame_2.draw(self.screen, pos, event):
+            if self.box_save_frame_2.draw(self.screen, pos, event, self.sound):
                 self.load_game_state = 'detail'
                 self.load_id = 1
-            if self.box_save_frame_3.draw(self.screen, pos, event):
+            if self.box_save_frame_3.draw(self.screen, pos, event, self.sound):
                 self.load_game_state = 'detail'
                 self.load_id = 2
-            if self.box_save_frame_4.draw(self.screen, pos, event):
+            if self.box_save_frame_4.draw(self.screen, pos, event, self.sound):
                 self.load_game_state = 'detail'
                 self.load_id = 3
-            if self.box_save_frame_5.draw(self.screen, pos, event):
+            if self.box_save_frame_5.draw(self.screen, pos, event, self.sound):
                 self.load_game_state = 'detail'
                 self.load_id = 4
-            if self.box_save_frame_6.draw(self.screen, pos, event):
+            if self.box_save_frame_6.draw(self.screen, pos, event, self.sound):
                 self.load_game_state = 'detail'
                 self.load_id = 5
             for snapshot in self.snapshots:

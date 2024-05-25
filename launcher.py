@@ -40,7 +40,7 @@ class Launcher():
         button_algo_bfs_img = create_img(images_source, 'button_algo_bfs')
         button_algo_dfs_img = create_img(images_source, 'button_algo_dfs')
         button_algo_gbfs_img = create_img(images_source, 'button_algo_gbfs')
-        button_pause_game_img = create_img(images_source, 'button_pause_game')
+        button_pause_img = create_img(images_source, 'button_pause')
         button_resume_img = create_img(images_source, 'button_resume')
         button_restart_img = create_img(images_source, 'button_restart')
         button_save_img = create_img(images_source, 'button_save')
@@ -48,6 +48,8 @@ class Launcher():
         button_yes_img = create_img(images_source, 'button_yes')
         button_no_img = create_img(images_source, 'button_no')
         button_switch_themes_img = create_img(images_source, 'button_switch_themes')
+        button_auto_on_img = create_img(images_source, 'button_auto_on')
+        button_auto_off_img = create_img(images_source, 'button_auto_off')
         button_box_game_home_img = create_img(images_source, 'button_box_game_home')
         button_box_game_restart_img = create_img(images_source, 'button_box_game_restart')
         button_overwrite_img = create_img(images_source, 'button_overwrite')
@@ -80,8 +82,10 @@ class Launcher():
         self.button_algo_bfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_bfs_img, click_sound, 0.25, 0.26)
         self.button_algo_dfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_dfs_img, click_sound, 0.25, 0.26)
         self.button_algo_gbfs = Button(DISPLAY.SCREEN_WIDTH * 0.90, DISPLAY.SCREEN_HEIGHT * 0.92, button_algo_gbfs_img, click_sound, 0.25, 0.26)
-        self.button_pause_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_pause_game_img, click_sound, 0.25, 0.26)
+        self.button_pause = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_pause_img, click_sound, 0.25, 0.26)
         self.button_resume = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.82, button_resume_img, click_sound, 0.25, 0.26)
+        self.button_auto_on = Button(DISPLAY.SCREEN_WIDTH * 0.87, DISPLAY.SCREEN_HEIGHT * 0.82, button_auto_on_img, click_sound, 0.25, 0.26)
+        self.button_auto_off = Button(DISPLAY.SCREEN_WIDTH * 0.87, DISPLAY.SCREEN_HEIGHT * 0.82, button_auto_off_img, click_sound, 0.25, 0.26)
         self.button_restart = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.72, button_restart_img, click_sound, 0.25, 0.26)
         self.button_save_game = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.52, button_save_img, click_sound, 0.25, 0.26)
         self.button_home = Button(DISPLAY.SCREEN_WIDTH * 0.93, DISPLAY.SCREEN_HEIGHT * 0.62, button_home_img, click_sound, 0.25, 0.26)
@@ -171,7 +175,7 @@ class Launcher():
                         self.Game.de_visualize_solution()
                     
             if self.paused == False:
-                if self.button_pause_game.draw(self.window_screen, pos, event, self.sound_on):
+                if self.button_pause.draw(self.window_screen, pos, event, self.sound_on):
                     self.paused = True
                     self.time_at_pause = self.Game.format_time(self.Game.pause_time())
                     
@@ -249,6 +253,14 @@ class Launcher():
                     self.current_background = 0
                 self.background.change_image(self.background_images[self.current_background])
                 
+            if self.auto_on == True:
+                if self.button_auto_on.draw(self.window_screen, pos, event, self.sound_on):
+                    print('off')
+                    self.auto_on = False
+            else:
+                if self.button_auto_off.draw(self.window_screen, pos, event, self.sound_on):
+                    print('on')
+                    self.auto_on = True
         
         if self.win == True:
             step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
@@ -344,6 +356,7 @@ class Launcher():
         self.maze_generate_algo = maze_generate_algo
         self.full_save = full_save
         self.is_loaded = False
+        self.auto_on = False
         self.first_game_id = first_game_id # for remove first file if it is full storage
         self.Game.create_new_game_id(self.maze_visualizer, self.maze_generate_algo)
         self.background.change_image(self.background_images[self.current_background])
