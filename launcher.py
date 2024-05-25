@@ -41,7 +41,7 @@ class Launcher():
         button_algo_dfs_img = create_img(images_source, 'button_algo_dfs')
         button_algo_gbfs_img = create_img(images_source, 'button_algo_gbfs')
         button_pause_game_img = create_img(images_source, 'button_pause_game')
-        button_resume_img = create_img(images_source, 'button_play')
+        button_resume_img = create_img(images_source, 'button_resume')
         button_restart_img = create_img(images_source, 'button_restart')
         button_save_img = create_img(images_source, 'button_save')
         button_home_img = create_img(images_source, 'button_home')
