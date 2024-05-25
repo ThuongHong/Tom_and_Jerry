@@ -15,6 +15,7 @@ from algorithm.BDFS import BDFS
 from algorithm.GBFS import GBFS
 from solving_maze.solving_maze import solve_maze
 from menu_objects.music import MusicController
+from CONSTANTS import COLOR, DISPLAY
 import json
 import random
 
@@ -122,10 +123,17 @@ class GamePlay:
         self.is_move = False
 
         self.is_stop_process = True
-        
+
         self.spawn_mode = "RANDOM"
 
         self.frame = 0
+
+        self.score_config = {
+            "Easy": [40, 80, 10],
+            "Medium": [80, 300, 5],
+            "Hard": [210, 500, 3],
+        }
+        # time_max - step_max - levelscore
 
         # Intialize super basic maze
         self.Maze = Maze(
@@ -135,7 +143,7 @@ class GamePlay:
             screen=self.screen,
             window_screen=self.window_screen,
         )
-        
+
         self.music_player = MusicController()
 
     @property
@@ -166,7 +174,14 @@ class GamePlay:
 
     @property
     def score(self):
-        return self.step_moves / int(self.end_time / 1000)
+        _score = (
+            int(
+                max(0, self.score_config[self.game_mode][0] - self.end_time) * 0.4
+                + max(0, self.score_config[self.game_mode][1] - self.step_moves) * 0.6
+            )
+            * self.score_config[self.game_mode][2]
+        )
+        return _score
 
     def pause_time(self):
         self.time_at_pause = (
@@ -490,14 +505,17 @@ class GamePlay:
             db_connect.commit()
 
     def spawn_random(self):
-        self.spawn_mode = 'RANDOM'
+        self.spawn_mode = "RANDOM"
         self.Maze.spawn_start_end_position("TOP_BOTTOM")
         self.create_player()
 
     def select_position_spawn(self, ui_grp):
-        self.spawn_mode = 'MANUAL'
+        self.spawn_mode = "MANUAL"
         self.game_normal_view()
         self.scale = 20 / self.Maze.maze_size
+        noti_text = ui_grp.font.render(
+            "Choose the spawn position for Tom and Jerry", True, COLOR.WHITE
+        )
 
         while True:
             counter = 0
@@ -505,23 +523,29 @@ class GamePlay:
             self.update_screen(ui_grp=ui_grp)
             self.Maze.update(scale=self.scale)
             self.Maze.draw(self.screen)
-
+            ui_grp.window_screen.blit(
+                noti_text,
+                (
+                    DISPLAY.SCREEN_WIDTH * 0.5 - noti_text.get_rect().width * 0.5,
+                    DISPLAY.SCREEN_HEIGHT * 0.05,
+                ),
+            )
             if self.Maze.is_have_start():
                 mark_grid(
-                    grids= self.Maze.grids,
-                    screen= self.screen,
-                    current_grid= self.Maze.start_position,
-                    tom= True,
+                    grids=self.Maze.grids,
+                    screen=self.screen,
+                    current_grid=self.Maze.start_position,
+                    tom=True,
                     COLOR=(0, 0, 255),
                 )
                 counter += 1
 
             if self.Maze.is_have_end():
                 mark_grid(
-                    grids= self.Maze.grids,
-                    screen= self.screen,
-                    current_grid= self.Maze.end_position,
-                    jerry= True,
+                    grids=self.Maze.grids,
+                    screen=self.screen,
+                    current_grid=self.Maze.end_position,
+                    jerry=True,
                     COLOR=(255, 0, 0),
                 )
                 counter += 1
@@ -538,7 +562,7 @@ class GamePlay:
                     self.Maze.grids[self.Maze.end_position].is_end = False
                     self.Maze.start_position = None
                     self.Maze.end_position = None
-                    counter =0
+                    counter = 0
 
             scale_surface = pygame.transform.scale(
                 self.screen, self.screen_vector * self.scale
@@ -557,6 +581,8 @@ class GamePlay:
             events = pygame.event.get()
 
             for event in events:
+                if event.type == pygame.QUIT:
+                    pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.Maze.update(
                         maze=self.Maze,
@@ -569,7 +595,7 @@ class GamePlay:
 
             pygame.display.update()
 
-            if counter == 2: 
+            if counter == 2:
                 pygame.time.wait(500)
                 break
 
@@ -656,7 +682,7 @@ class GamePlay:
                 ui_grp.saved = False
                 if not self.is_stop_process:
                     self.de_visualize_process()
-                    self.de_visualize_solution()
+                    # self.de_visualize_solution()
                 self.player.update(
                     direction="L",
                     maze=self.Maze,
@@ -678,7 +704,7 @@ class GamePlay:
                 ui_grp.saved = False
                 if not self.is_stop_process:
                     self.de_visualize_process()
-                    self.de_visualize_solution()
+                    # self.de_visualize_solution()
                 self.player.update(
                     direction="R",
                     maze=self.Maze,
@@ -700,7 +726,7 @@ class GamePlay:
                 ui_grp.saved = False
                 if not self.is_stop_process:
                     self.de_visualize_process()
-                    self.de_visualize_solution()
+                    # self.de_visualize_solution()
                 self.player.update(
                     direction="T",
                     maze=self.Maze,
@@ -722,7 +748,7 @@ class GamePlay:
                 ui_grp.saved = False
                 if not self.is_stop_process:
                     self.de_visualize_process()
-                    self.de_visualize_solution()
+                    # self.de_visualize_solution()
                 self.player.update(
                     direction="B",
                     maze=self.Maze,
@@ -742,7 +768,7 @@ class GamePlay:
                     )
             elif event.key == pygame.K_e:
                 self.scale += 0.1
-            elif event.key == pygame.K_f:
+            elif event.key == pygame.K_q:
                 self.scale -= 0.1
             elif event.key == pygame.K_w:
                 self.scale_surface_offset.y += 50 * self.scale
@@ -754,7 +780,7 @@ class GamePlay:
                 self.scale_surface_offset.x -= 50 * self.scale
             elif event.key == pygame.K_SPACE:
                 self.game_centering()
-            elif event.key == pygame.K_x:
+            elif event.key == pygame.K_f:
                 self.game_normal_view()
 
     def update_ingame(self, event, ui_grp):
@@ -798,11 +824,13 @@ class GamePlay:
         # If the game is win -> Save to leaderboard
         if self.game_state == "in_game":
             if self.check_win():
-                self.music_player.play_music('win game', loops=0)
+                if ui_grp.music_on:
+                    self.music_player.play_music("win game", loops=0)
                 self.save_leaderboard()
 
             if self.check_lose():
-                self.music_player.play_music('lose game', loops=0)
+                if ui_grp.music_on:
+                    self.music_player.play_music("lose game", loops=0)
 
         # scale_surface = pygame.transform.rotozoom(self.screen, 0, self.scale)
         scale_surface = pygame.transform.scale(
@@ -872,7 +900,7 @@ class GamePlay:
             # self.solving_grid_process = []
 
     def check_lose(self):
-        if self.energy and self.Tom.hp == 0:
+        if (self.energy and self.Tom.hp == 0) or self.get_time // 1000 >= 9999 or self.Tom.step_moves >= 9999:
             self.end_time = self.get_time
             self.set_new_game_state("lose_game")
             return True
@@ -947,8 +975,8 @@ class GamePlay:
                 self.Tom.hp,
                 background,
                 theme,
-                self.spawn_mode
-            )
+                self.spawn_mode,
+            ),
         )
 
         save_image = pygame.transform.scale(self.screen, (520, 520))
@@ -974,11 +1002,11 @@ class GamePlay:
             return
 
         # Insert to leaderboard
-        insert_query = (
-            'INSERT INTO "leaderboard"("game_id", "times", "moves", "score") VALUES(?, ?, ?, ?)'
-        )
+        insert_query = 'INSERT INTO "leaderboard"("game_id", "times", "moves", "score") VALUES(?, ?, ?, ?)'
 
-        db_cursor.execute(insert_query, (self.id, self.get_time, self.step_moves, self.score))
+        db_cursor.execute(
+            insert_query, (self.id, self.get_time, self.step_moves, self.score)
+        )
 
         # Push to Real Database
         db_connect.commit()
@@ -1024,8 +1052,6 @@ class GamePlay:
             self.scale += 1 / max_frame
             self.game_centering()
             self.frame += 1
-            return False
-        return True
 
     def normal_zoom_linear(self, max_frame):
         if self.frame == 0:
@@ -1065,9 +1091,7 @@ def load_GamePlay(game_id: int) -> GamePlay:
 
     games_data = list(
         db_cursor.execute(f'SELECT * FROM "games" WHERE "id" = {game_id}')
-    )[
-        0
-    ]
+    )[0]
 
     # Category the info that we get
     # Get the data that useful

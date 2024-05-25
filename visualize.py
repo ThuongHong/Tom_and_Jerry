@@ -977,7 +977,9 @@ class GameScreen:
             username = self.font.render(records[i][0], True, COLOR.BLACK)
             time = self.font.render(f"{str(int(records[i][1] / 1000))} s", True, COLOR.BLACK)
             steps = self.font.render(str(records[i][2]), True, COLOR.BLACK)
-            score = self.font.render(str(records[i][3]), True, COLOR.BLACK)
+            # time = self.font.render(f"{9999} s", True, COLOR.BLACK)
+            # steps = self.font.render('9999', True, COLOR.BLACK)
+            score = self.font.render(str(int(records[i][3])), True, COLOR.BLACK)
             # score = self.font.render("123", True, COLOR.BLACK)
             self.screen.blit(
                 username,
@@ -1236,7 +1238,8 @@ class GameScreen:
                 current_theme = self.saved_games[self.load_id][-2]
                 spawn_mode = self.saved_games[self.load_id][-1]
                 
-                self.music_player.play_music(difficulty.lower())
+                if self.music:
+                    self.music_player.play_music(difficulty.lower())
                 
                 return [game_id, generate_algorithm, is_visualize_generator, current_background, current_theme, spawn_mode]
             if self.button_delete.draw(self.screen, pos, event, self.sound):
