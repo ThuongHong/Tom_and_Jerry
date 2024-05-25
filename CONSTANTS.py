@@ -4,6 +4,8 @@ class DISPLAY:
     SCREEN_WIDTH = 1400
     SCREEN_HEIGHT = int(SCREEN_WIDTH * (9 / 16)) # 787
     TEXT_LENGTH = 10
+    RECORD_LIMIT = 7
+    SAVE_LIMIT = 6
 
 class COLOR:
     GREY = (239, 237, 240)

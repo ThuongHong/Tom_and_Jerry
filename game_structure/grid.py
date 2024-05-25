@@ -7,11 +7,12 @@ class GridCell(pygame.sprite.Sprite):
                  group,
                  grid_position: tuple[int],
                  grid_size: int,
-                 scale: int = 1
+                 scale: int = 1,
+                 skinset: str = '2'
                  ):
         super().__init__(group)
 
-        self.offset = pygame.math.Vector2(0, 40)
+        self.offset = pygame.math.Vector2(0, 0)
 
         self.position = grid_position
         self.scale = scale
@@ -31,7 +32,10 @@ class GridCell(pygame.sprite.Sprite):
             'left': True
         }
         self.old_feature = ""
-        self.set_image()
+        self.is_start = False
+        self.is_end = False
+        
+        self.set_image(change = True, skinset=skinset)
     
     @property
     def grid_size(self):
@@ -115,6 +119,13 @@ class GridCell(pygame.sprite.Sprite):
             self.set_image()
 
     @property
+    def grid_coord_center(self):
+        return (
+            self.grid_coord[0] + self.grid_size / 2,
+            self.grid_coord[1] + self.grid_size / 2.1,
+        )
+
+    @property
     def get_feature(self) -> str:
         """Thie method return feature of this cell to be easier for visualize. Perform clockwise
 
@@ -133,11 +144,11 @@ class GridCell(pygame.sprite.Sprite):
 
         return '-'.join(features) + '.png'
 
-    def set_image(self):
+    def set_image(self, change=False, skinset='2'):
         """Use this method after generate maze
         """
-        if self.get_feature != self.old_feature:
-            self.image = pygame.image.load(join('images', 'Grids', self.get_feature)).convert_alpha()
+        if self.get_feature != self.old_feature or change == True:
+            self.image = pygame.image.load(join('images/Grids', 'Grids_' + skinset, self.get_feature)).convert_alpha()
             self.old_feature = self.get_feature
             # self._grid_size = self.image.get_height()
             self.image = pygame.transform.rotozoom(self.image, 0, self.grid_size / self.image.get_height())
@@ -148,11 +159,24 @@ class GridCell(pygame.sprite.Sprite):
     # def rect(self):
     #     return self._rect.topleft - self.offset
     
-    def update(self,scale = None, offset_change = None, **kwargs):
+    def update(self,scale = None, offset_change = None, events: list = None, screen= None, maze= None, **kwargs):
         # if scale:
             # if scale != self.scale:
             #     self.set_scale(scale)
+
         if offset_change:
             self.offset = self.offset - offset_change
+        if events:
+            for event in events:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    virtual_pos_x = (event.pos[0] - kwargs['topleft_info'][0]) / scale
+                    virtual_pos_y = (event.pos[1] - kwargs['topleft_info'][1]) / scale
+                    if self.rect.collidepoint((virtual_pos_x, virtual_pos_y)):
+                        if maze.is_have_start():
+                            self.is_end = True
+                            maze.end_position = self.position
+                        else:
+                            self.is_start = True   
+                            maze.start_position = self.position    
         
         self.set_image()
