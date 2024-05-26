@@ -471,7 +471,7 @@ class GamePlay:
 
         # Generate that maze
         self.Maze.generate_new_maze(
-            algorithm=algorithm, draw=ondraw, draw_speed=draw_speed, skinset=skinset
+            algorithm=algorithm, draw=ondraw, draw_speed=draw_speed
         )
 
     def create_new_game_id(self, on_draw, generate_algo):
@@ -619,7 +619,8 @@ class GamePlay:
 
     def change_theme(self, skinset):
         for grid in self.Maze.sprites():
-            grid.set_image(change=True, skinset=skinset)
+            grid.skinset = skinset
+            grid.set_image(change=True)
 
     def create_player(self):
         """This method will create player like Tom after Maze are generate and start_end is good"""
