@@ -147,6 +147,7 @@ class Launcher():
             if self.current_algo == 'AStar_OrderedList':
                 if self.button_algo_astarlist.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'BFS'
+                    self.Game.set_solution(algorithm=self.current_algo)
                     if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
@@ -155,6 +156,7 @@ class Launcher():
             elif self.current_algo == 'BFS':
                 if self.button_algo_bfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'DFS'
+                    self.Game.set_solution(algorithm=self.current_algo)
                     if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
@@ -163,6 +165,7 @@ class Launcher():
             elif self.current_algo == 'DFS':
                 if self.button_algo_dfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'GBFS'
+                    self.Game.set_solution(algorithm=self.current_algo)
                     if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
@@ -171,6 +174,7 @@ class Launcher():
             elif self.current_algo == 'GBFS':
                 if self.button_algo_gbfs.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'AStar_MinBinaryHeap'
+                    self.Game.set_solution(algorithm=self.current_algo)
                     if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
@@ -179,6 +183,7 @@ class Launcher():
             elif self.current_algo == 'AStar_MinBinaryHeap':
                 if self.button_algo_astarheap.draw(self.window_screen, pos, event, self.sound_on):
                     self.current_algo = 'AStar_OrderedList'
+                    self.Game.set_solution(algorithm=self.current_algo)
                     if self.Game.is_auto_move: self.Game.solution = None
                     if self.Game.is_draw_solution: self.Game.visualize_solution(algorithm=self.current_algo)
                     if not self.Game.is_stop_process: 
