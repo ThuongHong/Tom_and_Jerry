@@ -312,7 +312,7 @@ class Maze(pygame.sprite.Group):
             current_grid = next_grid
 
     def generate_new_maze(
-        self, algorithm: str = "DFS", draw: bool = False, draw_speed="FAST", skinset="2"
+        self, algorithm: str = "DFS", draw: bool = False, draw_speed="FAST"
     ):
         """Generate new maze using following algorithm
 
@@ -379,7 +379,7 @@ class Maze(pygame.sprite.Group):
                         )
 
         for grid in self.grids:
-            self.grids[grid].set_image(skinset=skinset)
+            self.grids[grid].set_image()
 
     def is_have_start(self):
         for grid in self.grids:

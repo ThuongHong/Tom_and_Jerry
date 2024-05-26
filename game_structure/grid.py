@@ -36,7 +36,8 @@ class GridCell(pygame.sprite.Sprite):
         self.is_start = False
         self.is_end = False
 
-        self.set_image(change=True, skinset=skinset)
+        self.skinset = skinset
+        self.set_image(change=True)
 
     @property
     def grid_size(self):
@@ -160,11 +161,11 @@ class GridCell(pygame.sprite.Sprite):
 
         return "-".join(features) + ".png"
 
-    def set_image(self, change=False, skinset="2"):
+    def set_image(self, change=False):
         """Use this method after generate maze"""
         if self.get_feature != self.old_feature or change == True:
             self.image = pygame.image.load(
-                join("images/Grids", "Grids_" + skinset, self.get_feature)
+                join("images/Grids", "Grids_" + self.skinset, self.get_feature)
             ).convert_alpha()
             self.old_feature = self.get_feature
             # self._grid_size = self.image.get_height()
@@ -206,4 +207,4 @@ class GridCell(pygame.sprite.Sprite):
                             self.is_start = True
                             maze.start_position = self.position
 
-        self.set_image()
+        self.set_image(self.skinset)
