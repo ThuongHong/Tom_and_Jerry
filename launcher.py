@@ -395,6 +395,9 @@ class Launcher():
         self.Game.scale = 1
         self.Game.frame = 0
         self.Game.solution = None
+        self.Game.Energy_Items.remove(self.Game.Energy_Items.sprites())
+        del self.Game.energy_lst
+        self.Game.energy_lst = []
         # self.Game.change_theme(self.current_theme)
         
         # self.Game.game_normal_view()
