@@ -262,11 +262,11 @@ class GamePlay:
             path_list=path_list,
             energy_list=self.energy_lst,
             grids=self.Maze.grids,
-            maximize_distance=5 + fake_adjust * 2,
+            maximize_distance=5 + fake_adjust,
         )
 
         if choosen_place:
-            if start not in self.energy_lst:
+            if start not in self.energy_lst and start not in choosen_place:
                 EnergyItem(
                     group=self.Energy_Items,
                     grid_position=start,
@@ -1199,6 +1199,7 @@ class GamePlay:
             and self.solution
             and self.frame >= self.max_frame
             and self.auto_index == 0
+            and not ui_grp.paused
         ):
             moving_rule = self.solution.pop(0)[0]  # Direction
 

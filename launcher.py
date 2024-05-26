@@ -430,9 +430,11 @@ class Launcher():
             
             if self.Game.game_state == 'win_game':
                 # self.music_player.play_music('win game')
+                self.paused = True
                 self.win = True
                 
             if self.Game.game_state == 'lose_game':
+                self.paused = True
                 self.lose = True
 
             if self.Game.game_state == 'back_menu':
