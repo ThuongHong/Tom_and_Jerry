@@ -31,8 +31,7 @@ class Launcher():
         box_game_win_img = create_img(images_source, 'box_game_win')
         box_game_lose_img = create_img(images_source, 'box_game_lose')
         box_confirm_overwrite_img = create_img(images_source, 'box_confirm_overwrite')
-        self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 30)
-        self.end_font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 50)
+        self.font = pygame.font.Font('fonts/The Fountain of Wishes Regular.ttf', 50)
         
         button_visualize_process_on_img = create_img(images_source, 'button_visualize_process_on')
         button_visualize_process_off_img = create_img(images_source, 'button_visualize_process_off')
@@ -283,9 +282,9 @@ class Launcher():
                     
         
         if self.win == True:
-            step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
-            time_end = self.end_font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, COLOR.BLACK)
-            score = self.end_font.render(f'Score:        {self.Game.score}', True, COLOR.BLACK)
+            step_end = self.font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
+            time_end = self.font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, COLOR.BLACK)
+            score = self.font.render(f'Score:        {self.Game.score}', True, COLOR.BLACK)
             self.box_game_win.draw(self.window_screen)
             self.window_screen.blit(step_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord - self.box_game_win.modified_height * 0.08))
             self.window_screen.blit(time_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.09))
@@ -301,8 +300,8 @@ class Launcher():
                 self.Game.set_new_game_state("start")
                 
         if self.lose == True:
-            step_end = self.end_font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
-            time_end = self.end_font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, COLOR.BLACK)
+            step_end = self.font.render(f'Steps:        {self.Game.Tom.step_moves}', True, COLOR.BLACK)
+            time_end = self.font.render(f'Time  :        {self.Game.format_time(self.Game.end_time)}', True, COLOR.BLACK)
             self.box_game_lose.draw(self.window_screen)
             self.window_screen.blit(step_end, (self.box_game_lose.x_coord - self.box_game_lose.modified_width * 0.18, self.box_game_lose.y_coord - self.box_game_win.modified_height * 0.01))
             self.window_screen.blit(time_end, (self.box_game_lose.x_coord - self.box_game_lose.modified_width * 0.18, self.box_game_lose.y_coord + self.box_game_win.modified_height * 0.17))

@@ -73,6 +73,7 @@ while game_menu.running:
             game_menu.get_saved_data()
         game_menu.game_state = "main menu"
         game_menu.skip_login = False
+        game_menu.difficulty = ""
         game_menu.full_save = False
         game_menu.energy_mode = False
         game_menu.insane_mode = False
