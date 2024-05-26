@@ -1210,8 +1210,10 @@ class GamePlay:
                 jerry_grp=self.npc,
                 ui_grp=ui_grp,
             )
+
             if self.insane_mode:
-                is_jerry_move = self.npc.update(
+                old_jerry_position = self.Jerry.position
+                self.npc.update(
                     maze=self.Maze,
                     scale=self.scale,
                     offset=self.scale_surface_offset,
@@ -1219,8 +1221,11 @@ class GamePlay:
                     energy_grp=self.Energy_Items,
                     ui_grp=ui_grp,
                 )
-                if is_jerry_move:
+                new_jerry_position = self.Jerry.position
+
+                if old_jerry_position != new_jerry_position:
                     self.set_solution(algorithm=ui_grp.current_algo)
+
             self.move_focus_tom(ui_grp=ui_grp)
 
     def de_auto_move(self):

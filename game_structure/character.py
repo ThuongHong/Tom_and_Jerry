@@ -730,7 +730,6 @@ class Jerry(Tom):
                 self.escape_teleport(
                     maze=maze, energy_grp=energy_grp, tom_grp=tom_grp, ui_grp=ui_grp
                 )
-                return True
 
         if no_event:
             self.current_sprite += 0.1
@@ -739,4 +738,3 @@ class Jerry(Tom):
         if int(self.current_sprite) >= len(self.animation_images["StandDown"]):
             self.current_sprite = 0
         self.image = self.animation_images["StandDown"][int(self.current_sprite)]
-        return False

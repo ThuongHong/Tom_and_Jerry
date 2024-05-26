@@ -79,7 +79,7 @@ class EnergyItem(pygame.sprite.Sprite):
                 self.collect_energy_sound.play()
         if self.transparency_index >= 255:
             self.index_sign = -1
-        if self.transparency_index <= 0:
+        if self.transparency_index <= 100:
             self.index_sign = 1
         self.transparency_index += self.index_sign * 5
         self.image.set_alpha(self.transparency_index)

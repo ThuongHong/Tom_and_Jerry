@@ -77,11 +77,12 @@ def choose_k_point_in_path(grids, position_lst: list, number: int) -> list:
     return processing_lst
     # return preprocess_lst
 
+
 def get_grid_set(path_list):
-    if not path_list: return set()
-    else: return set(
-        [single_item[1] for single_item in path_list]
-    )
+    if not path_list:
+        return set()
+    else:
+        return set([single_item[1] for single_item in path_list])
 
 
 # def choose_point_in_path(
@@ -145,21 +146,26 @@ def get_grid_set(path_list):
 
 #         return [path_list[i][1] for i in random_index_lst]
 
-def choose_point_in_path(grids, path_list: list, energy_list: list, maximize_distance= 5):
+
+def choose_point_in_path(
+    grids, path_list: list, energy_list: list, maximize_distance=5
+):
     path_len = len(path_list)
+
     def is_valid_path_list(path_list: list, energy_list: list):
         for place in path_list:
             if place[1] not in energy_list:
                 return True
         return False
 
-    if not is_valid_path_list(path_list= path_list, energy_list= energy_list):
+    if not is_valid_path_list(path_list=path_list, energy_list=energy_list):
         return []
 
     number = int(path_len / 3)
 
-    if number == 0: return []
-    
+    if number == 0:
+        return []
+
     random_index_lst = []
     # random_index_lst.append(0)
 
@@ -168,33 +174,40 @@ def choose_point_in_path(grids, path_list: list, energy_list: list, maximize_dis
         if first_random_index not in energy_list:
             random_index_lst.append(first_random_index)
             break
-    
-    while (path_len - 1) - random_index_lst[-1] > maximize_distance and not get_grid_set(path_list[random_index_lst[-1] + 1:path_len - 1]).issubset(set(energy_list)):
+
+    while (path_len - 1) - random_index_lst[
+        -1
+    ] > maximize_distance and not get_grid_set(
+        path_list[random_index_lst[-1] + 1 : path_len - 1]
+    ).issubset(
+        set(energy_list)
+    ):
         random_index = random.randrange(random_index_lst[-1] + 1, path_len - 1)
         if path_list[random_index][1] not in energy_list:
             random_index_lst.append(random_index)
 
-    while random_index_lst[0] > maximize_distance - 1 and not get_grid_set(path_list[:random_index_lst[0]]).issubset(set(energy_list)):
+    while random_index_lst[0] > maximize_distance - 1 and not get_grid_set(
+        path_list[: random_index_lst[0]]
+    ).issubset(set(energy_list)):
         random_index = random.randrange(0, random_index_lst[0])
         if path_list[random_index][1] not in energy_list:
-            random_index_lst.insert(
-                0,
-                random_index
-            )
-    
+            random_index_lst.insert(0, random_index)
+
     if len(random_index_lst) <= 1:
-        if len(random_index_lst) == 0: return []
+        if len(random_index_lst) == 0:
+            return []
         return [path_list[i][1] for i in random_index_lst]
     else:
         i = 1
-        while i != len(random_index_lst) and not get_grid_set(path_list[random_index_lst[i - 1] + 1:random_index_lst[i]]).issubset(set(energy_list)):
+        while i != len(random_index_lst) and not get_grid_set(
+            path_list[random_index_lst[i - 1] + 1 : random_index_lst[i]]
+        ).issubset(set(energy_list)):
             if random_index_lst[i] - random_index_lst[i - 1] > maximize_distance:
-                random_index = random.randrange(random_index_lst[i - 1] + 1, random_index_lst[i])
+                random_index = random.randrange(
+                    random_index_lst[i - 1] + 1, random_index_lst[i]
+                )
                 if path_list[random_index][1] not in energy_list:
-                    random_index_lst.insert(
-                        i,
-                        random_index
-                    )
+                    random_index_lst.insert(i, random_index)
 
                 continue
 
