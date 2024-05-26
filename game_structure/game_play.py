@@ -699,6 +699,7 @@ class GamePlay:
         ):
             if event.key == pygame.K_LEFT and not self.is_auto_move:
                 ui_grp.saved = False
+                old_tom_position = self.Tom.position
                 if not self.is_stop_process:
                     self.de_visualize_process()
                     # self.de_visualize_solution()
@@ -712,10 +713,11 @@ class GamePlay:
                 )
                 # if self.solution and self.Tom.position != self.solution[0][1]: self.set_solution(algorithm=ui_grp.current_algo)
                 # elif self.solution: self.solution.pop(0)
-                if self.Tom.position == self.solution[0][1]:
-                    self.solution.pop(0)
-                else:
-                    self.set_solution(algorithm=ui_grp.current_algo)
+                if self.Tom.position != old_tom_position:
+                    if self.Tom.position != old_tom_position and self.Tom.position == self.solution[0][1]:
+                        self.solution.pop(0)
+                    else:
+                        self.set_solution(algorithm=ui_grp.current_algo)
                 if self.insane_mode:
                     self.npc.update(
                         maze=self.Maze,
@@ -727,6 +729,7 @@ class GamePlay:
                     )
             elif event.key == pygame.K_RIGHT and not self.is_auto_move:
                 ui_grp.saved = False
+                old_tom_position = self.Tom.position
                 if not self.is_stop_process:
                     self.de_visualize_process()
                     # self.de_visualize_solution()
@@ -740,10 +743,11 @@ class GamePlay:
                 )
                 # if self.solution and self.Tom.position != self.solution[0][1]: self.set_solution(algorithm=ui_grp.current_algo)
                 # elif self.solution: self.solution.pop(0)
-                if self.Tom.position == self.solution[0][1]:
-                    self.solution.pop(0)
-                else:
-                    self.set_solution(algorithm=ui_grp.current_algo)
+                if self.Tom.position != old_tom_position:
+                    if self.Tom.position != old_tom_position and self.Tom.position == self.solution[0][1]:
+                        self.solution.pop(0)
+                    else:
+                        self.set_solution(algorithm=ui_grp.current_algo)
                 if self.insane_mode:
                     self.npc.update(
                         maze=self.Maze,
@@ -755,6 +759,7 @@ class GamePlay:
                     )
             elif event.key == pygame.K_UP and not self.is_auto_move:
                 ui_grp.saved = False
+                old_tom_position = self.Tom.position
                 if not self.is_stop_process:
                     self.de_visualize_process()
                     # self.de_visualize_solution()
@@ -768,10 +773,11 @@ class GamePlay:
                 )
                 # if self.solution and self.Tom.position != self.solution[0][1]: self.set_solution(algorithm=ui_grp.current_algo)
                 # elif self.solution: self.solution.pop(0)
-                if self.Tom.position == self.solution[0][1]:
-                    self.solution.pop(0)
-                else:
-                    self.set_solution(algorithm=ui_grp.current_algo)
+                if self.Tom.position != old_tom_position:
+                    if self.Tom.position != old_tom_position and self.Tom.position == self.solution[0][1]:
+                        self.solution.pop(0)
+                    else:
+                        self.set_solution(algorithm=ui_grp.current_algo)
                 if self.insane_mode:
                     self.npc.update(
                         maze=self.Maze,
@@ -783,6 +789,7 @@ class GamePlay:
                     )
             elif event.key == pygame.K_DOWN and not self.is_auto_move:
                 ui_grp.saved = False
+                old_tom_position = self.Tom.position
                 if not self.is_stop_process:
                     self.de_visualize_process()
                     # self.de_visualize_solution()
@@ -796,10 +803,11 @@ class GamePlay:
                 )
                 # if self.solution and self.Tom.position != self.solution[0][1]: self.set_solution(algorithm=ui_grp.current_algo)
                 # elif self.solution: self.solution.pop(0)
-                if self.Tom.position == self.solution[0][1]:
-                    self.solution.pop(0)
-                else:
-                    self.set_solution(algorithm=ui_grp.current_algo)
+                if self.Tom.position != old_tom_position:
+                    if self.Tom.position != old_tom_position and self.Tom.position == self.solution[0][1]:
+                        self.solution.pop(0)
+                    else:
+                        self.set_solution(algorithm=ui_grp.current_algo)
                 if self.insane_mode:
                     self.npc.update(
                         maze=self.Maze,
