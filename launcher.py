@@ -1,5 +1,6 @@
 import pygame
 import os
+import gc
 
 from game_structure.game_play import GamePlay
 from game_structure.game_play import load_GamePlay
@@ -94,8 +95,10 @@ class Launcher():
         self.button_yes = Button(box_save_confirm_x_coord - box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_yes_img, click_sound, 0.25, 0.26)
         self.button_no = Button(box_save_confirm_x_coord + box_save_confirm_width * 0.2, box_save_confirm_y_coord + box_save_confirm_height * 0.2, button_no_img, click_sound, 0.25, 0.26)
         self.button_switch_themes = Button(DISPLAY.SCREEN_WIDTH * 0.65, DISPLAY.SCREEN_HEIGHT * 0.92, button_switch_themes_img, click_sound, 0.25, 0.26)
-        self.button_box_game_restart = Button(box_game_win_x_coord - box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_restart_img, click_sound, 0.25, 0.26)
-        self.button_box_game_home = Button(box_game_win_x_coord + box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_home_img, click_sound, 0.25, 0.26)
+        self.button_box_game_restart_win = Button(box_game_win_x_coord - box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_restart_img, click_sound, 0.25, 0.26)
+        self.button_box_game_home_win = Button(box_game_win_x_coord + box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.48, button_box_game_home_img, click_sound, 0.25, 0.26)
+        self.button_box_game_restart_lose = Button(box_game_win_x_coord - box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.43, button_box_game_restart_img, click_sound, 0.25, 0.26)
+        self.button_box_game_home_lose = Button(box_game_win_x_coord + box_game_win_width * 0.2, box_game_win_y_coord + box_game_win_height * 0.43, button_box_game_home_img, click_sound, 0.25, 0.26)
         self.button_overwrite = Button(box_confirm_overwrite_x_coord - box_confirm_overwrite_width * 0.24, box_confirm_overwrite_y_coord + box_confirm_overwrite_height * 0.24, button_overwrite_img, click_sound, 0.3, 0.31)
         self.button_cancel = Button(box_confirm_overwrite_x_coord + box_confirm_overwrite_width * 0.24, box_confirm_overwrite_y_coord + box_confirm_overwrite_height * 0.24, button_cancel_img, click_sound, 0.3, 0.31)
         
@@ -184,6 +187,7 @@ class Launcher():
                     
             if self.paused == False:
                 if self.button_pause.draw(self.window_screen, pos, event, self.sound_on):
+                    self.Game.is_auto_move = False
                     self.paused = True
                     self.time_at_pause = self.Game.format_time(self.Game.pause_time())
                     
@@ -269,6 +273,7 @@ class Launcher():
                     self.Game.visualize_solution(algorithm=self.current_algo)
                     self.Game.de_visualize_process()
                     self.Game.is_auto_move = True
+                    self.paused = False
                     self.Game.solution = None
                     
         
@@ -281,11 +286,11 @@ class Launcher():
             self.window_screen.blit(time_end, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.09))
             self.window_screen.blit(score, (self.box_game_win.x_coord - self.box_game_win.modified_width * 0.18, self.box_game_win.y_coord + self.box_game_win.modified_height * 0.26))
 
-            if self.button_box_game_home.draw(self.window_screen, pos, event, self.sound_on):
+            if self.button_box_game_home_win.draw(self.window_screen, pos, event, self.sound_on):
                 self.save_confirm = False
                 self.paused = False
                 self.Game.set_new_game_state("back_menu")
-            if self.button_box_game_restart.draw(self.window_screen, pos, event, self.sound_on):
+            if self.button_box_game_restart_win.draw(self.window_screen, pos, event, self.sound_on):
                 self.paused = False
                 self.Game.resume_time()
                 self.Game.set_new_game_state("start")
@@ -297,11 +302,11 @@ class Launcher():
             self.window_screen.blit(step_end, (self.box_game_lose.x_coord - self.box_game_lose.modified_width * 0.18, self.box_game_lose.y_coord - self.box_game_win.modified_height * 0.01))
             self.window_screen.blit(time_end, (self.box_game_lose.x_coord - self.box_game_lose.modified_width * 0.18, self.box_game_lose.y_coord + self.box_game_win.modified_height * 0.17))
 
-            if self.button_box_game_home.draw(self.window_screen, pos, event, self.sound_on):
+            if self.button_box_game_home_lose.draw(self.window_screen, pos, event, self.sound_on):
                 self.save_confirm = False
                 self.paused = False
                 self.Game.set_new_game_state("back_menu")
-            if self.button_box_game_restart.draw(self.window_screen, pos, event, self.sound_on):
+            if self.button_box_game_restart_lose.draw(self.window_screen, pos, event, self.sound_on):
                 self.paused = False
                 self.Game.resume_time()
                 self.Game.set_new_game_state("start")
@@ -431,6 +436,8 @@ class Launcher():
                 self.lose = True
 
             if self.Game.game_state == 'back_menu':
+                del self.Game
+                gc.collect()
                 break
             
             if self.Game.game_state == 'start':
