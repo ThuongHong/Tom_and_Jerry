@@ -1,10 +1,12 @@
 # Maze: Tom & Jerry
 
-Our final project for the course “Programming for Artificial Intelligence” at the University of Science - VNUHCM (HCMUS)
+Our final project for the course “Programming for Artificial Intelligence” at the University of Science - VNUHCM (HCMUS).
 
 ## Description
 
 This is a strategic game with multiple levels and various gameplay modes. The main character, Tom, is a cat from a family that frequently experiences cheese theft. The culprit behind these cheese thefts is Jerry. Now, Tom must find a way to catch Jerry as quickly as possible. The player’s main task is to use their logic to determine the shortest path to Jerry’s location. 🐱🐭
+
+[Video demo](https://youtu.be/0v4KKZqlP_Y?si=lCpmLjsrEIOx2vHb)
 
 ## Features
 
